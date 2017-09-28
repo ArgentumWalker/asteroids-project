@@ -1,0 +1,8 @@
+rootProject.name = 'asteroids-project'
+include 'game-logic'
+include 'agent-model'
+include 'training-arena'
+include 'standalone-game-client'
+include 'standalone-observer-client'
+include 'commons'
+
