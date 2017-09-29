@@ -14,7 +14,7 @@ public class Ship extends Entity {
     }
 
     public Ship(@NotNull Point position, long id, long vehicleAngle, long weaponAngle) {
-        super(position, Point.with(0, 0), Constants.BULLET_HEALTH, Constants.BULLET_RADIUS);
+        super(position, Point.with(0, 0), Constants.SHIP_START_HEALTH, Constants.SHIP_RADIUS);
         weapon = new Weapon(weaponAngle);
         vehicle = new Vehicle(vehicleAngle);
         this.id = id;

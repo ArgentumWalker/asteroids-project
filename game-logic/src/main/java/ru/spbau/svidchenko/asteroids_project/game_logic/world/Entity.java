@@ -1,6 +1,7 @@
 package ru.spbau.svidchenko.asteroids_project.game_logic.world;
 
 import com.sun.istack.internal.NotNull;
+import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
 
 public class Entity {
@@ -8,6 +9,8 @@ public class Entity {
     protected Point velocity;
     protected long health;
     protected double radius;
+    protected boolean ignoreImpact = false;
+    protected boolean notPhysicalImpacter = false;
 
     protected Entity(@NotNull Point position, @NotNull Point velocity, long health, double radius) {
         this.position = position;
@@ -16,8 +19,28 @@ public class Entity {
         this.health = health;
     }
 
+    //CHANGE STATE
+
     public void move() {
         position.add(velocity);
+        position.checkWorldBounds();
+    }
+
+    public void receiveImpact(@NotNull Point impacterVelocity, @NotNull Point impacterPosition, boolean ignorePhysicalImpact) {
+        Point line = impacterPosition.getInverse().add(position);
+        double impactSpeed = impacterVelocity.getProjectionLength(line) - velocity.getProjectionLength(line);
+
+        if (impactSpeed > 0) {
+            receiveDamage((long)(impactSpeed * Constants.SPEED_TO_DAMAGE_KOEF));
+            if (!ignoreImpact && !ignorePhysicalImpact) {
+                Point velocityProjectionInv = velocity.getProjection(line).getInverse();
+                Point impactVelocity = impacterVelocity.getProjection(line).add(velocityProjectionInv);
+                if (notPhysicalImpacter) {
+                    impactVelocity.mult(1/2);
+                }
+                velocity.add(velocityProjectionInv).add(impactVelocity);
+            }
+        }
     }
 
     public boolean receiveDamage(long damage) {
@@ -25,27 +48,43 @@ public class Entity {
         return isDead();
     }
 
+    //STATE GETTERS
+
+    public boolean isNotPhysicalImpacter() {
+        return notPhysicalImpacter;
+    }
+
     public boolean isDead() {
         return health <= 0;
     }
 
     public Point getPosition() {
-        return position;
+        return position.clone();
     }
 
     public Point getVelocity() {
-        return velocity;
+        return velocity.clone();
     }
 
     public Long getRemainingHealth() {
         return health;
     }
 
+    public boolean intersectsEntity(Entity e) {
+        return position.distanceTo(e.position) < e.radius + radius;
+    }
+
+    //FORCE ACTIONS
+
     public void setVelocity(Point newVelocity) {
         velocity = newVelocity;
     }
 
-    public boolean intersectsEntity(Entity e) {
-        return position.distanceTo(e.position) < e.radius + radius;
+    public void setPosition(Point position) {
+        this.position = position;
+    }
+
+    public void setHealth(long health) {
+        this.health = health;
     }
 }

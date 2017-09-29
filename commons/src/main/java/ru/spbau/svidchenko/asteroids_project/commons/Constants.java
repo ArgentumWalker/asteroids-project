@@ -13,6 +13,7 @@ public class Constants {
     public static final double WORLD_HALF_HEIGHT = 1200.0;
 
     //Health
+    public static final double SPEED_TO_DAMAGE_KOEF = 2.0;
     public static final long SHIP_START_HEALTH = 10;
     public static final long STONE_START_HEALTH = 10;
     public static final long BULLET_HEALTH = 60;

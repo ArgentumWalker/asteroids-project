@@ -17,12 +17,34 @@ public class Point {
         return new Point(size * Math.cos(angle), size * Math.sin(angle));
     }
 
-    public double getAngle() {
-        if (Math.abs(x) > Constants.EPS || Math.abs(y) > Constants.EPS) {
-            return Math.atan2(y, x);
-        }
-        return 0;
+    //GETTING NEW RELATIVE POINTS
+
+    public Point clone() {
+        return Point.with(x, y);
     }
+
+    public Point getInverse() {
+        return Point.with(-x, -y);
+    }
+
+    public Point getNormalized() {
+        return Point.withPolar(getAngle(), 1.0);
+    }
+
+    public Point getProjection(Point line) {
+        double lineAngle = line.getAngle();
+        double cos = Math.cos(-lineAngle);
+        double sin = Math.sin(-lineAngle);
+        double tmp = x * cos - y * sin;
+        return Point.with(tmp * cos, - tmp * sin);
+    }
+
+    public double getProjectionLength(Point line) {
+        double lineAngle = line.getAngle();
+        return x * Math.cos(-lineAngle) - y * Math.sin(-lineAngle);
+    }
+
+    //MODIFY POINT
 
     public Point turn(double angle) {
         double oldX = x;
@@ -31,6 +53,12 @@ public class Point {
         double sin = Math.sin(angle);
         x = oldX * cos - oldY * sin;
         y = oldX * sin + oldY * cos;
+        return this;
+    }
+
+    public Point mult(double k) {
+        x *= k;
+        y *= k;
         return this;
     }
 
@@ -65,6 +93,8 @@ public class Point {
         return this;
     }
 
+    //GET INFORMATION ABOUT POINT
+
     public double distanceTo(Point p) {
         double dx = Math.min(
                 Math.min(
@@ -77,6 +107,13 @@ public class Point {
                         Math.abs(y - p.y + Constants.WORLD_HALF_HEIGHT * 2)),
                 Math.abs(y - p.y - Constants.WORLD_HALF_HEIGHT * 2));
         return Math.sqrt(dx*dx + dy*dy);
+    }
+
+    public double getAngle() {
+        if (Math.abs(x) > Constants.EPS || Math.abs(y) > Constants.EPS) {
+            return Math.atan2(y, x);
+        }
+        return 0;
     }
 
     public double getX() {

@@ -7,6 +7,7 @@ import ru.spbau.svidchenko.asteroids_project.commons.Point;
 public class Bullet extends Entity {
     public Bullet(@NotNull Point position, @NotNull Point velocity) {
         super(position, velocity, Constants.BULLET_HEALTH, Constants.BULLET_RADIUS);
+        notPhysicalImpacter = true;
     }
 
     @Override

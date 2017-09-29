@@ -41,7 +41,43 @@ public class Game {
     //TURN LOGIC
 
     public void nextTurn() {
-
+        List<Entity> entities = currentWorldModel.getEntities();
+        for (Entity entity : entities) {
+            entity.move();
+        }
+        List<Entity> visitedEntities = new ArrayList<>();
+        for (Entity entity1 : entities) {
+            for (Entity entity2 : visitedEntities) {
+                Point entity1Velocity = entity1.getVelocity();
+                Point entity2Velocity = entity2.getVelocity();
+                if (entity1.intersectsEntity(entity2)) {
+                    entity2.receiveImpact(entity1Velocity, entity1.getPosition(), entity1.isNotPhysicalImpacter());
+                }
+                if (entity2.intersectsEntity(entity1)) {
+                    entity1.receiveImpact(entity2Velocity, entity2.getPosition(), entity2.isNotPhysicalImpacter());
+                }
+            }
+            visitedEntities.add(entity1);
+        }
+        List<Entity> entitiesToRemove = new ArrayList<>();
+        for (Entity entity : entities) {
+            if (entity.isDead()) {
+                if (entity instanceof Ship) {
+                    entity.setPosition(random.randomWorldPoint());
+                    entity.setVelocity(Point.with(0, 0));
+                    entity.setHealth(Constants.SHIP_START_HEALTH);
+                    continue;
+                }
+                if (entity instanceof Stone) {
+                    entity.setPosition(random.randomWorldPoint());
+                    entity.setVelocity(random.randomPoint(0, Constants.STONE_MAX_VELOCITY));
+                    entity.setHealth(Constants.STONE_START_HEALTH);
+                    continue;
+                }
+                entitiesToRemove.add(entity);
+            }
+        }
+        entities.removeAll(entitiesToRemove);
     }
 
     //OTHER METHODS
