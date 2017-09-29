@@ -5,15 +5,15 @@ import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
 
 public class Ship extends Entity {
-    protected int id;
+    protected long id;
     protected Weapon weapon;
     protected Vehicle vehicle;
 
-    public Ship(@NotNull Point position, int id) {
+    public Ship(@NotNull Point position, long id) {
         this(position, id, 0 ,0);
     }
 
-    public Ship(@NotNull Point position, int id, long vehicleAngle, long weaponAngle) {
+    public Ship(@NotNull Point position, long id, long vehicleAngle, long weaponAngle) {
         super(position, Point.with(0, 0), Constants.BULLET_HEALTH, Constants.BULLET_RADIUS);
         weapon = new Weapon(weaponAngle);
         vehicle = new Vehicle(vehicleAngle);
