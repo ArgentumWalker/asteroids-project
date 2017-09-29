@@ -18,14 +18,6 @@ public class Game {
 
     //CONSTRUCTORS
 
-    public Game(WorldModel startPosition, WorldDescriptor worldDescriptor) {
-        currentWorldModel = startPosition;
-        currentWorldModel.removeEntities(currentWorldModel.getTypedEntities(Stone.class)
-                .stream()
-                .skip(worldDescriptor.stonesCount)
-                .collect(Collectors.toList()));
-    }
-
     public Game(WorldDescriptor worldDescriptor) {
         List<Stone> stones = new ArrayList<>();
         for (long i = 0; i < worldDescriptor.stonesCount; i++) {
