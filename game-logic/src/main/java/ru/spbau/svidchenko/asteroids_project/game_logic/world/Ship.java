@@ -15,10 +15,13 @@ public class Ship extends Entity {
 
     public Ship(@NotNull Point position, long id, long vehicleAngle, long weaponAngle) {
         super(position, Point.with(0, 0), Constants.SHIP_START_HEALTH, Constants.SHIP_RADIUS);
+        ignorePhysicalImpact = true;
         weapon = new Weapon(weaponAngle);
         vehicle = new Vehicle(vehicleAngle);
         this.id = id;
     }
+
+    //GET STATE
 
     public Weapon getWeapon() {
         return weapon;
@@ -46,7 +49,7 @@ public class Ship extends Entity {
         public Bullet fire() {
             Point velocity = Point.withPolar(2 * Math.PI * angle/Constants.WEAPON_MOVES_TO_TURN,
                     Constants.BULLET_BASE_VELOCITY).add(getVelocity());
-            return new Bullet(getPosition(), velocity);
+            return new Bullet(getPosition(), velocity, Ship.this.id);
         }
 
         public long getAngle() {

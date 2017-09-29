@@ -9,7 +9,7 @@ public class Entity {
     protected Point velocity;
     protected long health;
     protected double radius;
-    protected boolean ignoreImpact = false;
+    protected boolean ignorePhysicalImpact = false;
     protected boolean notPhysicalImpacter = false;
 
     protected Entity(@NotNull Point position, @NotNull Point velocity, long health, double radius) {
@@ -26,13 +26,20 @@ public class Entity {
         position.checkWorldBounds();
     }
 
-    public void receiveImpact(@NotNull Point impacterVelocity, @NotNull Point impacterPosition, boolean ignorePhysicalImpact) {
+    public void receiveImpact(
+            @NotNull Point impacterVelocity,
+            @NotNull Point impacterPosition,
+            boolean ignorePhysicalImpact,
+            boolean ignoreHealthImpact
+    ) {
         Point line = impacterPosition.getInverse().add(position);
         double impactSpeed = impacterVelocity.getProjectionLength(line) - velocity.getProjectionLength(line);
 
         if (impactSpeed > 0) {
-            receiveDamage((long)(impactSpeed * Constants.SPEED_TO_DAMAGE_KOEF));
-            if (!ignoreImpact && !ignorePhysicalImpact) {
+            if (!ignoreHealthImpact) {
+                receiveDamage((long) (impactSpeed * Constants.SPEED_TO_DAMAGE_KOEF));
+            }
+            if (!ignorePhysicalImpact) {
                 Point velocityProjectionInv = velocity.getProjection(line).getInverse();
                 Point impactVelocity = impacterVelocity.getProjection(line).add(velocityProjectionInv);
                 if (notPhysicalImpacter) {
@@ -50,8 +57,12 @@ public class Entity {
 
     //STATE GETTERS
 
-    public boolean isNotPhysicalImpacter() {
-        return notPhysicalImpacter;
+    public boolean physicalImpactsTo(Entity e) {
+        return !(notPhysicalImpacter || e.ignorePhysicalImpact);
+    }
+
+    public boolean harmfulImpactsTo(Entity e) {
+        return true;
     }
 
     public boolean isDead() {

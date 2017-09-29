@@ -51,10 +51,14 @@ public class Game {
                 Point entity1Velocity = entity1.getVelocity();
                 Point entity2Velocity = entity2.getVelocity();
                 if (entity1.intersectsEntity(entity2)) {
-                    entity2.receiveImpact(entity1Velocity, entity1.getPosition(), entity1.isNotPhysicalImpacter());
+                    entity2.receiveImpact(entity1Velocity, entity1.getPosition(),
+                            entity1.physicalImpactsTo(entity2),
+                            entity1.harmfulImpactsTo(entity2));
                 }
                 if (entity2.intersectsEntity(entity1)) {
-                    entity1.receiveImpact(entity2Velocity, entity2.getPosition(), entity2.isNotPhysicalImpacter());
+                    entity1.receiveImpact(entity2Velocity, entity2.getPosition(),
+                            entity2.physicalImpactsTo(entity1),
+                            entity2.harmfulImpactsTo(entity1));
                 }
             }
             visitedEntities.add(entity1);

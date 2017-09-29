@@ -5,8 +5,11 @@ import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
 
 public class Bullet extends Entity {
-    public Bullet(@NotNull Point position, @NotNull Point velocity) {
+    protected long parentShipId;
+
+    public Bullet(@NotNull Point position, @NotNull Point velocity, long parentShipId) {
         super(position, velocity, Constants.BULLET_HEALTH, Constants.BULLET_RADIUS);
+        this.parentShipId = parentShipId;
         notPhysicalImpacter = true;
     }
 
@@ -14,5 +17,15 @@ public class Bullet extends Entity {
     public void move() {
         receiveDamage(Constants.BULLET_DAMAGE_PER_MOVE);
         super.move();
+    }
+
+    @Override
+    public boolean harmfulImpactsTo(Entity e) {
+        if (e instanceof Ship) {
+            if (((Ship) e).id == parentShipId) {
+                return false;
+            }
+        }
+        return super.harmfulImpactsTo(e);
     }
 }
