@@ -1,10 +1,11 @@
 package ru.spbau.svidchenko.asteroids_project.game_logic.world;
 
 import com.sun.istack.internal.NotNull;
+import ru.spbau.svidchenko.asteroids_project.commons.Callable;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
 
-public class Entity {
+public abstract class Entity {
     protected Point position;
     protected Point velocity;
     protected long health;
@@ -98,4 +99,10 @@ public class Entity {
     public void setHealth(long health) {
         this.health = health;
     }
+
+    //OTHER
+
+    public abstract EntityRelative getRelative(double angle, Point center);
+
+    public abstract EntityRelative getRelative(Callable<Double> angleFunction, Callable<Point> centerFunction);
 }

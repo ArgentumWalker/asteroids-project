@@ -1,6 +1,7 @@
 package ru.spbau.svidchenko.asteroids_project.game_logic.world;
 
 import com.sun.istack.internal.NotNull;
+import ru.spbau.svidchenko.asteroids_project.commons.Callable;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
 
@@ -29,6 +30,16 @@ public class Ship extends Entity {
 
     public Vehicle getVehicle() {
         return vehicle;
+    }
+
+    @Override
+    public EntityRelative getRelative(double angle, Point center) {
+        return new Relative(angle, center);
+    }
+
+    @Override
+    public EntityRelative getRelative(Callable<Double> angleFunction, Callable<Point> centerFunction) {
+        return new Relative(angleFunction, centerFunction);
     }
 
     public class Weapon {
@@ -82,6 +93,36 @@ public class Ship extends Entity {
 
         public void stop() {
             velocity = Point.with(0, 0);
+        }
+    }
+
+    public class Relative extends EntityRelative<Ship> {
+        protected double weaponOrientation;
+        protected double vehicleOrientation;
+
+        public Relative(double angle, Point center) {
+            super(angle, center, Ship.this);
+        }
+
+        public Relative(Callable<Double> angleFunction, Callable<Point> centerFunction) {
+            super(angleFunction, centerFunction, Ship.this);
+        }
+
+        @Override
+        public void refresh() {
+            double angle = angleFunction.call();
+            Point cennter = centerFunction.call();
+            super.refresh(angle, cennter);
+            weaponOrientation = 2 * Math.PI * entity.weapon.angle/Constants.WEAPON_MOVES_TO_TURN + angle;
+            vehicleOrientation = 2 * Math.PI * entity.vehicle.angle/Constants.VEHICLE_MOVES_TO_TURN + angle;
+        }
+
+        public double getWeaponOrientation() {
+            return weaponOrientation;
+        }
+
+        public double getVehicleOrientation() {
+            return vehicleOrientation;
         }
     }
 }
