@@ -1,4 +1,4 @@
-package ru.spbau.svidchenko.asteroids_project.agentmodel.base.plane_grid;
+package ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.plane_grid;
 
 import java.util.ArrayList;
 import java.util.List;

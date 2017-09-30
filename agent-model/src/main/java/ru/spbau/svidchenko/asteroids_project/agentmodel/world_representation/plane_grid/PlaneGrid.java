@@ -1,6 +1,5 @@
-package ru.spbau.svidchenko.asteroids_project.agentmodel.base.plane_grid;
+package ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.plane_grid;
 
-import ru.spbau.svidchenko.asteroids_project.commons.Point;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.EntityRelative;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.RelativeWorldModel;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Stone;

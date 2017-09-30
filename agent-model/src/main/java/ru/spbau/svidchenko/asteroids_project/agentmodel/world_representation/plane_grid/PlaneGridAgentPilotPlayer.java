@@ -1,4 +1,4 @@
-package ru.spbau.svidchenko.asteroids_project.agentmodel.base.plane_grid;
+package ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.plane_grid;
 
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.GunnerPlayer;
