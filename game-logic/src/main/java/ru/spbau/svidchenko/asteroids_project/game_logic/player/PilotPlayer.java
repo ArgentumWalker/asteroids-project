@@ -63,11 +63,11 @@ public abstract class PilotPlayer extends Player {
         private Turn turn = Turn.NO_TURN;
         private Move move = Move.OFF;
 
-        public void setTurn(@NotNull Turn turn) {
+        public void setTurn(Turn turn) {
             this.turn = turn;
         }
 
-        public void setMove(@NotNull Move move) {
+        public void setMove(Move move) {
             this.move = move;
         }
     }

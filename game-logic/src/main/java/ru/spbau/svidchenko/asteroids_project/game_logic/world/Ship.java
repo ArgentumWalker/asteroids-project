@@ -1,6 +1,5 @@
 package ru.spbau.svidchenko.asteroids_project.game_logic.world;
 
-import com.sun.istack.internal.NotNull;
 import ru.spbau.svidchenko.asteroids_project.commons.Callable;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
@@ -12,11 +11,11 @@ public class Ship extends Entity {
     protected Vehicle vehicle;
     private ShipCrew shipCrew;
 
-    public Ship(@NotNull Point position, long id) {
+    public Ship(Point position, long id) {
         this(position, id, 0 ,0);
     }
 
-    public Ship(@NotNull Point position, long id, long vehicleAngle, long weaponAngle) {
+    public Ship(Point position, long id, long vehicleAngle, long weaponAngle) {
         super(position, Point.with(0, 0), Constants.SHIP_START_HEALTH, Constants.SHIP_RADIUS);
         ignorePhysicalImpact = true;
         weapon = new Weapon(weaponAngle);

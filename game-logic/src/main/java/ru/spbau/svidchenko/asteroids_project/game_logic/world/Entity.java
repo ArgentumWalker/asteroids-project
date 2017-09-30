@@ -1,6 +1,5 @@
 package ru.spbau.svidchenko.asteroids_project.game_logic.world;
 
-import com.sun.istack.internal.NotNull;
 import ru.spbau.svidchenko.asteroids_project.commons.Callable;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
@@ -13,7 +12,7 @@ public abstract class Entity {
     protected boolean ignorePhysicalImpact = false;
     protected boolean notPhysicalImpacter = false;
 
-    protected Entity(@NotNull Point position, @NotNull Point velocity, long health, double radius) {
+    protected Entity(Point position, Point velocity, long health, double radius) {
         this.position = position;
         this.velocity = velocity;
         this.radius = radius;
@@ -28,8 +27,8 @@ public abstract class Entity {
     }
 
     public void receiveImpact(
-            @NotNull Point impacterVelocity,
-            @NotNull Point impacterPosition,
+            Point impacterVelocity,
+            Point impacterPosition,
             boolean ignorePhysicalImpact,
             boolean ignoreHealthImpact
     ) {

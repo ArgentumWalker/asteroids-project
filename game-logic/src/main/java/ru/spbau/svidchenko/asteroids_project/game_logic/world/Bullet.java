@@ -1,6 +1,5 @@
 package ru.spbau.svidchenko.asteroids_project.game_logic.world;
 
-import com.sun.istack.internal.NotNull;
 import ru.spbau.svidchenko.asteroids_project.commons.Callable;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
@@ -8,7 +7,7 @@ import ru.spbau.svidchenko.asteroids_project.commons.Point;
 public class Bullet extends Entity {
     protected long parentShipId;
 
-    public Bullet(@NotNull Point position, @NotNull Point velocity, long parentShipId) {
+    public Bullet(Point position, Point velocity, long parentShipId) {
         super(position, velocity, Constants.BULLET_HEALTH, Constants.BULLET_RADIUS);
         this.parentShipId = parentShipId;
         notPhysicalImpacter = true;

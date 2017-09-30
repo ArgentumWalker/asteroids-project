@@ -1,7 +1,5 @@
 package ru.spbau.svidchenko.asteroids_project.game_logic.player;
 
-import com.sun.istack.internal.NotNull;
-import com.sun.istack.internal.Nullable;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Bullet;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Entity;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Ship;
@@ -48,7 +46,7 @@ public abstract class GunnerPlayer extends Player {
         private Turn turn = Turn.NO_TURN;
         private boolean shoot = false;
 
-        public void setTurn(@NotNull Turn turn) {
+        public void setTurn(Turn turn) {
             this.turn = turn;
         }
 

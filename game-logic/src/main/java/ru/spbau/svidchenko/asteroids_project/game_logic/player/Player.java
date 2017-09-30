@@ -1,6 +1,5 @@
 package ru.spbau.svidchenko.asteroids_project.game_logic.player;
 
-import com.sun.istack.internal.Nullable;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Entity;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.RelativeWorldModel;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Ship;
@@ -15,7 +14,6 @@ public abstract class Player {
         this.id = id;
     }
 
-    @Nullable
     public abstract List<? extends Entity> makeAction();
 
     public void setRelativeWorldModel(RelativeWorldModel worldModel) {
