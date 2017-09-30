@@ -1,6 +1,5 @@
 package ru.spbau.svidchenko.asteroids_project.game_logic.player;
 
-import com.sun.istack.internal.NotNull;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Entity;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Ship;
 
