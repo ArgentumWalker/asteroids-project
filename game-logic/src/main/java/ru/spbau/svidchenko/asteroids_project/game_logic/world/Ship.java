@@ -4,11 +4,13 @@ import com.sun.istack.internal.NotNull;
 import ru.spbau.svidchenko.asteroids_project.commons.Callable;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
+import ru.spbau.svidchenko.asteroids_project.game_logic.player.ShipCrew;
 
 public class Ship extends Entity {
     protected long id;
     protected Weapon weapon;
     protected Vehicle vehicle;
+    private ShipCrew shipCrew;
 
     public Ship(@NotNull Point position, long id) {
         this(position, id, 0 ,0);
@@ -23,6 +25,10 @@ public class Ship extends Entity {
     }
 
     //GET STATE
+
+    public long getId() {
+        return id;
+    }
 
     public Weapon getWeapon() {
         return weapon;
@@ -41,6 +47,8 @@ public class Ship extends Entity {
     public EntityRelative getRelative(Callable<Double> angleFunction, Callable<Point> centerFunction) {
         return new Relative(angleFunction, centerFunction);
     }
+
+    //ELEMENTS
 
     public class Weapon {
         private long angle;

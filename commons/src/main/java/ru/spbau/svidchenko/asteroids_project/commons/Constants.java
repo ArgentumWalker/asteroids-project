@@ -35,4 +35,12 @@ public class Constants {
 
     //Vehicle
     public static final long VEHICLE_MOVES_TO_TURN = 30;
+
+
+    ////GAME CONSTANTS
+
+    //Score
+    public static final long SCORE_FOR_DEATH = -50;
+    public static final long SCORE_FOR_DESTROY_STONE = 10;
+    public static final long SCORE_FOR_DESTROY_SHIP = 150;
 }

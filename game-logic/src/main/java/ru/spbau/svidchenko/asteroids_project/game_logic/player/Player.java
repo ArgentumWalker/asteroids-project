@@ -10,11 +10,9 @@ import java.util.List;
 public abstract class Player {
     protected long id;
     protected RelativeWorldModel worldModel;
-    protected long score;
 
     public Player(long id) {
         this.id = id;
-        score = 0;
     }
 
     @Nullable
@@ -24,11 +22,5 @@ public abstract class Player {
         this.worldModel = worldModel;
     }
 
-    public void incScore(long reward) {
-        score += reward;
-    }
-
-    public long getScore() {
-        return score;
-    }
+    public abstract void incScore(long reward);
 }

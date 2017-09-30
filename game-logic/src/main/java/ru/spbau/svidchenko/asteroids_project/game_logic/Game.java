@@ -7,9 +7,11 @@ import ru.spbau.svidchenko.asteroids_project.commons.RandomGod;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.GunnerPlayer;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.PilotPlayer;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.Player;
+import ru.spbau.svidchenko.asteroids_project.game_logic.player.ShipCrew;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.*;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -19,6 +21,8 @@ public class Game {
     private RandomGod random = new RandomGod();
     private List<RelativeWorldModel> relativeWorldModels = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
+    private HashMap<Long, ShipCrew> shipId2shipCrew = new HashMap<>();
+
 
     //CONSTRUCTORS
 
@@ -31,23 +35,24 @@ public class Game {
         currentWorldModel.addEntities(stones);
         List<Ship> ships = new ArrayList<>();
         long shipId = 0;
-        for (Pair<PilotPlayer, GunnerPlayer> team : worldDescriptor.players) {
+        for (ShipCrew crew : worldDescriptor.players) {
             Ship ship = new Ship(random.randomWorldPoint(), shipId++);
             ships.add(ship);
-            team.first().setVehicle(ship.getVehicle());
-            team.second().setWeapon(ship.getWeapon());
+            crew.getMembers().first().setVehicle(ship.getVehicle());
+            crew.getMembers().second().setWeapon(ship.getWeapon());
             RelativeWorldModel pilotWorldModel = new RelativeWorldModel(
                     () -> 2 * Math.PI * ship.getVehicle().getAngle() / Constants.VEHICLE_MOVES_TO_TURN,
                     ship::getPosition, currentWorldModel);
             RelativeWorldModel gunnerWorldModel = new RelativeWorldModel(
                     () -> 2 * Math.PI * ship.getWeapon().getAngle() / Constants.WEAPON_MOVES_TO_TURN,
                     ship::getPosition, currentWorldModel);
-            team.first().setRelativeWorldModel(pilotWorldModel);
-            team.second().setRelativeWorldModel(gunnerWorldModel);
+            crew.getMembers().first().setRelativeWorldModel(pilotWorldModel);
+            crew.getMembers().second().setRelativeWorldModel(gunnerWorldModel);
             relativeWorldModels.add(pilotWorldModel);
             relativeWorldModels.add(gunnerWorldModel);
-            players.add(team.first());
-            players.add(team.second());
+            players.add(crew.getMembers().first());
+            players.add(crew.getMembers().second());
+            shipId2shipCrew.put(ship.getId(), crew);
         }
         currentWorldModel.addEntities(ships);
         afterTurn();
@@ -69,11 +74,17 @@ public class Game {
                     entity2.receiveImpact(entity1Velocity, entity1.getPosition(),
                             entity1.physicalImpactsTo(entity2),
                             entity1.harmfulImpactsTo(entity2));
+                    if (entity2.isDead()) {
+                        processScore(entity2, entity1);
+                    }
                 }
                 if (entity2.intersectsEntity(entity1)) {
                     entity1.receiveImpact(entity2Velocity, entity2.getPosition(),
                             entity2.physicalImpactsTo(entity1),
                             entity2.harmfulImpactsTo(entity1));
+                    if (entity1.isDead()) {
+                        processScore(entity1, entity2);
+                    }
                 }
             }
             visitedEntities.add(entity1);
@@ -111,6 +122,20 @@ public class Game {
             }
         }
         currentWorldModel.addEntities(newEntities);
+    }
+
+    private void processScore(Entity entity, Entity destroedBy) {
+        if (entity instanceof Ship) {
+            shipId2shipCrew.get(((Ship) entity).getId()).addScore(Constants.SCORE_FOR_DEATH);
+        }
+        if (destroedBy instanceof Bullet){
+            if (entity instanceof Ship) {
+                shipId2shipCrew.get(((Bullet) destroedBy).getParentShipId()).addScore(Constants.SCORE_FOR_DESTROY_SHIP);
+            }
+            if (entity instanceof Stone) {
+                shipId2shipCrew.get(((Bullet) destroedBy).getParentShipId()).addScore(Constants.SCORE_FOR_DESTROY_STONE);
+            }
+        }
     }
 
     //OTHER METHODS

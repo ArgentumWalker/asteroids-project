@@ -30,6 +30,10 @@ public class Bullet extends Entity {
         return super.harmfulImpactsTo(e);
     }
 
+    public long getParentShipId() {
+        return parentShipId;
+    }
+
     @Override
     public EntityRelative getRelative(double angle, Point center) {
         return new Relative(angle, center);
