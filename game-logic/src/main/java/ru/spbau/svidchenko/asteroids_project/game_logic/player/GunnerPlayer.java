@@ -3,7 +3,12 @@ package ru.spbau.svidchenko.asteroids_project.game_logic.player;
 import com.sun.istack.internal.NotNull;
 import com.sun.istack.internal.Nullable;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Bullet;
+import ru.spbau.svidchenko.asteroids_project.game_logic.world.Entity;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Ship;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public abstract class GunnerPlayer extends Player {
     private Ship.Weapon weapon;
@@ -18,7 +23,7 @@ public abstract class GunnerPlayer extends Player {
         this.weapon = weapon;
     }
 
-    public final @Nullable Bullet makeAction() {
+    public final List<Bullet> makeAction() {
         Action action = chooseAction();
         switch (action.turn) {
             case LEFT: {
@@ -30,7 +35,8 @@ public abstract class GunnerPlayer extends Player {
                 break;
             }
         }
-        return action.shoot ? weapon.fire() : null;
+        Bullet bullet = action.shoot ? weapon.fire() : null;
+        return bullet == null ? null : Collections.singletonList(bullet);
     }
 
     protected final static class Action {

@@ -1,9 +1,11 @@
 package ru.spbau.svidchenko.asteroids_project.game_logic.player;
 
 import com.sun.istack.internal.NotNull;
+import ru.spbau.svidchenko.asteroids_project.game_logic.world.Entity;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Ship;
 
 import java.util.HashMap;
+import java.util.List;
 
 public abstract class PilotPlayer extends Player {
     private Ship.Vehicle vehicle;
@@ -18,7 +20,7 @@ public abstract class PilotPlayer extends Player {
         this.vehicle = vehicle;
     }
 
-    public final void makeAction() {
+    public final List<Entity> makeAction() {
         Action action = chooseAction();
         switch (action.turn) {
             case LEFT: {
@@ -44,6 +46,7 @@ public abstract class PilotPlayer extends Player {
                 break;
             }
         }
+        return null;
     }
 
     protected final static class Action {

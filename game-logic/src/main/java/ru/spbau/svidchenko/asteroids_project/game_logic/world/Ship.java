@@ -94,6 +94,10 @@ public class Ship extends Entity {
         public void stop() {
             velocity = Point.with(0, 0);
         }
+
+        public long getAngle() {
+            return angle;
+        }
     }
 
     public class Relative extends EntityRelative<Ship> {

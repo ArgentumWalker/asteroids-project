@@ -1,39 +1,62 @@
 package ru.spbau.svidchenko.asteroids_project.game_logic;
 
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
+import ru.spbau.svidchenko.asteroids_project.commons.Pair;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
 import ru.spbau.svidchenko.asteroids_project.commons.RandomGod;
-import ru.spbau.svidchenko.asteroids_project.game_logic.world.Entity;
-import ru.spbau.svidchenko.asteroids_project.game_logic.world.Ship;
-import ru.spbau.svidchenko.asteroids_project.game_logic.world.Stone;
-import ru.spbau.svidchenko.asteroids_project.game_logic.world.WorldModel;
+import ru.spbau.svidchenko.asteroids_project.game_logic.player.GunnerPlayer;
+import ru.spbau.svidchenko.asteroids_project.game_logic.player.PilotPlayer;
+import ru.spbau.svidchenko.asteroids_project.game_logic.player.Player;
+import ru.spbau.svidchenko.asteroids_project.game_logic.world.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class Game {
     private WorldModel currentWorldModel;
     private RandomGod random = new RandomGod();
+    private List<RelativeWorldModel> relativeWorldModels = new ArrayList<>();
+    private List<Player> players = new ArrayList<>();
 
     //CONSTRUCTORS
 
     public Game(WorldDescriptor worldDescriptor) {
+        currentWorldModel = new WorldModel();
         List<Stone> stones = new ArrayList<>();
         for (long i = 0; i < worldDescriptor.stonesCount; i++) {
             stones.add(new Stone(random.randomWorldPoint(), random.randomPoint(0, Constants.STONE_MAX_VELOCITY)));
         }
         currentWorldModel.addEntities(stones);
         List<Ship> ships = new ArrayList<>();
-        for (long i = 0; i < worldDescriptor.shipCount; i++) {
-            ships.add(new Ship(random.randomWorldPoint(), i));
+        long shipId = 0;
+        for (Pair<PilotPlayer, GunnerPlayer> team : worldDescriptor.players) {
+            Ship ship = new Ship(random.randomWorldPoint(), shipId++);
+            ships.add(ship);
+            team.first().setVehicle(ship.getVehicle());
+            team.second().setWeapon(ship.getWeapon());
+            RelativeWorldModel pilotWorldModel = new RelativeWorldModel(
+                    () -> 2 * Math.PI * ship.getVehicle().getAngle() / Constants.VEHICLE_MOVES_TO_TURN,
+                    ship::getPosition, currentWorldModel);
+            RelativeWorldModel gunnerWorldModel = new RelativeWorldModel(
+                    () -> 2 * Math.PI * ship.getWeapon().getAngle() / Constants.WEAPON_MOVES_TO_TURN,
+                    ship::getPosition, currentWorldModel);
+            team.first().setRelativeWorldModel(pilotWorldModel);
+            team.second().setRelativeWorldModel(gunnerWorldModel);
+            relativeWorldModels.add(pilotWorldModel);
+            relativeWorldModels.add(gunnerWorldModel);
+            players.add(team.first());
+            players.add(team.second());
         }
+        currentWorldModel.addEntities(ships);
+        afterTurn();
     }
 
     //TURN LOGIC
 
     public void nextTurn() {
-        List<Entity> entities = currentWorldModel.getEntities();
+        Set<Entity> entities = currentWorldModel.getEntities();
         for (Entity entity : entities) {
             entity.move();
         }
@@ -73,7 +96,21 @@ public class Game {
                 entitiesToRemove.add(entity);
             }
         }
-        entities.removeAll(entitiesToRemove);
+        currentWorldModel.removeEntities(entitiesToRemove);
+    }
+
+    private void afterTurn() {
+        for (RelativeWorldModel worldModel : relativeWorldModels) {
+            worldModel.refresh();
+        }
+        List<Entity> newEntities = new ArrayList<>();
+        for (Player player : players) {
+            List<? extends Entity> result = player.makeAction();
+            if (result != null) {
+                newEntities.addAll(result);
+            }
+        }
+        currentWorldModel.addEntities(newEntities);
     }
 
     //OTHER METHODS
