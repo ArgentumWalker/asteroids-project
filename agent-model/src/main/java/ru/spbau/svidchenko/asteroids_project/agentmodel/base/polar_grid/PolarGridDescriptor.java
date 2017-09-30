@@ -25,7 +25,7 @@ public class PolarGridDescriptor {
     }
 
     public void splitDistance(double at) {
-        if (distanceSectors.get(distanceSectors.size() - 1) > at && at > 0) {
+        if (at > 0) {
             int position = 0;
             while (distanceSectors.get(position) < at) {
                 position++;
