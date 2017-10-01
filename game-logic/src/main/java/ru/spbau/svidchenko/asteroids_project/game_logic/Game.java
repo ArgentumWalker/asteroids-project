@@ -1,11 +1,8 @@
 package ru.spbau.svidchenko.asteroids_project.game_logic;
 
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
-import ru.spbau.svidchenko.asteroids_project.commons.Pair;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
 import ru.spbau.svidchenko.asteroids_project.commons.RandomGod;
-import ru.spbau.svidchenko.asteroids_project.game_logic.player.GunnerPlayer;
-import ru.spbau.svidchenko.asteroids_project.game_logic.player.PilotPlayer;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.Player;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.ShipCrew;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.*;
@@ -14,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 public class Game {
     private WorldModel currentWorldModel;
@@ -41,10 +37,10 @@ public class Game {
             crew.getMembers().first().setVehicle(ship.getVehicle());
             crew.getMembers().second().setWeapon(ship.getWeapon());
             RelativeWorldModel pilotWorldModel = new RelativeWorldModel(
-                    () -> 2 * Math.PI * ship.getVehicle().getAngle() / Constants.VEHICLE_MOVES_TO_TURN,
+                    () -> 2 * Math.PI * ship.getVehicle().getAngle() / Constants.VEHICLE_TURNS_TO_TURN_AROUND,
                     ship::getPosition, currentWorldModel);
             RelativeWorldModel gunnerWorldModel = new RelativeWorldModel(
-                    () -> 2 * Math.PI * ship.getWeapon().getAngle() / Constants.WEAPON_MOVES_TO_TURN,
+                    () -> 2 * Math.PI * ship.getWeapon().getAngle() / Constants.WEAPON_TURNS_TO_TURN_AROUND,
                     ship::getPosition, currentWorldModel);
             crew.getMembers().first().setRelativeWorldModel(pilotWorldModel);
             crew.getMembers().second().setRelativeWorldModel(gunnerWorldModel);

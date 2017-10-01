@@ -33,7 +33,7 @@ public abstract class GunnerPlayer extends Player {
                 break;
             }
         }
-        Bullet bullet = action.shoot ? weapon.fire() : null;
+        Bullet bullet = (action.shoot ? weapon.fire() : null);
         return bullet == null ? null : Collections.singletonList(bullet);
     }
 

@@ -43,7 +43,7 @@ public class PolarGrid {
 
     private int calculateAngleSector(EntityRelative relative) {
         int result = 0;
-        long angle = (long) (relative.getPosition().getAngle() / (2 * Math.PI * Constants.WEAPON_MOVES_TO_TURN));
+        long angle = (long) (relative.getPosition().getAngle() / (2 * Math.PI * Constants.WEAPON_TURNS_TO_TURN_AROUND));
         for (long border : polarGridDescriptor.getAngleSectors()) {
             if (border > angle) {
                 return result;

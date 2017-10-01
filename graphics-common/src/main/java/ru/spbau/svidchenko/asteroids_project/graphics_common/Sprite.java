@@ -36,7 +36,7 @@ public class Sprite {
     private Point calculateCanvasPosition(Point worldPosition, double radius) {
         return Point.with(Constants.WINDOW_HALF_WIDTH_PX, Constants.WINDOW_HALF_HEIGHT_PX)
                 .mult(1 / Constants.PIXELS_IN_WORLD_POINT)
-                .add(worldPosition)
+                .add(Point.with(worldPosition.getY(), -worldPosition.getX()))
                 .add(Point.with(-radius, -radius))
                 .mult(Constants.PIXELS_IN_WORLD_POINT);
     }

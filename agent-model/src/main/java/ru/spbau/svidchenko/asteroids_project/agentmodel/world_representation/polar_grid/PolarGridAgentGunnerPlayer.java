@@ -8,7 +8,7 @@ public abstract class PolarGridAgentGunnerPlayer extends GunnerPlayer {
 
     public PolarGridAgentGunnerPlayer(long id, PolarGridDescriptor polarGridDescriptor) {
         super(id);
-        polarGridDescriptor.setMaxAngle(Constants.VEHICLE_MOVES_TO_TURN);
+        polarGridDescriptor.setMaxAngle(Constants.VEHICLE_TURNS_TO_TURN_AROUND);
         this.polarGrid = new PolarGrid(polarGridDescriptor, worldModel);
     }
 

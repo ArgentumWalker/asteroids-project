@@ -18,9 +18,9 @@ public class GraphicUtils {
 
     public static void drawImage(GraphicsContext context, Image source, Point position, Point size, double rotation) {
         context.save();
-        Rotate rotate = new Rotate(rotation,
-                position.getX() + source.getWidth() / 2,
-                position.getY() + source.getHeight() / 2);
+        Rotate rotate = new Rotate(Math.toDegrees(rotation),
+                position.getX() + size.getX() / 2,
+                position.getY() + size.getY() / 2);
         context.setTransform(rotate.getMxx(), rotate.getMyx(),
                 rotate.getMxy(), rotate.getMyy(),
                 rotate.getTx(), rotate.getTy());

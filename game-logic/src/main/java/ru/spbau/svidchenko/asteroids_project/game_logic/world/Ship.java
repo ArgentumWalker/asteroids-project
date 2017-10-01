@@ -51,21 +51,27 @@ public class Ship extends Entity {
 
     public class Weapon {
         private long angle;
+        private long cooldown = 0;
 
         Weapon(long angle) {
             this.angle = angle;
         }
 
         public void turnLeft() {
-            angle++;
-        }
-
-        public void turnRight() {
             angle--;
         }
 
+        public void turnRight() {
+            angle++;
+        }
+
         public Bullet fire() {
-            Point velocity = Point.withPolar(2 * Math.PI * angle/Constants.WEAPON_MOVES_TO_TURN,
+            if (cooldown > 0) {
+                cooldown--;
+                return null;
+            }
+            cooldown = Constants.WEAPON_COOLDOWN;
+            Point velocity = Point.withPolar(2 * Math.PI * angle/Constants.WEAPON_TURNS_TO_TURN_AROUND,
                     Constants.BULLET_BASE_VELOCITY).add(getVelocity());
             return new Bullet(getPosition(), velocity, Ship.this.id);
         }
@@ -91,11 +97,11 @@ public class Ship extends Entity {
         }
 
         public void moveForward() {
-            velocity = Point.withPolar(2 * Math.PI * angle/Constants.WEAPON_MOVES_TO_TURN, Constants.SHIP_MAX_VELOCITY);
+            velocity = Point.withPolar(2 * Math.PI * angle/Constants.WEAPON_TURNS_TO_TURN_AROUND, Constants.SHIP_MAX_VELOCITY);
         }
 
         public void moveBackward() {
-            velocity = Point.withPolar(-2 * Math.PI * angle/Constants.WEAPON_MOVES_TO_TURN, Constants.SHIP_MAX_VELOCITY);
+            velocity = Point.withPolar(-2 * Math.PI * angle/Constants.WEAPON_TURNS_TO_TURN_AROUND, Constants.SHIP_MAX_VELOCITY);
         }
 
         public void stop() {
@@ -122,10 +128,10 @@ public class Ship extends Entity {
         @Override
         public void refresh() {
             double angle = angleFunction.call();
-            Point cennter = centerFunction.call();
-            super.refresh(angle, cennter);
-            weaponOrientation = 2 * Math.PI * entity.weapon.angle/Constants.WEAPON_MOVES_TO_TURN + angle;
-            vehicleOrientation = 2 * Math.PI * entity.vehicle.angle/Constants.VEHICLE_MOVES_TO_TURN + angle;
+            Point center = centerFunction.call();
+            super.refresh(angle, center);
+            weaponOrientation = 2 * Math.PI * entity.weapon.angle/Constants.WEAPON_TURNS_TO_TURN_AROUND - angle;
+            vehicleOrientation = 2 * Math.PI * entity.vehicle.angle/Constants.VEHICLE_TURNS_TO_TURN_AROUND - angle;
         }
 
         public double getWeaponOrientation() {

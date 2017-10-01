@@ -46,13 +46,13 @@ public class Point {
 
     //MODIFY POINT
 
-    public Point turn(double angle) {
+    public Point rotate(double angle) {
         double oldX = x;
         double oldY = y;
         double cos = Math.cos(angle);
         double sin = Math.sin(angle);
-        x = oldX * cos - oldY * sin;
-        y = oldX * sin + oldY * cos;
+        x = oldX * cos + oldY * sin;
+        y = -oldX * sin + oldY * cos;
         return this;
     }
 

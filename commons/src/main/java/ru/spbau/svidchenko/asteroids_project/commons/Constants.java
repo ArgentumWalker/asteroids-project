@@ -23,19 +23,19 @@ public class Constants {
     public static final double SHIP_RADIUS = 20.0;
     public static final double WEAPON_RADIUS = 13.0;
     public static final double STONE_RADIUS = 32.0;
-    public static final double BULLET_RADIUS = 1.0;
+    public static final double BULLET_RADIUS = 5.0;
 
     //Velocity constraints
     public static final double SHIP_MAX_VELOCITY = 10.0;
     public static final double STONE_MAX_VELOCITY = 10.0;
-    public static final double BULLET_BASE_VELOCITY = 30.0;
+    public static final double BULLET_BASE_VELOCITY = 20.0;
 
     //Weapon
     public static final long WEAPON_COOLDOWN = 5;
-    public static final long WEAPON_MOVES_TO_TURN = 30;
+    public static final long WEAPON_TURNS_TO_TURN_AROUND = 80;
 
     //Vehicle
-    public static final long VEHICLE_MOVES_TO_TURN = 30;
+    public static final long VEHICLE_TURNS_TO_TURN_AROUND = 80;
 
 
     ////GAME CONSTANTS
