@@ -40,13 +40,21 @@ public class Constants {
 
     ////GAME CONSTANTS
 
+    //Time
+    public static final long TURNS_IN_GAME = 12000;
+
     //Score
     public static final long SCORE_FOR_DEATH = -50;
     public static final long SCORE_FOR_DESTROY_STONE = 10;
     public static final long SCORE_FOR_DESTROY_SHIP = 150;
 
-    ////PLAYER CONSTANTS
-    public static final long WINDOW_HALF_WIDTH_Px = 400;
+    ////GUI CONSTANTS
+
+    //Time
+    public static final long MILLIS_PER_TURN = 25;
+
+    //Window
+    public static final long WINDOW_HALF_WIDTH_PX = 400;
     public static final long WINDOW_HALF_HEIGHT_PX = 400;
     public static final double PIXELS_IN_WORLD_POINT = 2.0;
 }

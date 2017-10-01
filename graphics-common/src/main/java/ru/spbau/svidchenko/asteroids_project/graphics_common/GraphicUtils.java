@@ -42,9 +42,9 @@ public class GraphicUtils {
     public static void drawWorld(GraphicsContext context, RelativeWorldModel relativeWorldModel, GraphicStyleContainer style) {
         List<EntityRelative> visibleEntities = relativeWorldModel.getRelatives().stream().filter(relative ->
                 (Math.abs(relative.getPosition().getX()) - relative.getEntity().getRadius()) * Constants.PIXELS_IN_WORLD_POINT
-                        < Constants.WINDOW_HALF_WIDTH_Px &&
+                        < Constants.WINDOW_HALF_WIDTH_PX &&
                 (Math.abs(relative.getPosition().getY()) - relative.getEntity().getRadius()) * Constants.PIXELS_IN_WORLD_POINT
-                                < Constants.WINDOW_HALF_WIDTH_Px
+                                < Constants.WINDOW_HALF_HEIGHT_PX
         ).collect(Collectors.toList());
         for (EntityRelative relative : visibleEntities) {
             for (Sprite sprite : style.getSpritesFor(relative)) {
