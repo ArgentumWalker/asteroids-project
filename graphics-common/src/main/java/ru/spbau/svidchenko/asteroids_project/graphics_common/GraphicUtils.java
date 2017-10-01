@@ -1,4 +1,4 @@
-package ru.spbau.svidchenko.asteroids_project.graphics_common.commons;
+package ru.spbau.svidchenko.asteroids_project.graphics_common;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;

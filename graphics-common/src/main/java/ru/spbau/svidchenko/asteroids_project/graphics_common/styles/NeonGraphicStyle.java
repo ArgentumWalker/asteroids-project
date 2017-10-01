@@ -1,7 +1,7 @@
-package ru.spbau.svidchenko.asteroids_project.graphics_common;
+package ru.spbau.svidchenko.asteroids_project.graphics_common.styles;
 
 import javafx.scene.image.Image;
-import ru.spbau.svidchenko.asteroids_project.graphics_common.commons.GraphicStyleContainer;
+import ru.spbau.svidchenko.asteroids_project.graphics_common.GraphicStyleContainer;
 
 
 public class NeonGraphicStyle extends GraphicStyleContainer {
