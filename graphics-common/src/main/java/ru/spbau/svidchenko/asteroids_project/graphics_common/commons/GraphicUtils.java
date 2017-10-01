@@ -23,7 +23,7 @@ public class GraphicUtils {
         return imageView.snapshot(null, null);
     }
 
-    public void drawImage(GraphicsContext context, Image source, Point position, double rotation) {
+    public static void drawImage(GraphicsContext context, Image source, Point position, double rotation) {
         context.save();
         Rotate rotate = new Rotate(rotation,
                 position.getX() + source.getWidth() / 2,
@@ -35,12 +35,11 @@ public class GraphicUtils {
         context.restore();
     }
 
-    public void drawSprite(GraphicsContext context, Sprite sprite) {
+    public static void drawSprite(GraphicsContext context, Sprite sprite) {
         drawImage(context, sprite.getImage(), sprite.getPosition(), sprite.getRotation());
     }
 
-    public void drawWorld(GraphicsContext context, RelativeWorldModel relativeWorldModel, GraphicStyleContainer style) {
-        context.clearRect(0, 0, context.getCanvas().getWidth(), context.getCanvas().getHeight());
+    public static void drawWorld(GraphicsContext context, RelativeWorldModel relativeWorldModel, GraphicStyleContainer style) {
         List<EntityRelative> visibleEntities = relativeWorldModel.getRelatives().stream().filter(relative ->
                 (Math.abs(relative.getPosition().getX()) - relative.getEntity().getRadius()) * Constants.PIXELS_IN_WORLD_POINT
                         < Constants.WINDOW_HALF_WIDTH_Px &&
