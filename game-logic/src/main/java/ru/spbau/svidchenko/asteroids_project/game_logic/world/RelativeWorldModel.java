@@ -34,12 +34,12 @@ public class RelativeWorldModel {
     public void refresh() {
         relatives.forEach(EntityRelative::refresh);
         relatives.removeAll(
-                relatives.stream().filter(relative -> worldModel.getEntities().contains(relative.getEntity())).collect(Collectors.toList())
+                relatives.stream().filter(relative -> !worldModel.getEntities().contains(relative.getEntity())).collect(Collectors.toList())
         );
         Set<Entity> entities = relatives.stream().map(EntityRelative::getEntity).collect(Collectors.toSet());
         relatives.addAll(
                 worldModel.getEntities().stream()
-                        .filter(entities::contains)
+                        .filter(entity -> !entities.contains(entity))
                         .map(entity -> entity.getRelative(angleFunction, centerFunction))
                         .collect(Collectors.toSet())
         );

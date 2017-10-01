@@ -8,7 +8,6 @@ public abstract class PlaneGridAgentPilotPlayer extends GunnerPlayer {
 
     public PlaneGridAgentPilotPlayer(long id, PlaneGridDescriptor planeGridDescriptor) {
         super(id);
-        planeGridDescriptor.setMaxAngle(Constants.VEHICLE_MOVES_TO_TURN);
         this.planeGrid = new PlaneGrid(planeGridDescriptor, worldModel);
     }
 

@@ -24,7 +24,6 @@ public class StandaloneAppGameExecutor extends BaseGameExecutor {
     protected void makeTurn() {
         try {
             game.nextTurn();
-            GraphicUtils.drawWorld(client.getCanvas(), client.getWorldModel(), client.getGraphicStyle());
             TimeUnit.MILLISECONDS.sleep(Constants.MILLIS_PER_TURN);
         } catch (InterruptedException e) {
             interrupted = true;
@@ -45,6 +44,6 @@ public class StandaloneAppGameExecutor extends BaseGameExecutor {
 
     @Override
     protected boolean gameInterrupted() {
-        return super.gameInterrupted() || interrupted;
+        return super.gameInterrupted() || interrupted || client.isGameInterrupted();
     }
 }

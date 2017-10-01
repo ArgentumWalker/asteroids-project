@@ -37,7 +37,7 @@ public abstract class GunnerPlayer extends Player {
         return bullet == null ? null : Collections.singletonList(bullet);
     }
 
-    protected final static class Action {
+    public final static class Action {
         public enum Turn {
             LEFT,
             RIGHT,

@@ -48,7 +48,7 @@ public abstract class PilotPlayer extends Player {
         return null;
     }
 
-    protected final static class Action {
+    public final static class Action {
         public enum Turn {
             LEFT,
             RIGHT,

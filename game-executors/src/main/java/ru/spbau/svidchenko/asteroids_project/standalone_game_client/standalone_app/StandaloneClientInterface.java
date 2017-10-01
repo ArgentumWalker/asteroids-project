@@ -9,9 +9,4 @@ public interface StandaloneClientInterface {
     void onGameStart();
     void onGameEnd();
     boolean isGameInterrupted();
-
-    //Graphics
-    GraphicsContext getCanvas();
-    GraphicStyleContainer getGraphicStyle();
-    RelativeWorldModel getWorldModel();
 }

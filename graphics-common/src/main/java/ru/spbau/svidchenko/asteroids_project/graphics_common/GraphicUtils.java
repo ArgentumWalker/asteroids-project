@@ -1,5 +1,6 @@
 package ru.spbau.svidchenko.asteroids_project.graphics_common;
 
+import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
@@ -15,15 +16,7 @@ import java.util.stream.Collectors;
 
 public class GraphicUtils {
 
-    public static Image scaleImage(Image source, double koef) {
-        ImageView imageView = new ImageView(source);
-        imageView.setPreserveRatio(true);
-        imageView.setFitWidth(source.getWidth() * koef);
-        imageView.setFitHeight(source.getHeight() * koef);
-        return imageView.snapshot(null, null);
-    }
-
-    public static void drawImage(GraphicsContext context, Image source, Point position, double rotation) {
+    public static void drawImage(GraphicsContext context, Image source, Point position, Point size, double rotation) {
         context.save();
         Rotate rotate = new Rotate(rotation,
                 position.getX() + source.getWidth() / 2,
@@ -31,12 +24,12 @@ public class GraphicUtils {
         context.setTransform(rotate.getMxx(), rotate.getMyx(),
                 rotate.getMxy(), rotate.getMyy(),
                 rotate.getTx(), rotate.getTy());
-        context.drawImage(source, position.getX(), position.getY());
+        context.drawImage(source, position.getX(), position.getY(), size.getX(), size.getY());
         context.restore();
     }
 
     public static void drawSprite(GraphicsContext context, Sprite sprite) {
-        drawImage(context, sprite.getImage(), sprite.getPosition(), sprite.getRotation());
+        drawImage(context, sprite.getImage(), sprite.getPosition(), sprite.getSize(), sprite.getRotation());
     }
 
     public static void drawWorld(GraphicsContext context, RelativeWorldModel relativeWorldModel, GraphicStyleContainer style) {

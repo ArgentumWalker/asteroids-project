@@ -108,6 +108,7 @@ public class Game {
             }
         }
         currentWorldModel.removeEntities(entitiesToRemove);
+        afterTurn();
     }
 
     private void afterTurn() {

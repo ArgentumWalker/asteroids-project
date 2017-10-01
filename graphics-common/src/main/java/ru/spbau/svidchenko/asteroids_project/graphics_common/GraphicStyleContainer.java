@@ -2,6 +2,7 @@ package ru.spbau.svidchenko.asteroids_project.graphics_common;
 
 import javafx.scene.image.Image;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
+import ru.spbau.svidchenko.asteroids_project.commons.Point;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Bullet;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.EntityRelative;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Ship;
@@ -11,43 +12,34 @@ import java.util.ArrayList;
 import java.util.List;
 
 public abstract class GraphicStyleContainer {
-    private Image vehicleImage;
-    private Image weaponImage;
-    private Image stoneImage;
-    private Image bulletImage;
+    private Image vehicleImage = getVehicleImage();
+    private Image weaponImage = getWeaponImage();
+    private Image stoneImage = getStoneImage();
+    private Image bulletImage = getBulletImage();
 
-    public GraphicStyleContainer() {
-        Image vehicleFullsizeImage = getVehicleImage();
-        Image weaponFullsizeImage = getWeaponImage();
-        Image stoneFullsizeImage = getStoneImage();
-        Image bulletFullsizeImage = getBulletImage();
-        double vehicleScaleKoef = Constants.SHIP_RADIUS * 2 * Constants.PIXELS_IN_WORLD_POINT
-                / Math.max(vehicleFullsizeImage.getWidth(), vehicleFullsizeImage.getHeight());
-        double weaponScaleKoef = Constants.WEAPON_RADIUS * 2 * Constants.PIXELS_IN_WORLD_POINT
-                / Math.max(weaponFullsizeImage.getWidth(), weaponFullsizeImage.getHeight());
-        double stoneScaleKoef = Constants.STONE_RADIUS * 2 * Constants.PIXELS_IN_WORLD_POINT
-                / Math.max(stoneFullsizeImage.getWidth(), stoneFullsizeImage.getHeight());
-        double bulletScaleKoef = Constants.BULLET_RADIUS * 2 * Constants.PIXELS_IN_WORLD_POINT
-                / Math.max(bulletFullsizeImage.getWidth(), bulletFullsizeImage.getHeight());
-        vehicleImage = GraphicUtils.scaleImage(vehicleFullsizeImage, vehicleScaleKoef);
-        weaponImage = GraphicUtils.scaleImage(weaponFullsizeImage, weaponScaleKoef);
-        bulletImage = GraphicUtils.scaleImage(bulletFullsizeImage, bulletScaleKoef);
-        stoneImage = GraphicUtils.scaleImage(stoneFullsizeImage, stoneScaleKoef);
-    }
+    public GraphicStyleContainer() {}
 
     public List<Sprite> getSpritesFor(EntityRelative relative) {
         List<Sprite> result = new ArrayList<>();
         if (relative instanceof Ship.Relative) {
-            result.add(new Sprite(vehicleImage, ((Ship.Relative) relative).getVehicleOrientation(), relative.getPosition()));
-            result.add(new Sprite(weaponImage, ((Ship.Relative) relative).getWeaponOrientation(), relative.getPosition()));
+            result.add(new Sprite(vehicleImage, ((Ship.Relative) relative).getVehicleOrientation(),
+                    relative.getPosition(), Constants.SHIP_RADIUS));
+            result.add(new Sprite(weaponImage, ((Ship.Relative) relative).getWeaponOrientation(),
+                    relative.getPosition(), Constants.WEAPON_RADIUS));
         }
         if (relative instanceof Stone.Relative) {
-            result.add(new Sprite(stoneImage, 0, relative.getPosition()));
+            result.add(new Sprite(stoneImage, 0, relative.getPosition(), Constants.STONE_RADIUS));
         }
         if (relative instanceof Bullet.Relative) {
-            result.add(new Sprite(bulletImage, 0, relative.getPosition()));
+            result.add(new Sprite(bulletImage, 0, relative.getPosition(), Constants.BULLET_RADIUS));
         }
         return result;
+    }
+
+    private Point calculateWindowPosition(Point worldPosition) {
+        return Point.with(Constants.WINDOW_HALF_WIDTH_PX / Constants.PIXELS_IN_WORLD_POINT,
+                Constants.WINDOW_HALF_HEIGHT_PX / Constants.PIXELS_IN_WORLD_POINT)
+                .add(worldPosition).mult(Constants.PIXELS_IN_WORLD_POINT);
     }
 
     protected abstract Image getVehicleImage();

@@ -11,16 +11,19 @@ public class EntityRelative<T extends Entity> {
     protected Callable<Point> centerFunction;
 
     public EntityRelative(double angle, Point center, T entity) {
-        angleFunction = () -> angle;
         Point centerClone = center.clone();
-        centerFunction = () -> centerClone;
-        this.entity = entity;
+        init(() -> angle, () -> centerClone, entity);
     }
 
     public EntityRelative(Callable<Double> angleFunction, Callable<Point> centerFunction, T entity) {
+        init(angleFunction, centerFunction, entity);
+    }
+
+    private void init(Callable<Double> angleFunction, Callable<Point> centerFunction, T entity) {
         this.angleFunction = angleFunction;
         this.centerFunction = centerFunction;
         this.entity = entity;
+        refresh();
     }
 
     public void refresh() {
