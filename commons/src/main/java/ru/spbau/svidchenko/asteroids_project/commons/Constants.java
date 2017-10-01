@@ -43,4 +43,9 @@ public class Constants {
     public static final long SCORE_FOR_DEATH = -50;
     public static final long SCORE_FOR_DESTROY_STONE = 10;
     public static final long SCORE_FOR_DESTROY_SHIP = 150;
+
+    ////PLAYER CONSTANTS
+    public static final long WINDOW_HALF_WIDTH_Px = 400;
+    public static final long WINDOW_HALF_HEIGHT_PX = 400;
+    public static final double PIXELS_IN_WORLD_POINT = 2.0;
 }

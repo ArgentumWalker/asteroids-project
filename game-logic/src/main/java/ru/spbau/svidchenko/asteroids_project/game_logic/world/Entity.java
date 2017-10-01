@@ -57,6 +57,10 @@ public abstract class Entity {
 
     //STATE GETTERS
 
+    public double getRadius() {
+        return radius;
+    }
+
     public boolean physicalImpactsTo(Entity e) {
         return !(notPhysicalImpacter || e.ignorePhysicalImpact);
     }
