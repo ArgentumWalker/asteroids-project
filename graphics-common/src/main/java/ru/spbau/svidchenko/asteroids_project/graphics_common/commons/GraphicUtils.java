@@ -2,6 +2,7 @@ package ru.spbau.svidchenko.asteroids_project.graphics_common.commons;
 
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.transform.Rotate;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
@@ -13,6 +14,14 @@ import java.util.stream.Collectors;
 
 
 public class GraphicUtils {
+
+    public static Image scaleImage(Image source, double koef) {
+        ImageView imageView = new ImageView(source);
+        imageView.setPreserveRatio(true);
+        imageView.setFitWidth(source.getWidth() * koef);
+        imageView.setFitHeight(source.getHeight() * koef);
+        return imageView.snapshot(null, null);
+    }
 
     public void drawImage(GraphicsContext context, Image source, Point position, double rotation) {
         context.save();
@@ -39,7 +48,9 @@ public class GraphicUtils {
                                 < Constants.WINDOW_HALF_WIDTH_Px
         ).collect(Collectors.toList());
         for (EntityRelative relative : visibleEntities) {
-            drawSprite(context, style.getSpriteFor(relative));
+            for (Sprite sprite : style.getSpritesFor(relative)) {
+                drawSprite(context, sprite);
+            }
         }
     }
 }

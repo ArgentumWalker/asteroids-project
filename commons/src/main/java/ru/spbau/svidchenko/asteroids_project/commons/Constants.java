@@ -21,6 +21,7 @@ public class Constants {
 
     //Entities sizes
     public static final double SHIP_RADIUS = 20.0;
+    public static final double WEAPON_RADIUS = 13.0;
     public static final double STONE_RADIUS = 32.0;
     public static final double BULLET_RADIUS = 1.0;
 
