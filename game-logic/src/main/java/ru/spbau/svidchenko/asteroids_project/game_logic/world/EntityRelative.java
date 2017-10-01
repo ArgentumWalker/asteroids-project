@@ -31,7 +31,9 @@ public class EntityRelative<T extends Entity> {
     }
 
     protected void refresh(double angle, Point center) {
-        position = entity.getPosition().clone().add(center.getInverse()).rotate(angle);
+        Point tmp = entity.getPosition().clone().add(center.getInverse());
+        tmp.checkWorldBounds();
+        position = tmp.rotate(angle);
         position.checkWorldBounds();
     }
 

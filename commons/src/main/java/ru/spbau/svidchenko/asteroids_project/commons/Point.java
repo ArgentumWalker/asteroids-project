@@ -70,16 +70,16 @@ public class Point {
 
     public Point checkWorldBounds() {
         if (x > Constants.WORLD_HALF_WIDTH) {
-            x -= Constants.WORLD_HALF_WIDTH;
+            x -= Constants.WORLD_HALF_WIDTH * 2;
         }
         if (x < -Constants.WORLD_HALF_WIDTH) {
-            x += Constants.WORLD_HALF_WIDTH;
+            x += Constants.WORLD_HALF_WIDTH * 2;
         }
         if (y > Constants.WORLD_HALF_HEIGHT) {
-            y -= Constants.WORLD_HALF_HEIGHT;
+            y -= Constants.WORLD_HALF_HEIGHT * 2;
         }
         if (y < -Constants.WORLD_HALF_HEIGHT) {
-            y += Constants.WORLD_HALF_HEIGHT;
+            y += Constants.WORLD_HALF_HEIGHT * 2;
         }
         return this;
     }

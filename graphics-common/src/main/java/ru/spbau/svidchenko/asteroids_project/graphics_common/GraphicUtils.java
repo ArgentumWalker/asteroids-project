@@ -33,6 +33,7 @@ public class GraphicUtils {
     }
 
     public static void drawWorld(GraphicsContext context, RelativeWorldModel relativeWorldModel, GraphicStyleContainer style) {
+        relativeWorldModel.readLock().lock();
         List<EntityRelative> visibleEntities = relativeWorldModel.getRelatives().stream().filter(relative ->
                 (Math.abs(relative.getPosition().getX()) - relative.getEntity().getRadius()) * Constants.PIXELS_IN_WORLD_POINT
                         < Constants.WINDOW_HALF_WIDTH_PX &&
@@ -44,5 +45,6 @@ public class GraphicUtils {
                 drawSprite(context, sprite);
             }
         }
+        relativeWorldModel.readLock().unlock();
     }
 }

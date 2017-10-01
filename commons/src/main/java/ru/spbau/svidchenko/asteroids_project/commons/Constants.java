@@ -9,14 +9,14 @@ public class Constants {
     ////WORLD CONSTANTS
 
     //Common
-    public static final double WORLD_HALF_WIDTH = 1200.0;
-    public static final double WORLD_HALF_HEIGHT = 1200.0;
+    public static final double WORLD_HALF_WIDTH = 800.0;
+    public static final double WORLD_HALF_HEIGHT = 800.0;
 
     //Health
-    public static final double SPEED_TO_DAMAGE_KOEF = 2.0;
-    public static final long SHIP_START_HEALTH = 10;
-    public static final long STONE_START_HEALTH = 10;
-    public static final long BULLET_HEALTH = 60;
+    public static final double SPEED_TO_DAMAGE_KOEF = 5.0;
+    public static final long SHIP_START_HEALTH = 1;
+    public static final long STONE_START_HEALTH = 1;
+    public static final long BULLET_HEALTH = 40;
     public static final long BULLET_DAMAGE_PER_MOVE = 1;
 
     //Entities sizes
@@ -26,8 +26,8 @@ public class Constants {
     public static final double BULLET_RADIUS = 5.0;
 
     //Velocity constraints
-    public static final double SHIP_MAX_VELOCITY = 10.0;
-    public static final double STONE_MAX_VELOCITY = 10.0;
+    public static final double SHIP_MAX_VELOCITY = 5.0;
+    public static final double STONE_MAX_VELOCITY = 5.0;
     public static final double BULLET_BASE_VELOCITY = 20.0;
 
     //Weapon
@@ -44,9 +44,9 @@ public class Constants {
     public static final long TURNS_IN_GAME = 12000;
 
     //Score
-    public static final long SCORE_FOR_DEATH = -50;
+    public static final long SCORE_FOR_DEATH = -150;
     public static final long SCORE_FOR_DESTROY_STONE = 10;
-    public static final long SCORE_FOR_DESTROY_SHIP = 150;
+    public static final long SCORE_FOR_DESTROY_SHIP = 300;
 
     ////GUI CONSTANTS
 

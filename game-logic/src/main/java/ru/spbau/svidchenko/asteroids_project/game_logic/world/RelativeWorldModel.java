@@ -6,9 +6,13 @@ import ru.spbau.svidchenko.asteroids_project.commons.Point;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReadWriteLock;
+import java.util.concurrent.locks.ReentrantReadWriteLock;
 import java.util.stream.Collectors;
 
 public class RelativeWorldModel {
+    private ReadWriteLock usageLock = new ReentrantReadWriteLock();
     private Set<EntityRelative> relatives;
     private WorldModel worldModel;
     private Callable<Double> angleFunction;
@@ -32,6 +36,7 @@ public class RelativeWorldModel {
     }
 
     public void refresh() {
+        usageLock.readLock().lock();
         relatives.forEach(EntityRelative::refresh);
         relatives.removeAll(
                 relatives.stream().filter(relative -> !worldModel.getEntities().contains(relative.getEntity())).collect(Collectors.toList())
@@ -43,5 +48,10 @@ public class RelativeWorldModel {
                         .map(entity -> entity.getRelative(angleFunction, centerFunction))
                         .collect(Collectors.toSet())
         );
+        usageLock.readLock().unlock();
+    }
+
+    public Lock readLock() {
+        return usageLock.readLock();
     }
 }
