@@ -95,7 +95,7 @@ public class Point {
 
     //GET INFORMATION ABOUT POINT
 
-    public double distanceTo(Point p) {
+    public double worldDistanceTo(Point p) {
         double dx = Math.min(
                 Math.min(
                         Math.abs(x - p.x),
@@ -107,6 +107,24 @@ public class Point {
                         Math.abs(y - p.y + Constants.WORLD_HALF_HEIGHT * 2)),
                 Math.abs(y - p.y - Constants.WORLD_HALF_HEIGHT * 2));
         return Math.sqrt(dx*dx + dy*dy);
+    }
+
+    public Point worldDirectionTo(Point p) {
+        double newX = p.x - x;
+        if (newX < -Constants.WORLD_HALF_WIDTH) {
+            newX += 2 * Constants.WORLD_HALF_WIDTH;
+        }
+        if (newX > Constants.WORLD_HALF_WIDTH) {
+            newX -= 2 * Constants.WORLD_HALF_WIDTH;
+        }
+        double newY = p.y - y;
+        if (newY < -Constants.WORLD_HALF_HEIGHT) {
+            newY += 2 * Constants.WORLD_HALF_HEIGHT;
+        }
+        if (newY > Constants.WORLD_HALF_HEIGHT) {
+            newY -= 2 * Constants.WORLD_HALF_HEIGHT;
+        }
+        return Point.with(newX, newY);
     }
 
     public double getAngle() {

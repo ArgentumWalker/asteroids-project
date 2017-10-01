@@ -56,7 +56,7 @@ public class PolarGrid {
 
     private int calculateDistanceSector(EntityRelative relative) {
         int result = 0;
-        double distance = relative.getPosition().distanceTo(Point.with(0, 0));
+        double distance = relative.getPosition().worldDistanceTo(Point.with(0, 0));
         for (double border : polarGridDescriptor.getDistanceSectors()) {
             if (border > distance) {
                 return result;

@@ -32,7 +32,7 @@ public abstract class Entity {
             boolean ignorePhysicalImpact,
             boolean ignoreHealthImpact
     ) {
-        Point line = impacterPosition.getInverse().add(position);
+        Point line = impacterPosition.worldDirectionTo(position);
         double impactSpeed = impacterVelocity.getProjectionLength(line) - velocity.getProjectionLength(line);
 
         if (impactSpeed > 0) {
@@ -86,7 +86,7 @@ public abstract class Entity {
     }
 
     public boolean intersectsEntity(Entity e) {
-        return position.distanceTo(e.position) < e.radius + radius;
+        return position.worldDistanceTo(e.position) < e.radius + radius;
     }
 
     //FORCE ACTIONS
