@@ -4,14 +4,17 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
+import javafx.scene.paint.Color;
 import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
+import ru.spbau.svidchenko.asteroids_project.game_logic.player.ShipCrew;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.EntityRelative;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.RelativeWorldModel;
+import ru.spbau.svidchenko.asteroids_project.game_logic.world.Ship;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.menu.Menu;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.menu.MenuButton;
 
@@ -28,7 +31,7 @@ public class GraphicUtils {
         if (style.isStroke) {
             strokeString(context, position, text, style.font, style.strokeWidth, style.strokePaint, style.effect, style.blendMode);
         }
-        return getTextSizes(text, style).add(position);
+        return getTextSizes(text, style);
     }
 
     public static void drawImage(GraphicsContext context, Image source, Point position, Point size, double rotation) {
@@ -47,6 +50,11 @@ public class GraphicUtils {
         drawImage(context, sprite.getImage(), sprite.getPosition(), sprite.getSize(), sprite.getRotation());
     }
 
+    public static void drawGameBackground(GraphicsContext context, RelativeWorldModel relativeWorldModel, GraphicStyleContainer style) {
+        context.setFill(Color.BLACK);
+        context.fillRect(0, 0, context.getCanvas().getWidth(), context.getCanvas().getHeight());
+    }
+
     public static void drawWorld(GraphicsContext context, RelativeWorldModel relativeWorldModel, GraphicStyleContainer style) {
         relativeWorldModel.readLock().lock();
         List<EntityRelative> visibleEntities = relativeWorldModel.getRelatives().stream().filter(relative ->
@@ -63,7 +71,19 @@ public class GraphicUtils {
         relativeWorldModel.readLock().unlock();
     }
 
+    public static void drawUi(
+            GraphicsContext context,
+            RelativeWorldModel relativeWorldModel,
+            GraphicStyleContainer style,
+            ShipCrew crew
+    ) {
+        //TODO: implement
+    }
+
     public static void drawMenu(GraphicsContext context, Menu menu, GraphicStyleContainer style) {
+        context.setFill(Color.BLACK);
+        context.fillRect(0, 0, context.getCanvas().getWidth(), context.getCanvas().getHeight());
+        //Title
         GraphicStyleContainer.TextStyle textStyle = style.getMenuTitleTextStyle();
         Point canvasSize = Point.with(context.getCanvas().getWidth(), context.getCanvas().getHeight());
         double horizontalOffset = drawText(context,
@@ -73,10 +93,11 @@ public class GraphicUtils {
                         canvasSize
                 ),
                 menu.getTitle(), textStyle).getY();
+        //Buttons
         int startIndex = Math.max(menu.getActiveButtonPosition() - Constants.AFTER_ACTIVE_BUTTONS_COUNT, 0);
-        int endIngex = Math.min(menu.getActiveButtonPosition() - Constants.AFTER_ACTIVE_BUTTONS_COUNT,
+        int endIndex = Math.min(menu.getActiveButtonPosition() + Constants.AFTER_ACTIVE_BUTTONS_COUNT,
                 menu.getButtons().size() - 1);
-        for (int i = startIndex; i < endIngex + 1; i++) {
+        for (int i = startIndex; i < endIndex + 1; i++) {
             horizontalOffset += Constants.MENU_BUTTON_HORIZONTAL_INDENT_PX;
             MenuButton button = menu.getButtons().get(i);
             textStyle = menu.isActiveButton(button) ? style.getMenuActiveTextStyle() : style.getMenuButtonTextStyle();

@@ -8,37 +8,41 @@ import java.util.List;
 public class Menu {
     protected String title;
     protected final List<MenuButton> buttons = new ArrayList<>();
-    protected MenuButton activeButton = null;
-
+    protected int activeButtonId = 0;
     public boolean isActiveButton(MenuButton button) {
-        return activeButton == button;
+        return !buttons.isEmpty() && buttons.get(activeButtonId) == button;
     }
 
     public MenuButton getActiveButton() {
         if (buttons.isEmpty()) {
             return null;
         }
-        if (activeButton == null) {
-            activeButton = buttons.get(0);
-        }
-        return activeButton;
+        return buttons.get(activeButtonId);
     }
 
-    public void setActiveButton(MenuButton button) {
-        if (buttons.contains(button)) {
-            activeButton = button;
+    public void activateNextButton() {
+        if (activeButtonId < buttons.size() - 1) {
+            activeButtonId++;
+        }
+    }
+
+    public void activatePreviousButton() {
+        if (activeButtonId > 0) {
+            activeButtonId--;
         }
     }
 
     public int getActiveButtonPosition() {
-        if (activeButton == null) {
-            return 0;
-        }
-        return buttons.indexOf(activeButton);
+        return activeButtonId;
     }
 
     public Menu(String title) {
         this.title = title;
+    }
+
+    public Menu addButton(MenuButton button) {
+        buttons.add(button);
+        return this;
     }
 
     public String getTitle() {
