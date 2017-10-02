@@ -62,4 +62,11 @@ public class Constants {
     public static final long WINDOW_HALF_WIDTH_PX = 400;
     public static final long WINDOW_HALF_HEIGHT_PX = 400;
     public static final double PIXELS_IN_WORLD_POINT = 2.0;
+
+    //Menu
+    public static final double MENU_TITLE_HORIZONTAL_INDENT_PX = 80;
+    public static final double MENU_TITLE_VERTICAL_INDENT_PX = 40;
+    public static final double MENU_BUTTON_HORIZONTAL_INDENT_PX = 40;
+    public static final double MENU_BUTTON_VERTICAL_INDENT_PX = 100;
+    public static final int AFTER_ACTIVE_BUTTONS_COUNT = 3;
 }
