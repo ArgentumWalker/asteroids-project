@@ -2,8 +2,15 @@ package ru.spbau.svidchenko.asteroids_project.graphics_common;
 
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.effect.Blend;
+import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.Effect;
+import javafx.scene.effect.GaussianBlur;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
 import javafx.scene.transform.Rotate;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
@@ -15,6 +22,47 @@ import java.util.stream.Collectors;
 
 
 public class GraphicUtils {
+    private static double DEFAULT_LINE_WIDTH = 3.0;
+    private static Font DEFAULT_FONT = Font.font("Times New Roman", FontWeight.BOLD, 36);
+    private static Color DEFAULT_STROKE_COLOR = Color.GREEN;
+
+
+    public static void strokeText(
+            GraphicsContext context,
+            Point position,
+            String text,
+            Font font,
+            double lineWidth,
+            Color strokeColor,
+            Effect effect,
+            BlendMode blendMode
+    ) {
+        context.save();
+        context.setFont(font);
+        context.setEffect(effect);
+        context.setGlobalBlendMode(blendMode);
+        context.setStroke(strokeColor);
+        context.setLineWidth(lineWidth);
+        context.strokeText(text, position.getX(), position.getY());
+        context.restore();
+    }
+
+    public static void strokeText(
+            GraphicsContext context,
+            Point position,
+            String text,
+            Font font,
+            double lineWidth,
+            Color strokeColor,
+            boolean blur
+    ) {
+        strokeText(context, position, text, font, lineWidth, strokeColor,
+                blur ? new GaussianBlur(lineWidth / 2) : null, BlendMode.LIGHTEN);
+    }
+
+    public static void strokeText(GraphicsContext context, Point position, String text) {
+        strokeText(context, position, text, DEFAULT_FONT, DEFAULT_LINE_WIDTH, DEFAULT_STROKE_COLOR, true);
+    }
 
     public static void drawImage(GraphicsContext context, Image source, Point position, Point size, double rotation) {
         context.save();

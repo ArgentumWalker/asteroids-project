@@ -14,7 +14,7 @@ import java.util.Set;
 
 public class Game {
     private WorldModel currentWorldModel;
-    private RandomGod random = new RandomGod();
+    private RandomGod random = RandomGod.ask;
     private List<RelativeWorldModel> relativeWorldModels = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
     private HashMap<Long, ShipCrew> shipId2shipCrew = new HashMap<>();
@@ -25,7 +25,7 @@ public class Game {
     public Game(WorldDescriptor worldDescriptor) {
         currentWorldModel = new WorldModel();
         List<Stone> stones = new ArrayList<>();
-        for (long i = 0; i < worldDescriptor.stonesCount; i++) {
+        for (long i = 0; i < Math.min(worldDescriptor.stonesCount, Constants.MAX_STONE_COUNT); i++) {
             stones.add(new Stone(random.randomWorldPoint(), random.randomPoint(0, Constants.STONE_MAX_VELOCITY)));
         }
         currentWorldModel.addEntities(stones);
@@ -61,6 +61,12 @@ public class Game {
         for (Entity entity : entities) {
             entity.move();
         }
+        processImpacts(entities);
+        processDying(entities);
+        afterTurn();
+    }
+
+    private void processImpacts(Set<Entity> entities) {
         List<Entity> visitedEntities = new ArrayList<>();
         for (Entity entity1 : entities) {
             for (Entity entity2 : visitedEntities) {
@@ -85,17 +91,20 @@ public class Game {
             }
             visitedEntities.add(entity1);
         }
+    }
+
+    private void processDying(Set<Entity> entities) {
         List<Entity> entitiesToRemove = new ArrayList<>();
         for (Entity entity : entities) {
             if (entity.isDead()) {
                 if (entity instanceof Ship) {
-                    entity.setPosition(random.randomWorldPoint());
+                    respawn(entity, entities);
                     entity.setVelocity(Point.with(0, 0));
                     entity.setHealth(Constants.SHIP_START_HEALTH);
                     continue;
                 }
                 if (entity instanceof Stone) {
-                    entity.setPosition(random.randomWorldPoint());
+                    respawn(entity, entities);
                     entity.setVelocity(random.randomPoint(0, Constants.STONE_MAX_VELOCITY));
                     entity.setHealth(Constants.STONE_START_HEALTH);
                     continue;
@@ -104,7 +113,23 @@ public class Game {
             }
         }
         currentWorldModel.removeEntities(entitiesToRemove);
-        afterTurn();
+
+    }
+
+    private void respawn(Entity entity, Set<Entity> entities) {
+        boolean respawned = false;
+        while (!respawned) {
+            Point newPosition = random.randomWorldPoint();
+            respawned = true;
+            for (Entity checkEntity : entities) {
+                respawned = respawned &&
+                        checkEntity.getPosition().worldDistanceTo(newPosition) >
+                                Constants.SPAWN_DISTANCE_KOEF * (checkEntity.getRadius() + entity.getRadius());
+            }
+            if (respawned) {
+                entity.setPosition(newPosition);
+            }
+        }
     }
 
     private void afterTurn() {

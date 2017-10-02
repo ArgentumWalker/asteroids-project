@@ -9,8 +9,13 @@ public class Constants {
     ////WORLD CONSTANTS
 
     //Common
-    public static final double WORLD_HALF_WIDTH = 800.0;
-    public static final double WORLD_HALF_HEIGHT = 800.0;
+    public static final double WORLD_HALF_WIDTH = 1200.0;
+    public static final double WORLD_HALF_HEIGHT = 1200.0;
+    public static final double SPAWN_DISTANCE_KOEF = 2.5;
+    public static final long MAX_STONE_COUNT = 150;
+
+    //Entity random orientations
+    public static final double STONE_MAX_ANGLE_DELTA = Math.PI / 40;
 
     //Health
     public static final double SPEED_TO_DAMAGE_KOEF = 5.0;
@@ -26,9 +31,9 @@ public class Constants {
     public static final double BULLET_RADIUS = 5.0;
 
     //Velocity constraints
-    public static final double SHIP_MAX_VELOCITY = 5.0;
-    public static final double STONE_MAX_VELOCITY = 5.0;
-    public static final double BULLET_BASE_VELOCITY = 20.0;
+    public static final double SHIP_MAX_VELOCITY = 8.0;
+    public static final double STONE_MAX_VELOCITY = 8.0;
+    public static final double BULLET_BASE_VELOCITY = 10.0;
 
     //Weapon
     public static final long WEAPON_COOLDOWN = 5;

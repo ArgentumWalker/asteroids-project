@@ -1,5 +1,7 @@
 package ru.spbau.svidchenko.asteroids_project.graphics_common;
 
+import javafx.scene.effect.BlendMode;
+import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
@@ -19,6 +21,14 @@ public abstract class GraphicStyleContainer {
 
     public GraphicStyleContainer() {}
 
+    public abstract BlendMode getBlendModel();
+    public abstract Effect getEffect();
+
+    protected abstract Image getVehicleImage();
+    protected abstract Image getWeaponImage();
+    protected abstract Image getStoneImage();
+    protected abstract Image getBulletImage();
+
     public List<Sprite> getSpritesFor(EntityRelative relative) {
         List<Sprite> result = new ArrayList<>();
         if (relative instanceof Ship.Relative) {
@@ -28,7 +38,8 @@ public abstract class GraphicStyleContainer {
                     relative.getPosition(), Constants.WEAPON_RADIUS));
         }
         if (relative instanceof Stone.Relative) {
-            result.add(new Sprite(stoneImage, 0, relative.getPosition(), Constants.STONE_RADIUS));
+            result.add(new Sprite(stoneImage, ((Stone.Relative) relative).getOrientation(),
+                    relative.getPosition(), Constants.STONE_RADIUS));
         }
         if (relative instanceof Bullet.Relative) {
             result.add(new Sprite(bulletImage, 0, relative.getPosition(), Constants.BULLET_RADIUS));
@@ -42,8 +53,4 @@ public abstract class GraphicStyleContainer {
                 .add(worldPosition).mult(Constants.PIXELS_IN_WORLD_POINT);
     }
 
-    protected abstract Image getVehicleImage();
-    protected abstract Image getWeaponImage();
-    protected abstract Image getStoneImage();
-    protected abstract Image getBulletImage();
 }
