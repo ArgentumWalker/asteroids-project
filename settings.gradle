@@ -5,4 +5,6 @@ include 'training-arena'
 include 'standalone-game-client'
 include 'standalone-observer-client'
 include 'commons'
+include 'graphics-common'
+include 'game-executors'
 
