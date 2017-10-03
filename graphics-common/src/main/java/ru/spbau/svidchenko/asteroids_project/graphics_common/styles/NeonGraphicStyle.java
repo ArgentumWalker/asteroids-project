@@ -7,6 +7,7 @@ import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
+import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.GraphicStyleContainer;
 
@@ -50,7 +51,7 @@ public class NeonGraphicStyle extends GraphicStyleContainer {
         return new TextStyle(
                 BlendMode.LIGHTEN,
                 new GaussianBlur(5.0),
-                Font.font("Times New Roman", FontWeight.BOLD, 40),
+                Font.font("Times New Roman", FontWeight.BOLD, FontPosture.ITALIC, 72),
                 Align.Center,
                 5.0,
                 Color.YELLOW
@@ -61,10 +62,10 @@ public class NeonGraphicStyle extends GraphicStyleContainer {
     public TextStyle getMenuButtonTextStyle() {
         return new TextStyle(
                 BlendMode.LIGHTEN,
-                new GaussianBlur(3.0),
-                Font.font("Times New Roman", 32),
+                new GaussianBlur(2.0),
+                Font.font("Times New Roman", 35),
                 Align.Left,
-                3.0,
+                2.0,
                 Color.GREENYELLOW
         );
     }
@@ -73,10 +74,10 @@ public class NeonGraphicStyle extends GraphicStyleContainer {
     public TextStyle getMenuActiveTextStyle() {
         return new TextStyle(
                 BlendMode.LIGHTEN,
-                new GaussianBlur(3.5),
-                Font.font("Times New Roman", 34),
+                new GaussianBlur(2.5),
+                Font.font("Times New Roman", 42),
                 Align.Left,
-                3.5,
+                2.5,
                 Color.LIMEGREEN
         );
     }

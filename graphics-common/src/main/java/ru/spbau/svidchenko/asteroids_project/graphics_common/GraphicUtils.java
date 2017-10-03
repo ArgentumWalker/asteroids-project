@@ -97,8 +97,8 @@ public class GraphicUtils {
         int startIndex = Math.max(menu.getActiveButtonPosition() - Constants.AFTER_ACTIVE_BUTTONS_COUNT, 0);
         int endIndex = Math.min(menu.getActiveButtonPosition() + Constants.AFTER_ACTIVE_BUTTONS_COUNT,
                 menu.getButtons().size() - 1);
+        horizontalOffset += Constants.MENU_AFTER_TITLE_VERTICAL_INDENT_PX;
         for (int i = startIndex; i < endIndex + 1; i++) {
-            horizontalOffset += Constants.MENU_BUTTON_HORIZONTAL_INDENT_PX;
             MenuButton button = menu.getButtons().get(i);
             textStyle = menu.isActiveButton(button) ? style.getMenuActiveTextStyle() : style.getMenuButtonTextStyle();
             horizontalOffset += drawText(context,
@@ -108,6 +108,7 @@ public class GraphicUtils {
                             canvasSize
                     ),
                     button.getText(), textStyle).getY();
+            horizontalOffset += Constants.MENU_BUTTON_VERTICAL_INDENT_PX;
         }
     }
 

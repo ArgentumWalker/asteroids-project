@@ -101,7 +101,7 @@ public class Ship extends Entity {
         }
 
         public void moveBackward() {
-            velocity = Point.withPolar(-2 * Math.PI * angle/Constants.WEAPON_TURNS_TO_TURN_AROUND, Constants.SHIP_MAX_VELOCITY);
+            velocity = Point.withPolar(2 * Math.PI * angle/Constants.WEAPON_TURNS_TO_TURN_AROUND - Math.PI, Constants.SHIP_MAX_VELOCITY);
         }
 
         public void stop() {

@@ -21,7 +21,7 @@ public class Constants {
     public static final double SPEED_TO_DAMAGE_KOEF = 5.0;
     public static final long SHIP_START_HEALTH = 1;
     public static final long STONE_START_HEALTH = 1;
-    public static final long BULLET_HEALTH = 40;
+    public static final long BULLET_HEALTH = 80;
     public static final long BULLET_DAMAGE_PER_MOVE = 1;
 
     //Entities sizes
@@ -31,9 +31,9 @@ public class Constants {
     public static final double BULLET_RADIUS = 5.0;
 
     //Velocity constraints
-    public static final double SHIP_MAX_VELOCITY = 8.0;
-    public static final double STONE_MAX_VELOCITY = 8.0;
-    public static final double BULLET_BASE_VELOCITY = 10.0;
+    public static final double SHIP_MAX_VELOCITY = 5.0;
+    public static final double STONE_MAX_VELOCITY = 3.0;
+    public static final double BULLET_BASE_VELOCITY = 8.0;
 
     //Weapon
     public static final long WEAPON_COOLDOWN = 5;
@@ -61,12 +61,13 @@ public class Constants {
     //Window
     public static final long WINDOW_HALF_WIDTH_PX = 400;
     public static final long WINDOW_HALF_HEIGHT_PX = 400;
-    public static final double PIXELS_IN_WORLD_POINT = 2.0;
+    public static final double PIXELS_IN_WORLD_POINT = 1.0;
 
     //Menu
     public static final double MENU_TITLE_HORIZONTAL_INDENT_PX = 80;
     public static final double MENU_TITLE_VERTICAL_INDENT_PX = 40;
+    public static final double MENU_AFTER_TITLE_VERTICAL_INDENT_PX = 150;
     public static final double MENU_BUTTON_HORIZONTAL_INDENT_PX = 40;
-    public static final double MENU_BUTTON_VERTICAL_INDENT_PX = 100;
+    public static final double MENU_BUTTON_VERTICAL_INDENT_PX = 40;
     public static final int AFTER_ACTIVE_BUTTONS_COUNT = 3;
 }
