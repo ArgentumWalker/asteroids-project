@@ -224,30 +224,4 @@ public class Game {
     public WorldModel getCurrentWorldodel() {
         return currentWorldModel;
     }
-
-    //CLASSES
-
-    private class EntityBorders {
-        public final Point minBorder;
-        public final Point maxBorder;
-        public final Entity entity;
-
-        public EntityBorders(Entity entity) {
-            this.entity = entity;
-            Point tmp1 = Point.with(
-                    entity.getPosition().getX() + entity.getRadius(),
-                    entity.getPosition().getY() + entity.getRadius())
-                    .checkWorldBounds();
-            Point tmp2 = Point.with(
-                    entity.getPosition().getX() - entity.getRadius(),
-                    entity.getPosition().getY() - entity.getRadius())
-                    .checkWorldBounds();
-            minBorder = Point.with(Math.min(tmp1.getX(), tmp2.getX()), Math.min(tmp1.getY(), tmp2.getY()));
-            maxBorder = Point.with(Math.max(tmp1.getX(), tmp2.getX()), Math.max(tmp1.getY(), tmp2.getY()));
-        }
-
-        public Entity getEntity() {
-            return entity;
-        }
-    }
 }

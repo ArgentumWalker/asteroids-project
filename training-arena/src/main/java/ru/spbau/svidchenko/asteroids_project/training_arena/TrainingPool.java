@@ -10,6 +10,7 @@ import ru.spbau.svidchenko.asteroids_project.game_logic.player.PilotPlayer;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.ShipCrew;
 import ru.spbau.svidchenko.asteroids_project.standalone_game_client.TrainingExecutor;
 
+import java.util.ArrayList;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -84,6 +85,8 @@ public class TrainingPool {
 
     private class RestartGunner implements Runnable {
         private final GunnerAgent agent;
+        private final List<Long> scoreStatistic = new ArrayList<>();
+        private ShipCrew currentShipCrew;
         private long lastStartTime = System.currentTimeMillis();
 
         RestartGunner(GunnerAgent agent) {
@@ -93,23 +96,38 @@ public class TrainingPool {
         @Override
         public void run() {
             if (gunnerAgent2gameCount.get(agent).getAndIncrement() <= gamesPerAgent) {
-                WorldDescriptor worldDescriptor = new WorldDescriptor();
-                worldDescriptor.players.add(new ShipCrew(random.chooseRandom(pilotAgents).buildPlayer(1), agent.buildPlayer(2)));
                 logFunction.accept("Gunner agent " + agent.getName()
                         + " starts " + gunnerAgent2gameCount.get(agent).get() + " game. Execution time = "
                         + (System.currentTimeMillis() - lastStartTime) + " ms");
-                lastStartTime = System.currentTimeMillis();
+                if (currentShipCrew != null) {
+                    scoreStatistic.add(currentShipCrew.getScore());
+                }
+
+                WorldDescriptor worldDescriptor = new WorldDescriptor();
+                currentShipCrew = new ShipCrew(random.chooseRandom(pilotAgents).buildPlayer(1), agent.buildPlayer(2));
+                worldDescriptor.players.add(currentShipCrew);
+
                 executor.execute(new TrainingExecutor(
                         worldDescriptor,
                         Constants.TURNS_IN_GAME,
                         RestartGunner.this
                 ));
+                lastStartTime = System.currentTimeMillis();
+            } else {
+                double avg = 0;
+                for (Long l : scoreStatistic) {
+                    avg += l;
+                }
+                avg /= Math.max(scoreStatistic.size(), 1);
+                logFunction.accept("Gunner agent " + agent.getName() + " complete training with " + avg + " average score");
             }
         }
     }
 
     private class RestartPilot implements Runnable {
         private final PilotAgent agent;
+        private final List<Long> scoreStatistic = new ArrayList<>();
+        private ShipCrew currentShipCrew;
         private long lastStartTime = System.currentTimeMillis();
 
         RestartPilot(PilotAgent agent) {
@@ -119,17 +137,32 @@ public class TrainingPool {
         @Override
         public void run() {
             if (pilotAgent2gameCount.get(agent).incrementAndGet() <= gamesPerAgent) {
-                WorldDescriptor worldDescriptor = new WorldDescriptor();
-                worldDescriptor.players.add(new ShipCrew(agent.buildPlayer(1), random.chooseRandom(gunnerAgents).buildPlayer(2)));
                 logFunction.accept("Pilot agent " + agent.getName()
                         + " starts " + pilotAgent2gameCount.get(agent).get() + " game. Execution time = "
                         + (System.currentTimeMillis() - lastStartTime) + " ms");
-                lastStartTime = System.currentTimeMillis();
+                if (currentShipCrew != null) {
+                    scoreStatistic.add(currentShipCrew.getScore());
+                }
+
+                WorldDescriptor worldDescriptor = new WorldDescriptor();
+                currentShipCrew = new ShipCrew(agent.buildPlayer(1), random.chooseRandom(gunnerAgents).buildPlayer(2));
+                worldDescriptor.players.add(currentShipCrew);
+
                 executor.execute(new TrainingExecutor(
                         worldDescriptor,
                         Constants.TURNS_IN_GAME,
                         RestartPilot.this
                 ));
+
+                lastStartTime = System.currentTimeMillis();
+
+            } else {
+                double avg = 0;
+                for (Long l : scoreStatistic) {
+                    avg += l;
+                }
+                avg /= Math.max(scoreStatistic.size(), 1);
+                logFunction.accept("Pilot agent " + agent.getName() + " complete training with " + avg + " average score");
             }
         }
     }
