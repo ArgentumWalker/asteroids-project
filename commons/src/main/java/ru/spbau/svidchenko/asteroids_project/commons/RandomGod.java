@@ -1,5 +1,6 @@
 package ru.spbau.svidchenko.asteroids_project.commons;
 
+import java.util.List;
 import java.util.Random;
 
 public class RandomGod extends Random {
@@ -11,5 +12,9 @@ public class RandomGod extends Random {
 
     public Point randomPoint(double minSize, double maxSize) {
         return Point.withPolar(2 * Math.PI * nextDouble(), minSize + (maxSize - minSize) * nextDouble());
+    }
+
+    public <T> T chooseRandom(List<T> variants) {
+        return variants.get(nextInt(variants.size()));
     }
 }
