@@ -33,9 +33,9 @@ public class AgentSaveLoader {
             oldAgents = loadGunners();
         } catch (Exception e) {
             //Well, we'll rewrite file
-            File pilotsFile = new File(GUNNERS_FILE);
-            pilotsFile.mkdirs();
-            pilotsFile.createNewFile();
+            File gunnersFile = new File(GUNNERS_FILE);
+            gunnersFile.getParentFile().mkdirs();
+            gunnersFile.createNewFile();
         }
         oldAgents.addAll(agents);
         try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(GUNNERS_FILE, false))) {

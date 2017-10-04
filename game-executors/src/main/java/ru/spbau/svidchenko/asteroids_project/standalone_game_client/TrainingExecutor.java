@@ -24,6 +24,7 @@ public class TrainingExecutor extends BaseGameExecutor {
     @Override
     protected void onGameEnd() {
         super.onGameEnd();
+        onGameEnd.run();
     }
 
     @Override

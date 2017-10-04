@@ -12,6 +12,7 @@ import ru.spbau.svidchenko.asteroids_project.standalone_game_client.TrainingExec
 
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
@@ -23,7 +24,7 @@ public class TrainingPool {
     private final List<PilotAgent> pilotAgents;
     private final ConcurrentHashMap<GunnerAgent, AtomicLong> gunnerAgent2gameCount = new ConcurrentHashMap<>();
     private final ConcurrentHashMap<PilotAgent, AtomicLong> pilotAgent2gameCount = new ConcurrentHashMap<>();
-    private final ThreadPoolExecutor executor;
+    private final ExecutorService executor;
     private final long gamesPerAgent;
     private final Consumer<String> logFunction;
 
@@ -31,7 +32,7 @@ public class TrainingPool {
             List<GunnerAgent> gunnerAgents,
             List<PilotAgent> pilotAgents,
             long gamesPerAgent,
-            ThreadPoolExecutor executor,
+            ExecutorService executor,
             Consumer<String> logFunction
     ) {
         this.executor = executor;
@@ -56,22 +57,26 @@ public class TrainingPool {
         }
     }
 
-    public void join() throws InterruptedException {
+    public void join() {
         for (GunnerAgent agent : gunnerAgents) {
             boolean completed = false;
             while (!completed) {
-                completed = gunnerAgent2gameCount.get(agent).get() < gamesPerAgent + 1;
+                completed = gunnerAgent2gameCount.get(agent).get() == gamesPerAgent + 1;
                 if (!completed) {
-                    TimeUnit.MILLISECONDS.sleep(300);
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(300);
+                    } catch (InterruptedException e) {}
                 }
             }
         }
         for (PilotAgent agent : pilotAgents) {
             boolean completed = false;
             while (!completed) {
-                completed = pilotAgent2gameCount.get(agent).get() < gamesPerAgent + 1;
+                completed = pilotAgent2gameCount.get(agent).get() == gamesPerAgent + 1;
                 if (!completed) {
-                    TimeUnit.MILLISECONDS.sleep(300);
+                    try {
+                        TimeUnit.MILLISECONDS.sleep(300);
+                    } catch (InterruptedException e) {}
                 }
             }
         }
@@ -86,15 +91,15 @@ public class TrainingPool {
 
         @Override
         public void run() {
-            if (gunnerAgent2gameCount.get(agent).incrementAndGet() <= gamesPerAgent) {
+            if (gunnerAgent2gameCount.get(agent).getAndIncrement() <= gamesPerAgent) {
                 WorldDescriptor worldDescriptor = new WorldDescriptor();
                 worldDescriptor.players.add(new ShipCrew(random.chooseRandom(pilotAgents).buildPlayer(1), agent.buildPlayer(2)));
                 logFunction.accept("Gunner agent " + agent.getName()
-                        + " already player " + gunnerAgent2gameCount.get(agent).get() + " games");
+                        + " starts " + gunnerAgent2gameCount.get(agent).get() + " game");
                 executor.execute(new TrainingExecutor(
                         worldDescriptor,
                         Constants.TURNS_IN_GAME,
-                        this
+                        RestartGunner.this
                 ));
             }
         }
@@ -113,11 +118,11 @@ public class TrainingPool {
                 WorldDescriptor worldDescriptor = new WorldDescriptor();
                 worldDescriptor.players.add(new ShipCrew(agent.buildPlayer(1), random.chooseRandom(gunnerAgents).buildPlayer(2)));
                 logFunction.accept("Pilot agent " + agent.getName()
-                        + " already player " + pilotAgent2gameCount.get(agent).get() + " games");
+                        + " starts " + pilotAgent2gameCount.get(agent).get() + " game");
                 executor.execute(new TrainingExecutor(
                         worldDescriptor,
                         Constants.TURNS_IN_GAME,
-                        this
+                        RestartPilot.this
                 ));
             }
         }
