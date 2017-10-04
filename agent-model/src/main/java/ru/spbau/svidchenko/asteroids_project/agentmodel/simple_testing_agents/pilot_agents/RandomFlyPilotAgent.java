@@ -7,7 +7,7 @@ import ru.spbau.svidchenko.asteroids_project.game_logic.player.PilotPlayer;
 public class RandomFlyPilotAgent extends PilotAgent {
     @Override
     public String getName() {
-        return "God of Random";
+        return "GodOfRandom";
     }
 
     @Override

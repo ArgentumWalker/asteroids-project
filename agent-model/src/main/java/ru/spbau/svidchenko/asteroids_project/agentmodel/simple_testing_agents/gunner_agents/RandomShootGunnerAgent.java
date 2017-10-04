@@ -7,7 +7,7 @@ import ru.spbau.svidchenko.asteroids_project.game_logic.player.GunnerPlayer;
 public class RandomShootGunnerAgent extends GunnerAgent {
     @Override
     public String getName() {
-        return "God of Random";
+        return "GodOfRandom";
     }
 
     @Override

@@ -6,7 +6,7 @@ import ru.spbau.svidchenko.asteroids_project.game_logic.player.PilotPlayer;
 public class FlyForwardPilotAgent extends PilotAgent {
     @Override
     public String getName() {
-        return "Forward";
+        return "ForwardFly";
     }
 
     @Override

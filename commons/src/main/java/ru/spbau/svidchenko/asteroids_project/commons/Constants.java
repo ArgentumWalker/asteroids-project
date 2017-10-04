@@ -18,7 +18,7 @@ public class Constants {
     public static final double STONE_MAX_ANGLE_DELTA = Math.PI / 40;
 
     //Health
-    public static final double SPEED_TO_DAMAGE_KOEF = 5.0;
+    public static final double SPEED_TO_DAMAGE_KOEF = 8.0;
     public static final long SHIP_START_HEALTH = 1;
     public static final long STONE_START_HEALTH = 1;
     public static final long BULLET_HEALTH = 80;
@@ -28,15 +28,15 @@ public class Constants {
     public static final double SHIP_RADIUS = 20.0;
     public static final double WEAPON_RADIUS = 13.0;
     public static final double STONE_RADIUS = 32.0;
-    public static final double BULLET_RADIUS = 5.0;
+    public static final double BULLET_RADIUS = 7.5;
 
     //Velocity constraints
-    public static final double SHIP_MAX_VELOCITY = 5.0;
-    public static final double STONE_MAX_VELOCITY = 3.0;
-    public static final double BULLET_BASE_VELOCITY = 8.0;
+    public static final double SHIP_MAX_VELOCITY = 5.5;
+    public static final double STONE_MAX_VELOCITY = 4.0;
+    public static final double BULLET_BASE_VELOCITY = 9.0;
 
     //Weapon
-    public static final long WEAPON_COOLDOWN = 5;
+    public static final long WEAPON_COOLDOWN = 9;
     public static final long WEAPON_TURNS_TO_TURN_AROUND = 80;
 
     //Vehicle

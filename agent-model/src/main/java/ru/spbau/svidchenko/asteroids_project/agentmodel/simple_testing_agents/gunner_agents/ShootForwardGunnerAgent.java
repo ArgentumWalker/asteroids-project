@@ -6,7 +6,7 @@ import ru.spbau.svidchenko.asteroids_project.game_logic.player.GunnerPlayer;
 public class ShootForwardGunnerAgent extends GunnerAgent {
     @Override
     public String getName() {
-        return "Mr. Forward";
+        return "ForwardShoot";
     }
 
     @Override
