@@ -134,6 +134,25 @@ public class Point {
         return 0;
     }
 
+    public boolean isLayInBoundsWithRadius(double radius, Point minBounds, Point maxBounds) {
+        double maxX = x + radius;
+        double minX = x - radius;
+        double maxY = y + radius;
+        double minY = y - radius;
+        double dx = 2 * Constants.WORLD_HALF_WIDTH;
+        double dy = 2 * Constants.WORLD_HALF_HEIGHT;
+        return  (__isLayInBoundsWithRadius(minX, maxX, minBounds.getX(), maxBounds.getX()) ||
+                        __isLayInBoundsWithRadius(minX + dx, maxX + dx, minBounds.getX(), maxBounds.getX()) ||
+                        __isLayInBoundsWithRadius(minX - dx, maxX - dx, minBounds.getX(), maxBounds.getX())) &&
+                (__isLayInBoundsWithRadius(minY, maxY, minBounds.getY(), maxBounds.getY()) ||
+                        __isLayInBoundsWithRadius(minY + dy, maxY + dy, minBounds.getY(), maxBounds.getY()) ||
+                        __isLayInBoundsWithRadius(minY - dy, maxY - dy, minBounds.getY(), maxBounds.getY()));
+    }
+
+    private boolean __isLayInBoundsWithRadius(double a, double b, double boundA, double boundB) {
+        return a < boundB && b > boundA;
+    }
+
     public double getX() {
         return x;
     }

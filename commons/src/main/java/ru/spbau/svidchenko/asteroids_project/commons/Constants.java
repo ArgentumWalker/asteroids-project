@@ -46,7 +46,7 @@ public class Constants {
     ////GAME CONSTANTS
 
     //Processing
-    public static final long IMPACTS_CALCULATION_SPLIT_DEPTH = 20;
+    public static final long IMPACTS_CALCULATION_SPLIT_DEPTH = 6;
 
     //Time
     public static final long TURNS_IN_GAME = 12000;

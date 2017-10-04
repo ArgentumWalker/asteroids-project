@@ -66,41 +66,53 @@ public class Game {
     }
 
     private void processImpacts(Set<Entity> entities) {
-        processImpactsSplit(entities.stream().map(EntityBorders::new).collect(Collectors.toSet()), 0,
+        processImpactsSplit(entities, 0,
                 Point.with(-Constants.WORLD_HALF_WIDTH, -Constants.WORLD_HALF_HEIGHT),
                 Point.with(Constants.WORLD_HALF_WIDTH, Constants.WORLD_HALF_HEIGHT));
     }
 
-    private void processImpactsSplit(Set<EntityBorders> entities, long currentDepth, Point minBounds, Point maxBounds) {
-        if (currentDepth >= Constants.IMPACTS_CALCULATION_SPLIT_DEPTH) {
-            processImpactsDirectly(entities.stream().map(EntityBorders::getEntity).collect(Collectors.toSet()));
+    private void processImpactsSplit(Set<Entity> entities, long currentDepth, Point minBounds, Point maxBounds) {
+        if (entities.size() < 2) {
             return;
         }
-        if (entities.isEmpty()) {
+        if (currentDepth >= Constants.IMPACTS_CALCULATION_SPLIT_DEPTH || entities.size() < 8) {
+            processImpactsDirectly(entities);
             return;
         }
-        Set<EntityBorders> upperLeft = new HashSet<>();
-        Set<EntityBorders> lowerLeft = new HashSet<>();
-        Set<EntityBorders> upperRight = new HashSet<>();
-        Set<EntityBorders> lowerRight = new HashSet<>();
+        Set<Entity> upperLeft = new HashSet<>();
+        Set<Entity> lowerLeft = new HashSet<>();
+        Set<Entity> upperRight = new HashSet<>();
+        Set<Entity> lowerRight = new HashSet<>();
         double middleX = (minBounds.getX() + maxBounds.getX()) / 2;
         double middleY = (minBounds.getY() + maxBounds.getY()) / 2;
-        for (EntityBorders entity : entities) {
-            if (middleX < entity.maxBorder.getX() && entity.maxBorder.getX() < maxBounds.getX()) {
-                if (middleY < entity.maxBorder.getY() && entity.maxBorder.getY() < maxBounds.getY()) {
-                    upperRight.add(entity);
-                }
-                if (minBounds.getY() < entity.minBorder.getY() && entity.minBorder.getY() < middleY) {
-                    lowerRight.add(entity);
-                }
+        for (Entity entity : entities) {
+            if (entity.getPosition()
+                    .isLayInBoundsWithRadius(entity.getRadius(),
+                            Point.with(middleX, middleY),
+                            maxBounds)
+            ) {
+                upperRight.add(entity);
             }
-            if (minBounds.getX() < entity.minBorder.getX() && entity.minBorder.getX() < middleX) {
-                if (middleY < entity.maxBorder.getY() && entity.maxBorder.getY() < maxBounds.getY()) {
-                    upperLeft.add(entity);
-                }
-                if (minBounds.getY() < entity.minBorder.getY() && entity.minBorder.getY() < middleY) {
-                    lowerLeft.add(entity);
-                }
+            if (entity.getPosition()
+                    .isLayInBoundsWithRadius(entity.getRadius(),
+                            Point.with(minBounds.getX(), middleY),
+                            Point.with(middleX, maxBounds.getY()))
+                    ) {
+                upperLeft.add(entity);
+            }
+            if (entity.getPosition()
+                    .isLayInBoundsWithRadius(entity.getRadius(),
+                            Point.with(middleX, minBounds.getY()),
+                            Point.with(maxBounds.getX(), middleY))
+                    ) {
+                lowerRight.add(entity);
+            }
+            if (entity.getPosition()
+                    .isLayInBoundsWithRadius(entity.getRadius(),
+                            minBounds,
+                            Point.with(middleX, middleY))
+                    ) {
+                lowerLeft.add(entity);
             }
         }
         processImpactsSplit(upperRight, currentDepth + 1,
@@ -109,7 +121,7 @@ public class Game {
                 Point.with(minBounds.getX(), middleY), Point.with(middleX, maxBounds.getY()));
         processImpactsSplit(lowerRight, currentDepth + 1,
                 Point.with(middleX, minBounds.getY()), Point.with(maxBounds.getX(), middleY));
-        processImpactsSplit(upperRight, currentDepth + 1,
+        processImpactsSplit(lowerLeft, currentDepth + 1,
                 minBounds, Point.with(middleX, middleY));
     }
 
