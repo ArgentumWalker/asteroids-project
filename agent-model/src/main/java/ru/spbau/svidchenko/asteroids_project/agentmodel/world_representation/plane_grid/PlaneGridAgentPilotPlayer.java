@@ -2,8 +2,9 @@ package ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.pl
 
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.GunnerPlayer;
+import ru.spbau.svidchenko.asteroids_project.game_logic.player.PilotPlayer;
 
-public abstract class PlaneGridAgentPilotPlayer extends GunnerPlayer {
+public abstract class PlaneGridAgentPilotPlayer extends PilotPlayer {
     private PlaneGrid planeGrid;
 
     public PlaneGridAgentPilotPlayer(long id, PlaneGridDescriptor planeGridDescriptor) {

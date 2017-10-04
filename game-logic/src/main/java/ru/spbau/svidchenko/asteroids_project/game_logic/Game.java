@@ -7,10 +7,9 @@ import ru.spbau.svidchenko.asteroids_project.game_logic.player.Player;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.ShipCrew;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.*;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class Game {
     private WorldModel currentWorldModel;
@@ -67,6 +66,66 @@ public class Game {
     }
 
     private void processImpacts(Set<Entity> entities) {
+        processImpactsSplit(entities, 0,
+                Point.with(-Constants.WORLD_HALF_WIDTH, -Constants.WORLD_HALF_HEIGHT),
+                Point.with(Constants.WORLD_HALF_WIDTH, Constants.WORLD_HALF_HEIGHT));
+    }
+
+    private void processImpactsSplit(Set<Entity> entities, long currentDepth, Point minBounds, Point maxBounds) {
+        if (entities.size() < 2) {
+            return;
+        }
+        if (currentDepth >= Constants.IMPACTS_CALCULATION_SPLIT_DEPTH || entities.size() < 8) {
+            processImpactsDirectly(entities);
+            return;
+        }
+        Set<Entity> upperLeft = new HashSet<>();
+        Set<Entity> lowerLeft = new HashSet<>();
+        Set<Entity> upperRight = new HashSet<>();
+        Set<Entity> lowerRight = new HashSet<>();
+        double middleX = (minBounds.getX() + maxBounds.getX()) / 2;
+        double middleY = (minBounds.getY() + maxBounds.getY()) / 2;
+        for (Entity entity : entities) {
+            if (entity.getPosition()
+                    .isLayInBoundsWithRadius(entity.getRadius(),
+                            Point.with(middleX, middleY),
+                            maxBounds)
+            ) {
+                upperRight.add(entity);
+            }
+            if (entity.getPosition()
+                    .isLayInBoundsWithRadius(entity.getRadius(),
+                            Point.with(minBounds.getX(), middleY),
+                            Point.with(middleX, maxBounds.getY()))
+                    ) {
+                upperLeft.add(entity);
+            }
+            if (entity.getPosition()
+                    .isLayInBoundsWithRadius(entity.getRadius(),
+                            Point.with(middleX, minBounds.getY()),
+                            Point.with(maxBounds.getX(), middleY))
+                    ) {
+                lowerRight.add(entity);
+            }
+            if (entity.getPosition()
+                    .isLayInBoundsWithRadius(entity.getRadius(),
+                            minBounds,
+                            Point.with(middleX, middleY))
+                    ) {
+                lowerLeft.add(entity);
+            }
+        }
+        processImpactsSplit(upperRight, currentDepth + 1,
+                Point.with(middleX, middleY), maxBounds);
+        processImpactsSplit(upperLeft, currentDepth + 1,
+                Point.with(minBounds.getX(), middleY), Point.with(middleX, maxBounds.getY()));
+        processImpactsSplit(lowerRight, currentDepth + 1,
+                Point.with(middleX, minBounds.getY()), Point.with(maxBounds.getX(), middleY));
+        processImpactsSplit(lowerLeft, currentDepth + 1,
+                minBounds, Point.with(middleX, middleY));
+    }
+
+    private void processImpactsDirectly(Set<Entity> entities) {
         List<Entity> visitedEntities = new ArrayList<>();
         for (Entity entity1 : entities) {
             for (Entity entity2 : visitedEntities) {
@@ -164,5 +223,31 @@ public class Game {
 
     public WorldModel getCurrentWorldodel() {
         return currentWorldModel;
+    }
+
+    //CLASSES
+
+    private class EntityBorders {
+        public final Point minBorder;
+        public final Point maxBorder;
+        public final Entity entity;
+
+        public EntityBorders(Entity entity) {
+            this.entity = entity;
+            Point tmp1 = Point.with(
+                    entity.getPosition().getX() + entity.getRadius(),
+                    entity.getPosition().getY() + entity.getRadius())
+                    .checkWorldBounds();
+            Point tmp2 = Point.with(
+                    entity.getPosition().getX() - entity.getRadius(),
+                    entity.getPosition().getY() - entity.getRadius())
+                    .checkWorldBounds();
+            minBorder = Point.with(Math.min(tmp1.getX(), tmp2.getX()), Math.min(tmp1.getY(), tmp2.getY()));
+            maxBorder = Point.with(Math.max(tmp1.getX(), tmp2.getX()), Math.max(tmp1.getY(), tmp2.getY()));
+        }
+
+        public Entity getEntity() {
+            return entity;
+        }
     }
 }

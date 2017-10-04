@@ -2,8 +2,9 @@ package ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.po
 
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.GunnerPlayer;
+import ru.spbau.svidchenko.asteroids_project.game_logic.player.PilotPlayer;
 
-public abstract class PolarGridAgentPilotPlayer extends GunnerPlayer {
+public abstract class PolarGridAgentPilotPlayer extends PilotPlayer {
     private PolarGrid polarGrid;
 
     public PolarGridAgentPilotPlayer(long id, PolarGridDescriptor polarGridDescriptor) {
