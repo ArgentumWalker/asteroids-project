@@ -1,9 +1,10 @@
 package ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.polar_grid;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PolarGridDescriptor {
+public class PolarGridDescriptor implements Serializable {
     private List<Long> angleSectors = new ArrayList<>();
     private List<Double> distanceSectors = new ArrayList<>();
     private long maxAngle = 0;

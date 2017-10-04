@@ -11,12 +11,10 @@ import java.util.List;
 
 public class PolarGrid {
     private PolarGridDescriptor polarGridDescriptor;
-    private RelativeWorldModel worldModel;
     private List<List<Boolean>> values = new ArrayList<>();
 
-    public PolarGrid(PolarGridDescriptor polarGridDescriptor, RelativeWorldModel worldModel) {
+    public PolarGrid(PolarGridDescriptor polarGridDescriptor) {
         this.polarGridDescriptor = polarGridDescriptor;
-        this.worldModel = worldModel;
         for (int i = 0; i < polarGridDescriptor.getAngleSectors().size() + 1; i++) {
             List<Boolean> valuesAtAngle = new ArrayList<>();
             for (int j = 0; j < polarGridDescriptor.getDistanceSectors().size() + 1; j++) {
@@ -24,10 +22,9 @@ public class PolarGrid {
             }
             values.add(valuesAtAngle);
         }
-        refresh();
     }
 
-    public void refresh() {
+    public void refresh(RelativeWorldModel worldModel) {
         for (int i = 0; i < polarGridDescriptor.getAngleSectors().size() + 1; i++) {
             for (int j = 0; j < polarGridDescriptor.getDistanceSectors().size() + 1; j++) {
                 values.get(i).set(i, false);
