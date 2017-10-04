@@ -84,6 +84,7 @@ public class TrainingPool {
 
     private class RestartGunner implements Runnable {
         private final GunnerAgent agent;
+        private long lastStartTime = System.currentTimeMillis();
 
         RestartGunner(GunnerAgent agent) {
             this.agent = agent;
@@ -95,7 +96,9 @@ public class TrainingPool {
                 WorldDescriptor worldDescriptor = new WorldDescriptor();
                 worldDescriptor.players.add(new ShipCrew(random.chooseRandom(pilotAgents).buildPlayer(1), agent.buildPlayer(2)));
                 logFunction.accept("Gunner agent " + agent.getName()
-                        + " starts " + gunnerAgent2gameCount.get(agent).get() + " game");
+                        + " starts " + gunnerAgent2gameCount.get(agent).get() + " game. Execution time = "
+                        + (System.currentTimeMillis() - lastStartTime) + " ms");
+                lastStartTime = System.currentTimeMillis();
                 executor.execute(new TrainingExecutor(
                         worldDescriptor,
                         Constants.TURNS_IN_GAME,
@@ -107,6 +110,7 @@ public class TrainingPool {
 
     private class RestartPilot implements Runnable {
         private final PilotAgent agent;
+        private long lastStartTime = System.currentTimeMillis();
 
         RestartPilot(PilotAgent agent) {
             this.agent = agent;
@@ -118,7 +122,9 @@ public class TrainingPool {
                 WorldDescriptor worldDescriptor = new WorldDescriptor();
                 worldDescriptor.players.add(new ShipCrew(agent.buildPlayer(1), random.chooseRandom(gunnerAgents).buildPlayer(2)));
                 logFunction.accept("Pilot agent " + agent.getName()
-                        + " starts " + pilotAgent2gameCount.get(agent).get() + " game");
+                        + " starts " + pilotAgent2gameCount.get(agent).get() + " game. Execution time = "
+                        + (System.currentTimeMillis() - lastStartTime) + " ms");
+                lastStartTime = System.currentTimeMillis();
                 executor.execute(new TrainingExecutor(
                         worldDescriptor,
                         Constants.TURNS_IN_GAME,
