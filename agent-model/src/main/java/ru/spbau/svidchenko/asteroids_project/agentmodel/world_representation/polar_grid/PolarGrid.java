@@ -26,13 +26,16 @@ public class PolarGrid {
 
     public void refresh(RelativeWorldModel worldModel) {
         for (int i = 0; i < polarGridDescriptor.getAngleSectors().size() + 1; i++) {
-            for (int j = 0; j < polarGridDescriptor.getDistanceSectors().size() + 1; j++) {
-                values.get(i).set(i, false);
+            for (int j = 0; j < polarGridDescriptor.getDistanceSectors().size(); j++) {
+                values.get(i).set(j, false);
             }
         }
         for (EntityRelative relative : worldModel.getRelatives()) {
             if (relative.getEntity() instanceof Stone) {
-                values.get(calculateAngleSector(relative)).set(calculateDistanceSector(relative), true);
+                int distanceSector = calculateDistanceSector(relative);
+                if (distanceSector < polarGridDescriptor.getDistanceSectors().size()) {
+                    values.get(calculateAngleSector(relative)).set(distanceSector, true);
+                }
             }
             //TODO: add bullets
         }

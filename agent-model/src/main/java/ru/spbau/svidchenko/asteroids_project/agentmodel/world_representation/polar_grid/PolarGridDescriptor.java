@@ -16,7 +16,7 @@ public class PolarGridDescriptor implements Serializable {
     public void splitAngle(long at) {
         if (maxAngle > at && at > 0) {
             int position = 0;
-            while (angleSectors.get(position) < at) {
+            while (position < angleSectors.size() && angleSectors.get(position) < at) {
                 position++;
             }
             angleSectors.add(position, at);
@@ -26,7 +26,7 @@ public class PolarGridDescriptor implements Serializable {
     public void splitDistance(double at) {
         if (at > 0) {
             int position = 0;
-            while (distanceSectors.get(position) < at) {
+            while (position < distanceSectors.size() && distanceSectors.get(position) < at) {
                 position++;
             }
             distanceSectors.add(position, at);

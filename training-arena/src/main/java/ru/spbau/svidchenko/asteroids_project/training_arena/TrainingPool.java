@@ -62,7 +62,7 @@ public class TrainingPool {
         for (GunnerAgent agent : gunnerAgents) {
             boolean completed = false;
             while (!completed) {
-                completed = gunnerAgent2gameCount.get(agent).get() == gamesPerAgent + 1;
+                completed = gunnerAgent2gameCount.get(agent).get() > gamesPerAgent;
                 if (!completed) {
                     try {
                         TimeUnit.MILLISECONDS.sleep(300);
@@ -73,7 +73,7 @@ public class TrainingPool {
         for (PilotAgent agent : pilotAgents) {
             boolean completed = false;
             while (!completed) {
-                completed = pilotAgent2gameCount.get(agent).get() == gamesPerAgent + 1;
+                completed = pilotAgent2gameCount.get(agent).get() > gamesPerAgent;
                 if (!completed) {
                     try {
                         TimeUnit.MILLISECONDS.sleep(300);
