@@ -36,7 +36,7 @@ public class RelativeWorldModel {
     }
 
     public void refresh() {
-        usageLock.readLock().lock();
+        usageLock.writeLock().lock();
         relatives.forEach(EntityRelative::refresh);
         relatives.removeAll(
                 relatives.stream().filter(relative -> !worldModel.getEntities().contains(relative.getEntity())).collect(Collectors.toList())
@@ -48,7 +48,7 @@ public class RelativeWorldModel {
                         .map(entity -> entity.getRelative(angleFunction, centerFunction))
                         .collect(Collectors.toSet())
         );
-        usageLock.readLock().unlock();
+        usageLock.writeLock().unlock();
     }
 
     public Lock readLock() {

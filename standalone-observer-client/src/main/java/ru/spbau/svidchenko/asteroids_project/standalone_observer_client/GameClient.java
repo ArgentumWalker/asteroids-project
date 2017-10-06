@@ -57,6 +57,10 @@ public class GameClient {
         stage.setScene(scene);
     }
 
+    public void setObserverMenu(ObserverMenu observerMenu) {
+        this.observerMenu = observerMenu;
+    }
+
     private void initEventHandler() {
         scene.setOnKeyPressed(event -> {
             switch (event.getCode()) {

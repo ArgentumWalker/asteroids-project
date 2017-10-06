@@ -1,12 +1,11 @@
 package ru.spbau.svidchenko.asteroids_project.standalone_observer_client;
 
-import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
-import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
+import ru.spbau.svidchenko.asteroids_project.agentmodel.AgentSaveLoader;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.game_logic.WorldDescriptor;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.GunnerPlayer;
@@ -18,8 +17,7 @@ import ru.spbau.svidchenko.asteroids_project.graphics_common.menu.Menu;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.menu.MenuButton;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.styles.NeonGraphicStyle;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
 public class ObserverMenu {
     private final Stage stage;
@@ -36,23 +34,14 @@ public class ObserverMenu {
 
     //TODO: implement player selector
     //TMP
-    private PilotPlayer piotPlayer = new PilotPlayer(1) {
-        @Override
-        protected Action chooseAction() {
-            return new Action();
-        }
-    };
-    private GunnerPlayer gunnerPlayer = new GunnerPlayer(2) {
-        @Override
-        protected Action chooseAction() {
-            return new Action();
-        }
-    };
+    private PilotPlayer pilotPlayer = AgentSaveLoader.loadPilots().get(5).buildPlayer(1);
+    private GunnerPlayer gunnerPlayer = AgentSaveLoader.loadGunners().get(0).buildPlayer(2);
     //TMP
 
-    public ObserverMenu(Stage stage, GameClient gameClient) {
+    public ObserverMenu(Stage stage, GameClient gameClient) throws IOException, ClassNotFoundException {
         this.gameClient = gameClient;
         this.stage = stage;
+        gameClient.setObserverMenu(this);
         Group root = new Group();
         scene = new Scene(root);
         Canvas canvas = new Canvas(Constants.WINDOW_HALF_WIDTH_PX * 2, Constants.WINDOW_HALF_HEIGHT_PX * 2);
@@ -79,7 +68,7 @@ public class ObserverMenu {
 
     private void startGame() {
         WorldDescriptor worldDescriptor = new WorldDescriptor();
-        worldDescriptor.players.add(new ShipCrew(piotPlayer, gunnerPlayer));
+        worldDescriptor.players.add(new ShipCrew(pilotPlayer, gunnerPlayer));
         gameClient.start(worldDescriptor, style, this);
     }
 
