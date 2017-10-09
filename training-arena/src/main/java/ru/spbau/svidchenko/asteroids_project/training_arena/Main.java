@@ -18,7 +18,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 public class Main {
-    private static final long GAME_COUNT = 40;
+    private static final long GAME_COUNT = 12000;
     private static final AgentsBuilder AGENTS_BUILDER = new AgentsBuilder();
 
     public static void main(String[] args) throws IOException, ClassNotFoundException {
@@ -27,13 +27,10 @@ public class Main {
         List<PilotAgent> pilotAgents = AGENTS_BUILDER.getPilotAgents(GAME_COUNT);
         TrainingPool trainingPool = new TrainingPool(gunnerAgents, pilotAgents, GAME_COUNT, executor, System.out::println);
         trainingPool.start();
-        //костыль
-        //gunnerAgents.remove(3);
-        ///костыль
         trainingPool.join();
         executor.shutdown();
-        //AgentSaveLoader.savePilots(pilotAgents);
-        //AgentSaveLoader.saveGunners(gunnerAgents);
+        AgentSaveLoader.savePilots(pilotAgents);
+        AgentSaveLoader.saveGunners(gunnerAgents);
         System.out.println("Completed");
     }
 }

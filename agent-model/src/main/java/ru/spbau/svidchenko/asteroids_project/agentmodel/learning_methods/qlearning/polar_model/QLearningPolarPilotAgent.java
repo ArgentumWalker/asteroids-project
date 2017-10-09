@@ -52,7 +52,6 @@ public class QLearningPolarPilotAgent extends PolarGridPilotAgent {
 
     private int chooseAction(long state, long prevState, int prevAction, double reward) {
         refresh(state, prevState, prevAction, reward);
-        System.out.println(state);
         return isExploration() ? randomAction() : getActionWithMaxValue(getByState(state));
     }
 
