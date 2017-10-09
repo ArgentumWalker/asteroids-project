@@ -33,6 +33,10 @@ public class PolarGridDescriptor implements Serializable {
         }
     }
 
+    public long getMaxAngle() {
+        return maxAngle;
+    }
+
     public List<Long> getAngleSectors() {
         return angleSectors;
     }

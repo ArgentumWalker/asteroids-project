@@ -10,15 +10,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class QLearningPolarGunnerAgent extends PolarGridGunnerAgent {
     private static long freeId = 0;
     private final long id = freeId++;
-    private final Callable<Double> explorationProbability;
+    private Callable<Double> explorationProbability;
     private final double gamma;
-    private final double alpha;
+    private Callable<Double> alpha;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Integer, Double>> state2action2value = new ConcurrentHashMap<>();
 
     public QLearningPolarGunnerAgent(
             PolarGridDescriptor polarGridDescriptor,
             Callable<Double> explorationProbability,
-            double alpha,
+            Callable<Double> alpha,
             double gamma
     ) {
         super(polarGridDescriptor);
@@ -30,6 +30,14 @@ public class QLearningPolarGunnerAgent extends PolarGridGunnerAgent {
     @Override
     public String getName() {
         return "QLearningPolarPilotAgent_" + id;
+    }
+
+    public void setExplorationProbability(Callable<Double> explorationProbability) {
+        this.explorationProbability = explorationProbability;
+    }
+
+    public void setAlpha(Callable<Double> alpha) {
+        this.alpha = alpha;
     }
 
     @Override
@@ -47,7 +55,7 @@ public class QLearningPolarGunnerAgent extends PolarGridGunnerAgent {
         ConcurrentHashMap<Integer, Double> prevStateAction = getByState(prevState);
         double maxValue = getMaxValue(currentStateAction);
         double prevActionValue = getByAction(prevStateAction, prevAction);
-        prevStateAction.put(prevAction, prevActionValue + alpha * (reward + gamma * maxValue - prevActionValue));
+        prevStateAction.put(prevAction, prevActionValue + alpha.call() * (reward + gamma * maxValue - prevActionValue));
     }
 
     private boolean isExploration() {

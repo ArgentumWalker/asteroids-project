@@ -6,6 +6,7 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.Stage;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.AgentSaveLoader;
+import ru.spbau.svidchenko.asteroids_project.agentmodel.simple_testing_agents.gunner_agents.ShootClosestGunnerAgent;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.game_logic.WorldDescriptor;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.GunnerPlayer;
@@ -16,6 +17,7 @@ import ru.spbau.svidchenko.asteroids_project.graphics_common.GraphicUtils;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.menu.Menu;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.menu.MenuButton;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.styles.NeonGraphicStyle;
+import ru.spbau.svidchenko.asteroids_project.training_arena.AgentsBuilder;
 
 import java.io.IOException;
 
@@ -34,8 +36,8 @@ public class ObserverMenu {
 
     //TODO: implement player selector
     //TMP
-    private PilotPlayer pilotPlayer = AgentSaveLoader.loadPilots().get(5).buildPlayer(1);
-    private GunnerPlayer gunnerPlayer = AgentSaveLoader.loadGunners().get(0).buildPlayer(2);
+    private PilotPlayer pilotPlayer = new AgentsBuilder().getPilotAgents(1).get(0).buildPlayer(1);
+    private GunnerPlayer gunnerPlayer = new ShootClosestGunnerAgent().buildPlayer(2);
     //TMP
 
     public ObserverMenu(Stage stage, GameClient gameClient) throws IOException, ClassNotFoundException {

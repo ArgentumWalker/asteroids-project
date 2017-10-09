@@ -15,15 +15,15 @@ import java.util.concurrent.ConcurrentHashMap;
 public class QLearningPolarPilotAgent extends PolarGridPilotAgent {
     private static long freeId = 0;
     private final long id = freeId++;
-    private final Callable<Double> explorationProbability;
+    private Callable<Double> explorationProbability;
     private final double gamma;
-    private final double alpha;
+    private Callable<Double> alpha;
     private ConcurrentHashMap<Long, ConcurrentHashMap<Integer, Double>> state2action2value = new ConcurrentHashMap<>();
 
     public QLearningPolarPilotAgent(
             PolarGridDescriptor polarGridDescriptor,
             Callable<Double> explorationProbability,
-            double alpha,
+            Callable<Double> alpha,
             double gamma
     ) {
         super(polarGridDescriptor);
@@ -37,6 +37,14 @@ public class QLearningPolarPilotAgent extends PolarGridPilotAgent {
         return "QLearningPolarPilotAgent_" + id;
     }
 
+    public void setExplorationProbability(Callable<Double> explorationProbability) {
+        this.explorationProbability = explorationProbability;
+    }
+
+    public void setAlpha(Callable<Double> alpha) {
+        this.alpha = alpha;
+    }
+
     @Override
     protected PolarGridAgentPilotPlayer buildPlayer(long id, PolarGridDescriptor polarGridDescriptor) {
         return new QLearningPolarPilotPlayer(id, polarGridDescriptor);
@@ -44,6 +52,7 @@ public class QLearningPolarPilotAgent extends PolarGridPilotAgent {
 
     private int chooseAction(long state, long prevState, int prevAction, double reward) {
         refresh(state, prevState, prevAction, reward);
+        System.out.println(state);
         return isExploration() ? randomAction() : getActionWithMaxValue(getByState(state));
     }
 
@@ -52,7 +61,7 @@ public class QLearningPolarPilotAgent extends PolarGridPilotAgent {
         ConcurrentHashMap<Integer, Double> prevStateAction = getByState(prevState);
         double maxValue = getMaxValue(currentStateAction);
         double prevActionValue = getByAction(prevStateAction, prevAction);
-        prevStateAction.put(prevAction, prevActionValue + alpha * (reward + gamma * maxValue - prevActionValue));
+        prevStateAction.put(prevAction, prevActionValue + alpha.call() * (reward + gamma * maxValue - prevActionValue));
     }
     
     private boolean isExploration() {
