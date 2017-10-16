@@ -11,6 +11,7 @@ import ru.spbau.svidchenko.asteroids_project.game_logic.player.ShipCrew;
 import ru.spbau.svidchenko.asteroids_project.standalone_game_client.TrainingExecutor;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -28,19 +29,22 @@ public class TrainingPool {
     private final ExecutorService executor;
     private final long gamesPerAgent;
     private final Consumer<String> logFunction;
+    private final Consumer<StatisticHolder> statisticFunction;
 
     public TrainingPool(
             List<GunnerAgent> gunnerAgents,
             List<PilotAgent> pilotAgents,
             long gamesPerAgent,
             ExecutorService executor,
-            Consumer<String> logFunction
+            Consumer<String> logFunction,
+            Consumer<StatisticHolder> statisticFunction
     ) {
         this.executor = executor;
         this.gunnerAgents = gunnerAgents;
         this.pilotAgents = pilotAgents;
         this.gamesPerAgent = gamesPerAgent;
         this.logFunction = logFunction;
+        this.statisticFunction = statisticFunction;
     }
 
     public void start() {
@@ -85,7 +89,7 @@ public class TrainingPool {
 
     private class RestartGunner implements Runnable {
         private final GunnerAgent agent;
-        private final List<Long> scoreStatistic = new ArrayList<>();
+        private final HashMap<Long, Long> scoreStatistic = new HashMap<>();
         private ShipCrew currentShipCrew;
         private long lastStartTime = System.currentTimeMillis();
 
@@ -95,16 +99,19 @@ public class TrainingPool {
 
         @Override
         public void run() {
-            if (gunnerAgent2gameCount.get(agent).getAndIncrement() <= gamesPerAgent) {
+            long game = gunnerAgent2gameCount.get(agent).incrementAndGet();
+            if (game <= gamesPerAgent) {
                 logFunction.accept("Gunner agent " + agent.getName()
                         + " starts " + gunnerAgent2gameCount.get(agent).get() + " game. Execution time = "
                         + (System.currentTimeMillis() - lastStartTime) + " ms");
                 if (currentShipCrew != null) {
-                    scoreStatistic.add(currentShipCrew.getScore());
+                    scoreStatistic.put(game, currentShipCrew.getScore());
                 }
 
                 WorldDescriptor worldDescriptor = new WorldDescriptor();
-                currentShipCrew = new ShipCrew(random.chooseRandom(pilotAgents).buildPlayer(1), agent.buildPlayer(2));
+                PilotAgent pilot = random.chooseRandom(pilotAgents);
+                pilotAgent2gameCount.get(pilot).incrementAndGet();
+                currentShipCrew = new ShipCrew(pilot.buildPlayer(1), agent.buildPlayer(2));
                 worldDescriptor.players.add(currentShipCrew);
 
                 executor.execute(new TrainingExecutor(
@@ -114,19 +121,17 @@ public class TrainingPool {
                 ));
                 lastStartTime = System.currentTimeMillis();
             } else {
-                double avg = 0;
-                for (Long l : scoreStatistic) {
-                    avg += l;
-                }
-                avg /= Math.max(scoreStatistic.size(), 1);
-                logFunction.accept("Gunner agent " + agent.getName() + " complete training with " + avg + " average score");
+                StatisticHolder statisticHolder = new StatisticHolder();
+                statisticHolder.agentName = agent.getName();
+                statisticHolder.game2score = scoreStatistic;
+                statisticFunction.accept(statisticHolder);
             }
         }
     }
 
     private class RestartPilot implements Runnable {
         private final PilotAgent agent;
-        private final List<Long> scoreStatistic = new ArrayList<>();
+        private final HashMap<Long, Long> scoreStatistic = new HashMap<>();
         private ShipCrew currentShipCrew;
         private long lastStartTime = System.currentTimeMillis();
 
@@ -136,16 +141,19 @@ public class TrainingPool {
 
         @Override
         public void run() {
-            if (pilotAgent2gameCount.get(agent).incrementAndGet() <= gamesPerAgent) {
+            long game = pilotAgent2gameCount.get(agent).incrementAndGet();
+            if (game <= gamesPerAgent) {
                 logFunction.accept("Pilot agent " + agent.getName()
                         + " starts " + pilotAgent2gameCount.get(agent).get() + " game. Execution time = "
                         + (System.currentTimeMillis() - lastStartTime) + " ms");
                 if (currentShipCrew != null) {
-                    scoreStatistic.add(currentShipCrew.getScore());
+                    scoreStatistic.put(game, currentShipCrew.getScore());
                 }
 
                 WorldDescriptor worldDescriptor = new WorldDescriptor();
-                currentShipCrew = new ShipCrew(agent.buildPlayer(1), random.chooseRandom(gunnerAgents).buildPlayer(2));
+                GunnerAgent gunner = random.chooseRandom(gunnerAgents);
+                gunnerAgent2gameCount.get(gunner).incrementAndGet();
+                currentShipCrew = new ShipCrew(agent.buildPlayer(1), gunner.buildPlayer(2));
                 worldDescriptor.players.add(currentShipCrew);
 
                 executor.execute(new TrainingExecutor(
@@ -157,13 +165,16 @@ public class TrainingPool {
                 lastStartTime = System.currentTimeMillis();
 
             } else {
-                double avg = 0;
-                for (Long l : scoreStatistic) {
-                    avg += l;
-                }
-                avg /= Math.max(scoreStatistic.size(), 1);
-                logFunction.accept("Pilot agent " + agent.getName() + " complete training with " + avg + " average score");
+                StatisticHolder statisticHolder = new StatisticHolder();
+                statisticHolder.agentName = agent.getName();
+                statisticHolder.game2score = scoreStatistic;
+                statisticFunction.accept(statisticHolder);
             }
         }
+    }
+
+    public static class StatisticHolder {
+        public String agentName;
+        public HashMap<Long, Long> game2score;
     }
 }

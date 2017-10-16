@@ -29,7 +29,7 @@ public class QLearningPolarGunnerAgent extends PolarGridGunnerAgent {
 
     @Override
     public String getName() {
-        return "QLearningPolarPilotAgent_" + id;
+        return "QLearningPolarGunnerAgent_" + id;
     }
 
     public void setExplorationProbability(Callable<Double> explorationProbability) {

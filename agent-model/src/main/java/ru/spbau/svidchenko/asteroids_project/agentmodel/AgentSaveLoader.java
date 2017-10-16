@@ -8,6 +8,30 @@ public class AgentSaveLoader {
     private static final String PILOTS_FILE = "agents/pilots.ag";
     private static final String GUNNERS_FILE = "agents/gunners.ag";
 
+    public static void rewritePilots(List<PilotAgent> agents) throws IOException {
+        File pilotsFile = new File(PILOTS_FILE);
+        pilotsFile.getParentFile().mkdirs();
+        pilotsFile.createNewFile();
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(PILOTS_FILE, false))) {
+            objectOutputStream.writeLong(agents.size());
+            for (PilotAgent agent : agents) {
+                objectOutputStream.writeObject(agent);
+            }
+        }
+    }
+
+    public static void rewriteGunners(List<GunnerAgent> agents) throws IOException {
+        File gunnersFile = new File(GUNNERS_FILE);
+        gunnersFile.getParentFile().mkdirs();
+        gunnersFile.createNewFile();
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(GUNNERS_FILE, false))) {
+            objectOutputStream.writeLong(agents.size());
+            for (GunnerAgent agent : agents) {
+                objectOutputStream.writeObject(agent);
+            }
+        }
+    }
+
     public static void savePilots(List<PilotAgent> agents) throws IOException {
         List<PilotAgent> oldAgents = new ArrayList<>();
         try {
