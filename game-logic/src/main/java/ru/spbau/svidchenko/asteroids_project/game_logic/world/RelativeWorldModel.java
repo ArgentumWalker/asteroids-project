@@ -17,6 +17,7 @@ public class RelativeWorldModel {
     private WorldModel worldModel;
     private Callable<Double> angleFunction;
     private Callable<Point> centerFunction;
+    private Double currentAngle;
 
     public RelativeWorldModel(double angle, Point center, WorldModel worldModel) {
         this(() -> angle, () -> center, worldModel);
@@ -35,8 +36,13 @@ public class RelativeWorldModel {
         return relatives;
     }
 
+    public Double getCurrentAngle() {
+        return currentAngle;
+    }
+
     public void refresh() {
         usageLock.writeLock().lock();
+        currentAngle = angleFunction.call();
         relatives.forEach(EntityRelative::refresh);
         relatives.removeAll(
                 relatives.stream().filter(relative -> !worldModel.getEntities().contains(relative.getEntity())).collect(Collectors.toList())

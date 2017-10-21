@@ -76,6 +76,10 @@ public class Ship extends Entity {
             return new Bullet(getPosition(), velocity, Ship.this.id);
         }
 
+        public Ship getShip() {
+            return Ship.this;
+        }
+
         public long getAngle() {
             return angle;
         }
@@ -110,6 +114,10 @@ public class Ship extends Entity {
 
         public long getAngle() {
             return angle;
+        }
+
+        public Ship getShip() {
+            return Ship.this;
         }
     }
 

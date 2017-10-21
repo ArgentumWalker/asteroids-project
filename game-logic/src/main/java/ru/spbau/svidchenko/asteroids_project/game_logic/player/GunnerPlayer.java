@@ -9,7 +9,7 @@ import java.util.Collections;
 import java.util.List;
 
 public abstract class GunnerPlayer extends Player {
-    private Ship.Weapon weapon;
+    protected Ship.Weapon weapon;
 
     public GunnerPlayer(long id) {
         super(id);

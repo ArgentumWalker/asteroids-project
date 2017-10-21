@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 public abstract class PilotPlayer extends Player {
-    private Ship.Vehicle vehicle;
+    protected Ship.Vehicle vehicle;
 
     public PilotPlayer(long id) {
         super(id);

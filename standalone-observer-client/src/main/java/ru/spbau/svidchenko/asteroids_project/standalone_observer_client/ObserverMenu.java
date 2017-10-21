@@ -1,11 +1,14 @@
 package ru.spbau.svidchenko.asteroids_project.standalone_observer_client;
 
+import javafx.event.EventHandler;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
+import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.AgentSaveLoader;
+import ru.spbau.svidchenko.asteroids_project.agentmodel.simple_testing_agents.gunner_agents.DoNothingGunnerAgent;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.simple_testing_agents.gunner_agents.ShootClosestGunnerAgent;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.game_logic.WorldDescriptor;
@@ -20,6 +23,8 @@ import ru.spbau.svidchenko.asteroids_project.graphics_common.styles.NeonGraphicS
 import ru.spbau.svidchenko.asteroids_project.training_arena.AgentsBuilder;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class ObserverMenu {
     private final Stage stage;
@@ -36,14 +41,13 @@ public class ObserverMenu {
 
     //TODO: implement player selector
     //TMP
-    private PilotPlayer pilotPlayer = new AgentsBuilder().getPilotAgents(1).get(0).buildPlayer(1);
-    private GunnerPlayer gunnerPlayer = new ShootClosestGunnerAgent().buildPlayer(2);
+    private PilotPlayer pilotPlayer = new AgentsBuilder().getDefaultPilotAgents().get(0).buildPlayer(1);//AgentSaveLoader.loadPilots().get(0).buildPlayer(1);
+    private GunnerPlayer gunnerPlayer = AgentSaveLoader.loadGunners().get(0).buildPlayer(1);
     //TMP
 
     public ObserverMenu(Stage stage, GameClient gameClient) throws IOException, ClassNotFoundException {
         this.gameClient = gameClient;
         this.stage = stage;
-        gameClient.setObserverMenu(this);
         Group root = new Group();
         scene = new Scene(root);
         Canvas canvas = new Canvas(Constants.WINDOW_HALF_WIDTH_PX * 2, Constants.WINDOW_HALF_HEIGHT_PX * 2);
