@@ -11,13 +11,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class SortedEntitiesData {
-    private final long maxAngle;
     private final SortedEntitiesDataDescriptor descriptor;
     private long currentState;
 
     public SortedEntitiesData(SortedEntitiesDataDescriptor descriptor) {
         this.descriptor = descriptor;
-        maxAngle = descriptor.getAngleSectors().size() + 1;
     }
 
     public void refresh(RelativeWorldModel worldModel) {
@@ -28,7 +26,7 @@ public class SortedEntitiesData {
                 .sorted(Comparator.comparing(rel -> rel.getPosition().worldDistanceTo(zero)))
                 .limit(descriptor.getLimit())
                 .collect(Collectors.toList())
-                .forEach(rel -> currentState = currentState * maxAngle + calculateAngleSector(rel));
+                .forEach(rel -> currentState = currentState * (descriptor.getAngleSectors().size() + 1) + calculateAngleSector(rel));
     }
 
     public long getCurrentState() {

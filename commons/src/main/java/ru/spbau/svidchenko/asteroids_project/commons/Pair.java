@@ -20,4 +20,12 @@ public class Pair<N, M> {
     public M second() {
         return second;
     }
+
+    public void setFirst(N first) {
+        this.first = first;
+    }
+
+    public void setSecond(M second) {
+        this.second = second;
+    }
 }

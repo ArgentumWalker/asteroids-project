@@ -21,7 +21,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 public class Main {
-    private static final long GAME_COUNT = 1200;
+    private static final long GAME_COUNT = 6000;
     private static final AgentsBuilder AGENTS_BUILDER = new AgentsBuilder();
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
