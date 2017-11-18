@@ -1,62 +1,62 @@
-package ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qlearning.polar_model;
+package ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qnetwork.polar_model;
 
-import ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qlearning.TableQLearningBase;
-import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.polar_grid.*;
+import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.polar_grid.PolarGrid;
+import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.polar_grid.PolarGridAgentGunnerPlayer;
+import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.polar_grid.PolarGridDescriptor;
+import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.polar_grid.PolarGridGunnerAgent;
 import ru.spbau.svidchenko.asteroids_project.commons.Callable;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Pair;
-import ru.spbau.svidchenko.asteroids_project.commons.RandomGod;
 
-import java.util.Deque;
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
-public class QLearningPolarGunnerAgent extends PolarGridGunnerAgent {
+public class QNetPolarGunnerAgent extends PolarGridGunnerAgent {
     private static long freeId = 0;
     private final long id = freeId++;
-    private final TableQLearningBase qLearningBase;
+    private final PolarQNet qNet;
 
-    public QLearningPolarGunnerAgent(
+    public QNetPolarGunnerAgent(
             PolarGridDescriptor polarGridDescriptor,
             Callable<Double> explorationProbability,
             Callable<Double> alpha,
             double gamma
     ) {
         super(polarGridDescriptor);
-        qLearningBase = new TableQLearningBase(explorationProbability, alpha, gamma, 6, this::isLearningDisabled);
+        qNet = new PolarQNet(explorationProbability, alpha, gamma, 6, polarGridDescriptor, this::isLearningDisabled);
     }
 
     @Override
     public String getName() {
-        return "QLearningPolarGunnerAgent_" + id;
+        return "QNetPolarGunnerAgent_" + id;
     }
 
     public void setExplorationProbability(Callable<Double> explorationProbability) {
-        qLearningBase.setExplorationProbability(explorationProbability);
+        qNet.setExplorationProbability(explorationProbability);
     }
 
     public void setAlpha(Callable<Double> alpha) {
-        qLearningBase.setAlpha(alpha);
+        qNet.setAlpha(alpha);
     }
 
     @Override
     protected PolarGridAgentGunnerPlayer buildPlayer(long id, PolarGridDescriptor polarGridDescriptor) {
-        return new QLearningPolarGunnerPlayer(id, polarGridDescriptor);
+        return new QNetPolarGunnerPlayer(id, polarGridDescriptor);
     }
 
-    private int chooseAction(long state) {
-        return qLearningBase.chooseAction(state);
+    private int chooseAction(List<List<Integer>> state) {
+        return qNet.getAction(state);
     }
 
-    private void refresh(long currentState, long prevState, int prevAction, double reward) {
-        qLearningBase.refresh(currentState, prevState, prevAction, reward);
+    private void refresh(List<List<Integer>> currentState, List<List<Integer>> prevState, int prevAction, double reward) {
+        qNet.refresh(reward, prevAction, prevState, currentState);
     }
 
-    private class QLearningPolarGunnerPlayer extends PolarGridAgentGunnerPlayer {
-        LinkedList<Pair<Pair<Long, Integer>, Long>> states = new LinkedList<>();
+    private class QNetPolarGunnerPlayer extends PolarGridAgentGunnerPlayer {
+        LinkedList<Pair<Pair<List<List<Integer>>, Integer>, Long>> states = new LinkedList<>();
 
-        public QLearningPolarGunnerPlayer(long id, PolarGridDescriptor polarGridDescriptor) {
+        public QNetPolarGunnerPlayer(long id, PolarGridDescriptor polarGridDescriptor) {
             super(id, polarGridDescriptor);
         }
 
@@ -70,16 +70,18 @@ public class QLearningPolarGunnerAgent extends PolarGridGunnerAgent {
 
         @Override
         protected Action chooseAction(PolarGrid polarGrid) {
-            long newState = 0;
+            List<List<Integer>> copy = new ArrayList<>();
             for (List<Integer> counts : polarGrid.getValues()) {
+                List<Integer> c  = new ArrayList<>();
                 for (int count : counts) {
-                    newState = newState * 2 + (count > 0 ? 1 : 0);
+                    c.add(count);
                 }
+                copy.add(c);
             }
-            int action = QLearningPolarGunnerAgent.this.chooseAction(newState);
-            states.addFirst(Pair.of(Pair.of(newState, action), 0L));
+            int action = QNetPolarGunnerAgent.this.chooseAction(copy);
+            states.addFirst(Pair.of(Pair.of(copy, action), 0L));
             if (states.size() > Constants.MAX_DELAY) {
-                Pair<Pair<Long, Integer>, Long> removed = states.removeLast();
+                Pair<Pair<List<List<Integer>>, Integer>, Long> removed = states.removeLast();
                 refresh(states.getLast().first().first(),
                         removed.first().first(),
                         removed.first().second(),

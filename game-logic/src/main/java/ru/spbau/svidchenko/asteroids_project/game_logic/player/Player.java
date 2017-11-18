@@ -16,7 +16,8 @@ public abstract class Player {
 
     public abstract List<? extends Entity> makeAction();
 
-    public void incScore(long reward) {}
+    public void incScore(long reward, long delay) {}
+
 
     public RelativeWorldModel getWorldModel() {
         return worldModel;

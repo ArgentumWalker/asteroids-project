@@ -7,18 +7,21 @@ import ru.spbau.svidchenko.asteroids_project.game_logic.world.RelativeWorldModel
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Stone;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class PolarGrid {
     private PolarGridDescriptor polarGridDescriptor;
-    private List<List<Boolean>> values = new ArrayList<>();
+    private List<List<Integer>> values = new ArrayList<>();
 
     public PolarGrid(PolarGridDescriptor polarGridDescriptor) {
         this.polarGridDescriptor = polarGridDescriptor;
         for (int i = 0; i < polarGridDescriptor.getAngleSectors().size() + 1; i++) {
-            List<Boolean> valuesAtAngle = new ArrayList<>();
-            for (int j = 0; j < polarGridDescriptor.getDistanceSectors().size() + 1; j++) {
-                valuesAtAngle.add(false);
+            List<Integer> valuesAtAngle = new ArrayList<>();
+            for (int j = 0; j < polarGridDescriptor.getDistanceSectors().size(); j++) {
+                valuesAtAngle.add(0);
             }
             values.add(valuesAtAngle);
         }
@@ -27,15 +30,24 @@ public class PolarGrid {
     public void refresh(RelativeWorldModel worldModel) {
         for (int i = 0; i < polarGridDescriptor.getAngleSectors().size() + 1; i++) {
             for (int j = 0; j < polarGridDescriptor.getDistanceSectors().size(); j++) {
-                values.get(i).set(j, false);
+                values.get(i).set(j, 0);
             }
         }
-        for (EntityRelative relative : worldModel.getRelatives()) {
-            if (relative.getEntity() instanceof Stone) {
-                int distanceSector = calculateDistanceSector(relative);
-                if (distanceSector < polarGridDescriptor.getDistanceSectors().size()) {
-                    values.get(calculateAngleSector(relative)).set(distanceSector, true);
-                }
+        Set<EntityRelative> relatives = worldModel.getRelatives().stream()
+                .filter(rel -> rel instanceof Stone.Relative)
+                .collect(Collectors.toSet());
+        if (polarGridDescriptor.getLimit() != 0) {
+            Point zero = Point.with(0,0);
+            relatives = relatives.stream()
+                    .sorted(Comparator.comparing(rel -> rel.getPosition().worldDistanceTo(zero)))
+                    .limit(polarGridDescriptor.getLimit())
+                    .collect(Collectors.toSet());
+        }
+        for (EntityRelative relative : relatives) {
+            int distanceSector = calculateDistanceSector(relative);
+            if (distanceSector < polarGridDescriptor.getDistanceSectors().size()) {
+                int val = values.get(calculateAngleSector(relative)).get(distanceSector);
+                values.get(calculateAngleSector(relative)).set(distanceSector, val + 1);
             }
             //TODO: add bullets
         }
@@ -67,7 +79,7 @@ public class PolarGrid {
         return result;
     }
 
-    public List<List<Boolean>> getValues() {
+    public List<List<Integer>> getValues() {
         return values;
     }
 

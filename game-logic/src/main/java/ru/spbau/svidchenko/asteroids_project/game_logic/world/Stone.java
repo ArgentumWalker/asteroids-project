@@ -42,7 +42,7 @@ public class Stone extends Entity {
         protected void refresh(double angle, Point center) {
             super.refresh(angle, center);
             this.angle += dangle;
-            orientation = this.angle + angle;
+            orientation = this.angle - angle / 2;
         }
     }
 }

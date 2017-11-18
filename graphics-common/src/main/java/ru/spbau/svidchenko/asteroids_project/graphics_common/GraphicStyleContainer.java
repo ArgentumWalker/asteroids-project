@@ -29,6 +29,7 @@ public abstract class GraphicStyleContainer {
     //Field & entities
     public abstract BlendMode getGameBlendModel();
     public abstract Effect getGameEffect();
+    public abstract Paint getGridColor();
 
     //Ui
     public abstract BlendMode getUiBlendModel();

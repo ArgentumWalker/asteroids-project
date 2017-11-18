@@ -28,6 +28,9 @@ public class TrainingPool {
     private final ConcurrentHashMap<PilotAgent, AtomicLong> pilotAgent2gameCount = new ConcurrentHashMap<>();
     private final ExecutorService executor;
     private final long gamesPerAgent;
+    private final long learningGamesPerStatisticGame;
+    private final boolean pilots;
+    private final boolean disableLearningForStatistic;
     private final Consumer<String> logFunction;
     private final Consumer<StatisticHolder> statisticFunction;
 
@@ -35,10 +38,16 @@ public class TrainingPool {
             List<GunnerAgent> gunnerAgents,
             List<PilotAgent> pilotAgents,
             long gamesPerAgent,
+            long learningGamesPerStatisticGame,
             ExecutorService executor,
             Consumer<String> logFunction,
-            Consumer<StatisticHolder> statisticFunction
+            Consumer<StatisticHolder> statisticFunction,
+            boolean pilots,
+            boolean disableLearningForStatistic
     ) {
+        this.disableLearningForStatistic = disableLearningForStatistic;
+        this.learningGamesPerStatisticGame = learningGamesPerStatisticGame;
+        this.pilots = pilots;
         this.executor = executor;
         this.gunnerAgents = gunnerAgents;
         this.pilotAgents = pilotAgents;
@@ -48,40 +57,47 @@ public class TrainingPool {
     }
 
     public void start() {
-        for (GunnerAgent agent : gunnerAgents) {
-            gunnerAgent2gameCount.put(agent, new AtomicLong(0));
-        }
-        for (PilotAgent agent : pilotAgents) {
-            pilotAgent2gameCount.put(agent, new AtomicLong(0));
-        }
-        for (GunnerAgent agent : gunnerAgents) {
-            new RestartGunner(agent).run();
-        }
-        for (PilotAgent agent : pilotAgents) {
-            new RestartPilot(agent).run();
+        if (pilots) {
+            for (PilotAgent agent : pilotAgents) {
+                pilotAgent2gameCount.put(agent, new AtomicLong(0));
+            }
+            for (PilotAgent agent : pilotAgents) {
+                new RestartPilot(agent).run();
+            }
+        } else {
+            for (GunnerAgent agent : gunnerAgents) {
+                gunnerAgent2gameCount.put(agent, new AtomicLong(0));
+            }
+            for (GunnerAgent agent : gunnerAgents) {
+                new RestartGunner(agent).run();
+            }
         }
     }
 
     public void join() {
-        for (GunnerAgent agent : gunnerAgents) {
-            boolean completed = false;
-            while (!completed) {
-                completed = gunnerAgent2gameCount.get(agent).get() > gamesPerAgent;
-                if (!completed) {
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(300);
-                    } catch (InterruptedException e) {}
+        if (pilots) {
+            for (PilotAgent agent : pilotAgents) {
+                boolean completed = false;
+                while (!completed) {
+                    completed = pilotAgent2gameCount.get(agent).get() > gamesPerAgent;
+                    if (!completed) {
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(3000);
+                        } catch (InterruptedException e) {}
+                    }
                 }
             }
-        }
-        for (PilotAgent agent : pilotAgents) {
-            boolean completed = false;
-            while (!completed) {
-                completed = pilotAgent2gameCount.get(agent).get() > gamesPerAgent;
-                if (!completed) {
-                    try {
-                        TimeUnit.MILLISECONDS.sleep(300);
-                    } catch (InterruptedException e) {}
+        } else {
+            for (GunnerAgent agent : gunnerAgents) {
+                boolean completed = false;
+                while (!completed) {
+                    completed = gunnerAgent2gameCount.get(agent).get() > gamesPerAgent;
+                    if (!completed) {
+                        try {
+                            TimeUnit.MILLISECONDS.sleep(3000);
+                        } catch (InterruptedException e) {
+                        }
+                    }
                 }
             }
         }
@@ -91,6 +107,7 @@ public class TrainingPool {
         private final GunnerAgent agent;
         private final HashMap<Long, Long> scoreStatistic = new HashMap<>();
         private ShipCrew currentShipCrew;
+        private boolean isStatisticGame = false;
         private long lastStartTime = System.currentTimeMillis();
 
         RestartGunner(GunnerAgent agent) {
@@ -101,16 +118,28 @@ public class TrainingPool {
         public void run() {
             long game = gunnerAgent2gameCount.get(agent).incrementAndGet();
             if (game <= gamesPerAgent) {
+                String scoreStat = "";
+                if (currentShipCrew != null) {
+                    if (isStatisticGame || !disableLearningForStatistic) {
+                        scoreStat = ", Score = " + currentShipCrew.getScore();
+                        scoreStatistic.put(game, currentShipCrew.getScore());
+                        if (disableLearningForStatistic) {
+                            isStatisticGame = false;
+                            agent.enableLearning();
+                        }
+                    }
+                }
                 logFunction.accept("Gunner agent " + agent.getName()
                         + " starts " + gunnerAgent2gameCount.get(agent).get() + " game. Execution time = "
-                        + (System.currentTimeMillis() - lastStartTime) + " ms");
-                if (currentShipCrew != null) {
-                    scoreStatistic.put(game, currentShipCrew.getScore());
+                        + (System.currentTimeMillis() - lastStartTime) + " ms" + scoreStat);
+
+                if (disableLearningForStatistic && game % (learningGamesPerStatisticGame + 1) == 0) {
+                    isStatisticGame = true;
+                    agent.disableLearning();
                 }
 
                 WorldDescriptor worldDescriptor = new WorldDescriptor();
                 PilotAgent pilot = random.chooseRandom(pilotAgents);
-                pilotAgent2gameCount.get(pilot).incrementAndGet();
                 currentShipCrew = new ShipCrew(pilot.buildPlayer(1), agent.buildPlayer(2));
                 worldDescriptor.players.add(currentShipCrew);
 
@@ -143,12 +172,15 @@ public class TrainingPool {
         public void run() {
             long game = pilotAgent2gameCount.get(agent).incrementAndGet();
             if (game <= gamesPerAgent) {
-                logFunction.accept("Pilot agent " + agent.getName()
-                        + " starts " + pilotAgent2gameCount.get(agent).get() + " game. Execution time = "
-                        + (System.currentTimeMillis() - lastStartTime) + " ms");
+                String scoreStat = "";
                 if (currentShipCrew != null) {
+                    scoreStat = ", Score = " + currentShipCrew.getScore();
                     scoreStatistic.put(game, currentShipCrew.getScore());
                 }
+                logFunction.accept("Pilot agent " + agent.getName()
+                        + " starts " + pilotAgent2gameCount.get(agent).get() + " game. Execution time = "
+                        + (System.currentTimeMillis() - lastStartTime) + " ms" + scoreStat);
+
 
                 WorldDescriptor worldDescriptor = new WorldDescriptor();
                 GunnerAgent gunner = random.chooseRandom(gunnerAgents);

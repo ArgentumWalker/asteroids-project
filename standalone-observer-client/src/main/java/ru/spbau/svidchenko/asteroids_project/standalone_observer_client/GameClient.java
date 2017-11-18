@@ -41,6 +41,7 @@ public class GameClient {
 
     public void start(WorldDescriptor descriptor, GraphicStyleContainer style, ObserverMenu menu) {
         crews = descriptor.players;
+        observerMenu = menu;
         animationTimer = new AnimationTimer() {
             @Override
             public void handle(long now) {

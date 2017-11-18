@@ -83,6 +83,8 @@ public class Ship extends Entity {
         public long getAngle() {
             return angle;
         }
+
+        public long getCooldown() {return cooldown;}
     }
 
     public class Vehicle {

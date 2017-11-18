@@ -25,7 +25,8 @@ public class Game {
         currentWorldModel = new WorldModel();
         List<Stone> stones = new ArrayList<>();
         for (long i = 0; i < Math.min(worldDescriptor.stonesCount, Constants.MAX_STONE_COUNT); i++) {
-            stones.add(new Stone(random.randomWorldPoint(), random.randomPoint(0, Constants.STONE_MAX_VELOCITY)));
+            stones.add(new Stone(random.randomWorldPoint(),
+                    random.randomPoint(Constants.STONE_MIN_VELOCITY, Constants.STONE_MAX_VELOCITY)));
         }
         currentWorldModel.addEntities(stones);
         List<Ship> ships = new ArrayList<>();
@@ -164,7 +165,7 @@ public class Game {
                 }
                 if (entity instanceof Stone) {
                     respawn(entity, entities);
-                    entity.setVelocity(random.randomPoint(0, Constants.STONE_MAX_VELOCITY));
+                    entity.setVelocity(random.randomPoint(Constants.STONE_MIN_VELOCITY, Constants.STONE_MAX_VELOCITY));
                     entity.setHealth(Constants.STONE_START_HEALTH);
                     continue;
                 }
@@ -183,7 +184,7 @@ public class Game {
             for (Entity checkEntity : entities) {
                 respawned = respawned &&
                         checkEntity.getPosition().worldDistanceTo(newPosition) >
-                                Constants.SPAWN_DISTANCE_KOEF * (checkEntity.getRadius() + entity.getRadius());
+                                Constants.SPAWN_DISTANCE_KOEF * (Math.max(checkEntity.getRadius(), entity.getRadius()));
             }
             if (respawned) {
                 entity.setPosition(newPosition);
@@ -205,16 +206,18 @@ public class Game {
         currentWorldModel.addEntities(newEntities);
     }
 
-    private void processScore(Entity entity, Entity destroedBy) {
+    private void processScore(Entity entity, Entity destroyedBy) {
         if (entity instanceof Ship) {
-            shipId2shipCrew.get(((Ship) entity).getId()).addScore(Constants.SCORE_FOR_DEATH);
+            shipId2shipCrew.get(((Ship) entity).getId()).addDelayedScore(Constants.SCORE_FOR_DEATH, 0);
         }
-        if (destroedBy instanceof Bullet){
+        if (destroyedBy instanceof Bullet){
             if (entity instanceof Ship) {
-                shipId2shipCrew.get(((Bullet) destroedBy).getParentShipId()).addScore(Constants.SCORE_FOR_DESTROY_SHIP);
+                shipId2shipCrew.get(((Bullet) destroyedBy).getParentShipId()).addDelayedScore(Constants.SCORE_FOR_DESTROY_SHIP,
+                        Math.min(destroyedBy.getLiveTime() - 1, Constants.MAX_DELAY));
             }
             if (entity instanceof Stone) {
-                shipId2shipCrew.get(((Bullet) destroedBy).getParentShipId()).addScore(Constants.SCORE_FOR_DESTROY_STONE);
+                shipId2shipCrew.get(((Bullet) destroyedBy).getParentShipId()).addDelayedScore(Constants.SCORE_FOR_DESTROY_STONE,
+                        Math.min(destroyedBy.getLiveTime() - 1, Constants.MAX_DELAY));
             }
         }
     }

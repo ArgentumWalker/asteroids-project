@@ -9,7 +9,7 @@ public class ExplorationProbability1 implements Callable<Double> {
     private final AtomicLong turns = new AtomicLong(0);
 
     public ExplorationProbability1(long targetTurns, double targetProbability) {
-        probabilityConstant = (1 / targetProbability - 1)/targetTurns;
+        probabilityConstant = ((1 / targetProbability) - 1)/targetTurns;
     }
 
     @Override

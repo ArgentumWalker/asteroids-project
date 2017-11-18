@@ -1,21 +1,22 @@
 package ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qlearning.sorted_model;
 
+import ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qlearning.TableQLearningBase;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.sorted_by_distance.SortedEntitiesData;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.sorted_by_distance.SortedEntitiesDataDescriptor;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.sorted_by_distance.SortedEntitiesPilotAgent;
 import ru.spbau.svidchenko.asteroids_project.commons.Callable;
+import ru.spbau.svidchenko.asteroids_project.commons.Constants;
+import ru.spbau.svidchenko.asteroids_project.commons.Pair;
 import ru.spbau.svidchenko.asteroids_project.commons.RandomGod;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.PilotPlayer;
 
+import java.util.LinkedList;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class QLearningSortedPilotAgent extends SortedEntitiesPilotAgent {
     private static long freeId = 0;
     private final long id = freeId++;
-    private Callable<Double> explorationProbability;
-    private final double gamma;
-    private Callable<Double> alpha;
-    private ConcurrentHashMap<Long, ConcurrentHashMap<Integer, Double>> state2action2value = new ConcurrentHashMap<>();
+    private final TableQLearningBase qLearningBase;
 
     public QLearningSortedPilotAgent(
             SortedEntitiesDataDescriptor descriptor,
@@ -24,9 +25,7 @@ public class QLearningSortedPilotAgent extends SortedEntitiesPilotAgent {
             double gamma
     ) {
         super(descriptor);
-        this.explorationProbability = explorationProbability;
-        this.gamma = gamma;
-        this.alpha = alpha;
+        qLearningBase = new TableQLearningBase(explorationProbability, alpha, gamma, 9, this::isLearningDisabled);
     }
 
     @Override
@@ -35,11 +34,11 @@ public class QLearningSortedPilotAgent extends SortedEntitiesPilotAgent {
     }
 
     public void setExplorationProbability(Callable<Double> explorationProbability) {
-        this.explorationProbability = explorationProbability;
+        qLearningBase.setExplorationProbability(explorationProbability);
     }
 
     public void setAlpha(Callable<Double> alpha) {
-        this.alpha = alpha;
+        qLearningBase.setAlpha(alpha);
     }
 
     @Override
@@ -47,87 +46,41 @@ public class QLearningSortedPilotAgent extends SortedEntitiesPilotAgent {
         return new QLearningSortedPilotAgent.Pilot(id, descriptor);
     }
 
-    private int chooseAction(long state, long prevState, int prevAction, double reward) {
-        refresh(state, prevState, prevAction, reward);
-        return isExploration() ? randomAction() : getActionWithMaxValue(getByState(state));
+    private int chooseAction(long state) {
+        return qLearningBase.chooseAction(state);
     }
 
     private void refresh(long currentState, long prevState, int prevAction, double reward) {
-        ConcurrentHashMap<Integer, Double> currentStateAction = getByState(currentState);
-        ConcurrentHashMap<Integer, Double> prevStateAction = getByState(prevState);
-        double maxValue = getMaxValue(currentStateAction);
-        double prevActionValue = getByAction(prevStateAction, prevAction);
-        prevStateAction.put(prevAction, prevActionValue + alpha.call() * (reward + gamma * maxValue - prevActionValue));
-    }
-
-    private boolean isExploration() {
-        return RandomGod.ask.nextDouble() < explorationProbability.call();
-    }
-
-    private int randomAction() {
-        return RandomGod.ask.nextInt(9);
-    }
-
-    private double getMaxValue(ConcurrentHashMap<Integer, Double> action2value) {
-        double max = -1e10;
-        for (int action = 0; action < 9; action++) {
-            max = Math.max(max, getByAction(action2value, action));
-        }
-        return max;
-    }
-
-    private int getActionWithMaxValue(ConcurrentHashMap<Integer, Double> action2value) {
-        double max = -1e10;
-        int action = 0;
-        for (int i = 0; i < 9; i++) {
-            double value = getByAction(action2value, i);
-            if (max < value) {
-                max = value;
-                action = i;
-            }
-        }
-        return action;
-    }
-
-    private ConcurrentHashMap<Integer, Double> getByState(long state) {
-        if (state2action2value.containsKey(state)) {
-            return state2action2value.get(state);
-        }
-        ConcurrentHashMap<Integer, Double> result = new ConcurrentHashMap<>();
-        state2action2value.put(state, result);
-        return result;
-    }
-
-    private double getByAction(ConcurrentHashMap<Integer, Double> action2value, int action) {
-        if (action2value.containsKey(action)) {
-            return action2value.get(action);
-        }
-        action2value.put(action, 0.0);
-        return 0.0;
+        qLearningBase.refresh(currentState, prevState, prevAction, reward);
     }
 
     private class Pilot extends SortedEntitiesPilotAgent.Pilot {
-        private long prevState = 0;
-        private int prevAction = 0;
-        private double reward = 0;
+        LinkedList<Pair<Pair<Long, Integer>, Long>> states = new LinkedList<>();
 
         public Pilot(long id, SortedEntitiesDataDescriptor descriptor) {
             super(id, descriptor);
         }
 
         @Override
-        public void incScore(long reward) {
-            super.incScore(reward);
-            this.reward = reward;
+        public void incScore(long reward, long delay) {
+            super.incScore(reward, delay);
+            if (states.size() > delay) {
+                states.get((int) delay).setSecond(reward);
+            }
         }
 
         @Override
         protected Action chooseAction(SortedEntitiesData data) {
             long newState = data.getCurrentState();
-            int action = QLearningSortedPilotAgent.this.chooseAction(newState, prevState, prevAction, reward);
-            prevState = newState;
-            prevAction = action;
-            reward = 0;
+            int action = QLearningSortedPilotAgent.this.chooseAction(newState);
+            states.addFirst(Pair.of(Pair.of(newState, action), 0L));
+            if (states.size() > Constants.MAX_DELAY) {
+                Pair<Pair<Long, Integer>, Long> removed = states.removeLast();
+                refresh(states.getLast().first().first(),
+                        removed.first().first(),
+                        removed.first().second(),
+                        removed.second());
+            }
             return intToAction(action);
         }
 

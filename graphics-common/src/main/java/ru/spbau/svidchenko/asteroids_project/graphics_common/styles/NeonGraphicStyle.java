@@ -6,6 +6,7 @@ import javafx.scene.effect.GaussianBlur;
 import javafx.scene.effect.Lighting;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.scene.text.FontWeight;
@@ -21,7 +22,12 @@ public class NeonGraphicStyle extends GraphicStyleContainer {
 
     @Override
     public Effect getGameEffect() {
-        return new Lighting();
+        return new GaussianBlur(1.0);
+    }
+
+    @Override
+    public Paint getGridColor() {
+        return Color.color(0, 1, 1, 0.2);
     }
 
     @Override

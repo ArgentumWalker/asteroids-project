@@ -8,6 +8,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.input.KeyEvent;
 import javafx.stage.Stage;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.AgentSaveLoader;
+import ru.spbau.svidchenko.asteroids_project.agentmodel.GunnerAgent;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.simple_testing_agents.gunner_agents.DoNothingGunnerAgent;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.simple_testing_agents.gunner_agents.ShootClosestGunnerAgent;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
@@ -41,8 +42,10 @@ public class ObserverMenu {
 
     //TODO: implement player selector
     //TMP
-    private PilotPlayer pilotPlayer = new AgentsBuilder().getDefaultPilotAgents().get(0).buildPlayer(1);//AgentSaveLoader.loadPilots().get(0).buildPlayer(1);
-    private GunnerPlayer gunnerPlayer = AgentSaveLoader.loadGunners().get(0).buildPlayer(1);
+    //private PilotPlayer pilotPlayer = AgentSaveLoader.loadPilots().get(0).buildPlayer(1);//AgentSaveLoader.loadPilots().get(0).buildPlayer(1);
+    private GunnerPlayer gunnerPlayer = AgentSaveLoader.loadGunners().get(3).buildPlayer(2);
+    private PilotPlayer pilotPlayer = new AgentsBuilder().getDefaultPilotAgents().get(0).buildPlayer(1);
+    //private GunnerPlayer gunnerPlayer = new AgentsBuilder().getDefaultGunnerAgents().get(0).buildPlayer(2);
     //TMP
 
     public ObserverMenu(Stage stage, GameClient gameClient) throws IOException, ClassNotFoundException {

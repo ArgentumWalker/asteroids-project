@@ -13,8 +13,19 @@ import java.util.List;
 
 public class SortedEntitiesDataDescriptor implements Serializable {
     private List<Long> angleSectors = new ArrayList<>();
-    private long limit = 0;
+    private List<Double> distanceSectors = new ArrayList<>();
+    private long limit = 150;
     private long maxAngle = 0;
+    private boolean vehicleRealted = false;
+    private boolean reloadRelated = false;
+
+    public void setVehicleRealted(boolean vehicleRealted) {
+        this.vehicleRealted = vehicleRealted;
+    }
+
+    public void setReloadRelated(boolean reloadRelated) {
+        this.reloadRelated = reloadRelated;
+    }
 
     public void setMaxAngle(long maxAngle) {
         this.maxAngle = maxAngle;
@@ -34,6 +45,15 @@ public class SortedEntitiesDataDescriptor implements Serializable {
         }
     }
 
+    public void splitDistance(double at) {
+        if (at > 0) {
+            int position = 0;
+            while (position < distanceSectors.size() && distanceSectors.get(position) < at) {
+                position++;
+            }
+            distanceSectors.add(position, at);
+        }
+    }
     public long getMaxAngle() {
         return maxAngle;
     }
@@ -42,7 +62,19 @@ public class SortedEntitiesDataDescriptor implements Serializable {
         return angleSectors;
     }
 
+    public List<Double> getDistanceSectors() {
+        return distanceSectors;
+    }
+
     public long getLimit() {
         return limit;
+    }
+
+    public boolean isReloadRelated() {
+        return reloadRelated;
+    }
+
+    public boolean isVehicleRealted() {
+        return vehicleRealted;
     }
 }

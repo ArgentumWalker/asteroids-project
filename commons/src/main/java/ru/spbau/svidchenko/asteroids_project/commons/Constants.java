@@ -11,7 +11,7 @@ public class Constants {
     //Common
     public static final double WORLD_HALF_WIDTH = 1200.0;
     public static final double WORLD_HALF_HEIGHT = 1200.0;
-    public static final double SPAWN_DISTANCE_KOEF = 2.5;
+    public static final double SPAWN_DISTANCE_KOEF = 4.0;
     public static final long MAX_STONE_COUNT = 150;
 
     //Entity random orientations
@@ -32,6 +32,7 @@ public class Constants {
 
     //Velocity constraints
     public static final double SHIP_MAX_VELOCITY = 5.5;
+    public static final double STONE_MIN_VELOCITY = 3.0;
     public static final double STONE_MAX_VELOCITY = 4.0;
     public static final double BULLET_BASE_VELOCITY = 9.0;
 
@@ -50,6 +51,7 @@ public class Constants {
 
     //Time
     public static final long TURNS_IN_GAME = 12000;
+    public static final long MAX_DELAY = 100;
 
     //Score
     public static final long SCORE_FOR_DEATH = -150;
@@ -73,4 +75,7 @@ public class Constants {
     public static final double MENU_BUTTON_HORIZONTAL_INDENT_PX = 40;
     public static final double MENU_BUTTON_VERTICAL_INDENT_PX = 40;
     public static final int AFTER_ACTIVE_BUTTONS_COUNT = 3;
+
+    //Graphics
+    public static final int GRID_DIVIDERS = 5;
 }

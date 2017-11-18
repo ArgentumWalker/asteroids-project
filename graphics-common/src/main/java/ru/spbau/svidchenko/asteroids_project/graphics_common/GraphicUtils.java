@@ -19,6 +19,7 @@ import ru.spbau.svidchenko.asteroids_project.graphics_common.menu.Menu;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.menu.MenuButton;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 
@@ -50,9 +51,54 @@ public class GraphicUtils {
         drawImage(context, sprite.getImage(), sprite.getPosition(), sprite.getSize(), sprite.getRotation());
     }
 
-    public static void drawGameBackground(GraphicsContext context, RelativeWorldModel relativeWorldModel, GraphicStyleContainer style) {
+    public static void drawGameBackground(
+            GraphicsContext context,
+            RelativeWorldModel relativeWorldModel,
+            GraphicStyleContainer style
+    ) {
         context.setFill(Color.BLACK);
         context.fillRect(0, 0, context.getCanvas().getWidth(), context.getCanvas().getHeight());
+        double angle = relativeWorldModel.getCurrentAngle();
+        Point center = relativeWorldModel.getCurrentCenter();
+        center = Point.with(-center.getY(), center.getX());
+        context.save();
+        context.setStroke(style.getGridColor());
+        context.setLineWidth(4);
+        //context.setGlobalBlendMode(style.getGameBlendModel());
+        //context.setEffect(style.getGameEffect());
+        for (int i = - 2 * Constants.GRID_DIVIDERS + 1; i < 2 * Constants.GRID_DIVIDERS; i++) {
+            Point start = Point.with(Constants.WINDOW_HALF_WIDTH_PX, Constants.WINDOW_HALF_HEIGHT_PX)
+                    .add(Point.with(
+                            i * Constants.WORLD_HALF_WIDTH / Constants.GRID_DIVIDERS,
+                            - 2 * Constants.WORLD_HALF_HEIGHT)
+                            .add(center)
+                            .rotate(angle)
+                            .mult(Constants.PIXELS_IN_WORLD_POINT));
+            Point end = Point.with(Constants.WINDOW_HALF_WIDTH_PX, Constants.WINDOW_HALF_HEIGHT_PX)
+                    .add(Point.with(
+                            i * Constants.WORLD_HALF_WIDTH / Constants.GRID_DIVIDERS,
+                            2 * Constants.WORLD_HALF_HEIGHT)
+                            .add(center)
+                            .rotate(angle)
+                            .mult(Constants.PIXELS_IN_WORLD_POINT));
+            context.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
+            start = Point.with(Constants.WINDOW_HALF_WIDTH_PX, Constants.WINDOW_HALF_HEIGHT_PX)
+                    .add(Point.with(
+                            - 2 * Constants.WORLD_HALF_WIDTH,
+                            i * Constants.WORLD_HALF_HEIGHT / Constants.GRID_DIVIDERS)
+                            .add(center)
+                            .rotate(angle)
+                            .mult(Constants.PIXELS_IN_WORLD_POINT));
+            end = Point.with(Constants.WINDOW_HALF_WIDTH_PX, Constants.WINDOW_HALF_HEIGHT_PX)
+                    .add(Point.with(
+                            2 * Constants.WORLD_HALF_WIDTH,
+                            i * Constants.WORLD_HALF_HEIGHT / Constants.GRID_DIVIDERS)
+                            .add(center)
+                            .rotate(angle)
+                            .mult(Constants.PIXELS_IN_WORLD_POINT));
+            context.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
+        }
+        context.restore();
     }
 
     public static void drawWorld(GraphicsContext context, RelativeWorldModel relativeWorldModel, GraphicStyleContainer style) {
@@ -77,6 +123,14 @@ public class GraphicUtils {
             GraphicStyleContainer style,
             ShipCrew crew
     ) {
+        GraphicStyleContainer.TextStyle textStyle = style.getTextStyle();
+        String text = "Score: " + crew.getScore();
+        double yOffset = 20 + getTextSizes(text, textStyle).getY();
+        drawText(context, Point.with(20, yOffset), text, textStyle);
+        long leftTime = crew.getLeftTimeSeconds();
+        text = "Time left: " + leftTime / 60 + ":" + leftTime % 60;
+        yOffset += 20 + getTextSizes(text, textStyle).getY();
+        drawText(context, Point.with(20, yOffset), text, textStyle);
         //TODO: implement
     }
 

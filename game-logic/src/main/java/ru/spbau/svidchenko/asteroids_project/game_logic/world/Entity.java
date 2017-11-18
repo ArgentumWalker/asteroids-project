@@ -8,6 +8,7 @@ public abstract class Entity {
     protected Point position;
     protected Point velocity;
     protected long health;
+    protected long liveTime;
     protected double radius;
     protected boolean ignorePhysicalImpact = false;
     protected boolean notPhysicalImpacter = false;
@@ -17,6 +18,7 @@ public abstract class Entity {
         this.velocity = velocity;
         this.radius = radius;
         this.health = health;
+        liveTime = 0;
     }
 
     //CHANGE STATE
@@ -24,6 +26,7 @@ public abstract class Entity {
     public void move() {
         position.add(velocity);
         position.checkWorldBounds();
+        liveTime++;
     }
 
     public void receiveImpact(
@@ -87,6 +90,10 @@ public abstract class Entity {
 
     public boolean intersectsEntity(Entity e) {
         return position.worldDistanceTo(e.position) < e.radius + radius;
+    }
+
+    public long getLiveTime() {
+        return liveTime;
     }
 
     //FORCE ACTIONS

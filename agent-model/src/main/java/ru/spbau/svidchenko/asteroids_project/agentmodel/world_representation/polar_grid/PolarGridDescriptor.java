@@ -8,10 +8,16 @@ public class PolarGridDescriptor implements Serializable {
     private List<Long> angleSectors = new ArrayList<>();
     private List<Double> distanceSectors = new ArrayList<>();
     private long maxAngle = 0;
+    private long limit = 0;
 
     public void setMaxAngle(long maxAngle) {
         this.maxAngle = maxAngle;
     }
+
+    public void setLimit(long limit) {
+        this.limit = limit;
+    }
+
 
     public void splitAngle(long at) {
         if (maxAngle > at && at > 0) {
@@ -35,6 +41,10 @@ public class PolarGridDescriptor implements Serializable {
 
     public long getMaxAngle() {
         return maxAngle;
+    }
+
+    public long getLimit() {
+        return limit;
     }
 
     public List<Long> getAngleSectors() {
