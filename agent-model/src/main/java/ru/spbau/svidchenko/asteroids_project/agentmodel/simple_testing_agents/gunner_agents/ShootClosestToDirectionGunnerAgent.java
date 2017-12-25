@@ -26,7 +26,7 @@ public class ShootClosestToDirectionGunnerAgent extends GunnerAgent {
             private final Point ZERO = Point.with(0, 0);
 
             @Override
-            protected Action chooseAction() {
+            public Action chooseAction() {
                 Action action = new Action();
                 action.setShoot(true);
                 action.setTurn(chooseTurn());

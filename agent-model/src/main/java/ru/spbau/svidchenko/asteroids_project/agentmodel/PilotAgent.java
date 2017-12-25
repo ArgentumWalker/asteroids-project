@@ -21,4 +21,6 @@ public abstract class PilotAgent implements Serializable {
     public final void enableLearning() {
         learningDisabled = false;
     }
+
+    public final void resetLearningProbability() {}
 }

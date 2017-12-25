@@ -13,7 +13,7 @@ public class DoNothingGunnerAgent extends GunnerAgent {
     public GunnerPlayer buildPlayer(long id) {
         return new GunnerPlayer(id) {
             @Override
-            protected Action chooseAction() {
+            public Action chooseAction() {
                 return new Action();
             }
         };

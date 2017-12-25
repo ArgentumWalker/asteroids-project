@@ -25,7 +25,7 @@ public abstract class SortedEntitiesGunnerAgent extends GunnerAgent {
             data = new SortedEntitiesData(descriptor);
         }
 
-        protected final Action chooseAction() {
+        public final Action chooseAction() {
             data.refresh(worldModel);
             return chooseAction(data);
         }

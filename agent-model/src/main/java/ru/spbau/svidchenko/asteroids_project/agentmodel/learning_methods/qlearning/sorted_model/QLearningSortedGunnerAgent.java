@@ -2,6 +2,7 @@ package ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qlearn
 
 import ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qlearning.TableQLearningBase;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qlearning.polar_model.QLearningPolarGunnerAgent;
+import ru.spbau.svidchenko.asteroids_project.agentmodel.parameters_functions.ExplorationProbability;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.polar_grid.PolarGrid;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.polar_grid.PolarGridAgentGunnerPlayer;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.polar_grid.PolarGridDescriptor;
@@ -21,15 +22,21 @@ import java.util.concurrent.ConcurrentHashMap;
 public class QLearningSortedGunnerAgent extends SortedEntitiesGunnerAgent {
     private static long freeId = 0;
     protected final long id = freeId++;
+    private boolean disableSymmetry = false;
     protected TableQLearningBase qLearningBase;
+    protected final SortedEntitiesDataDescriptor descriptor;
+    protected final ExplorationProbability explorationProbability;
 
     public QLearningSortedGunnerAgent(
             SortedEntitiesDataDescriptor descriptor,
-            Callable<Double> explorationProbability,
+            ExplorationProbability explorationProbability,
             Callable<Double> alpha,
             double gamma
     ) {
         super(descriptor);
+        this.descriptor = descriptor;
+        disableSymmetry = descriptor.isDisableSymmetry();
+        this.explorationProbability = explorationProbability;
         qLearningBase = new TableQLearningBase(explorationProbability, alpha, gamma, 6, this::isLearningDisabled);
     }
 
@@ -51,6 +58,12 @@ public class QLearningSortedGunnerAgent extends SortedEntitiesGunnerAgent {
         return new QLearningSortedGunnerAgent.Gunner(id, descriptor);
     }
 
+    @Override
+    public void resetLearningProbability() {
+        super.resetLearningProbability();
+        explorationProbability.reset();
+    }
+
     private int chooseAction(long state) {
         return qLearningBase.chooseAction(state);
     }
@@ -59,8 +72,12 @@ public class QLearningSortedGunnerAgent extends SortedEntitiesGunnerAgent {
         qLearningBase.refresh(currentState, prevState, prevAction, reward);
     }
 
+    public void setDisableSymmetry(boolean disableSymmetry) {
+        this.disableSymmetry = disableSymmetry;
+    }
+
     private class Gunner extends SortedEntitiesGunnerAgent.Gunner {
-        LinkedList<Pair<Pair<Long, Integer>, Long>> states = new LinkedList<>();
+        LinkedList<Pair<Pair<Pair<Long, Long>, Integer>, Long>> states = new LinkedList<>();
 
         public Gunner(long id, SortedEntitiesDataDescriptor descriptor) {
             super(id, descriptor);
@@ -70,7 +87,7 @@ public class QLearningSortedGunnerAgent extends SortedEntitiesGunnerAgent {
         public void incScore(long reward, long delay) {
             super.incScore(reward, delay);
             if (states.size() > delay) {
-                states.get((int) delay).setSecond(reward);
+                states.get((int) delay).setSecond(states.get((int) delay).second() + reward);
             }
         }
 
@@ -78,13 +95,41 @@ public class QLearningSortedGunnerAgent extends SortedEntitiesGunnerAgent {
         protected Action chooseAction(SortedEntitiesData data) {
             long newState = data.getCurrentState();
             int action = QLearningSortedGunnerAgent.this.chooseAction(newState);
-            states.addFirst(Pair.of(Pair.of(newState, action), 0L));
+            states.addFirst(Pair.of(Pair.of(Pair.of(newState, data.getCurrentSymmetricState()), action), 0L));
             if (states.size() > Constants.MAX_DELAY) {
-                Pair<Pair<Long, Integer>, Long> removed = states.removeLast();
-                refresh(states.getLast().first().first(),
-                        removed.first().first(),
+                Pair<Pair<Pair<Long, Long>, Integer>, Long> removed = states.removeLast();
+                double reward = removed.second();
+                long angle = descriptor.getAngleSectors()
+                        .get((int)(removed.first().first().first() % descriptor.getAngleSectors().size()));
+                angle -= 40;
+                if (angle == 0) {
+                    angle = 1;
+                }
+                if (angle < 0) {
+                    angle = - angle;
+                }
+                reward += descriptor.getCloserReward() / angle;
+                refresh(states.getLast().first().first().first(),
+                        removed.first().first().first(),
                         removed.first().second(),
-                        removed.second());
+                        reward);
+                if (!disableSymmetry) {
+                    reward = removed.second();
+                    angle = descriptor.getAngleSectors()
+                            .get((int) (removed.first().first().second() % descriptor.getAngleSectors().size()));
+                    angle -= 40;
+                    if (angle == 0) {
+                        angle = 1;
+                    }
+                    if (angle < 0) {
+                        angle = -angle;
+                    }
+                    reward += descriptor.getCloserReward() / angle;
+                    refresh(states.getLast().first().first().second(),
+                            removed.first().first().second(),
+                            2 * (2 - removed.first().second() / 2) + removed.first().second() % 2,
+                            reward);
+                }
             }
             return intToAction(action);
         }

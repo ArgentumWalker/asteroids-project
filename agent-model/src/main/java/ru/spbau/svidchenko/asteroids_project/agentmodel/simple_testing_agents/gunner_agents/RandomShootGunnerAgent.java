@@ -14,7 +14,7 @@ public class RandomShootGunnerAgent extends GunnerAgent {
     public GunnerPlayer buildPlayer(long id) {
         return new GunnerPlayer(id) {
             @Override
-            protected Action chooseAction() {
+            public Action chooseAction() {
                 Action action = new Action();
                 action.setShoot(true);
                 switch (RandomGod.ask.nextInt(3)) {

@@ -5,8 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AgentSaveLoader {
-    private static final String PILOTS_FILE = "agents/pilots.ag";
-    private static final String GUNNERS_FILE = "agents/gunners.ag";
+    private static final String BASE_DIR = "agents/";
+    private static final String PILOTS_FILE = "pilots.ag";
+    private static final String GUNNERS_FILE = "gunners.ag";
 
     public static void rewritePilots(List<PilotAgent> agents) throws IOException {
         File pilotsFile = new File(PILOTS_FILE);
@@ -21,10 +22,10 @@ public class AgentSaveLoader {
     }
 
     public static void rewriteGunners(List<GunnerAgent> agents) throws IOException {
-        File gunnersFile = new File(GUNNERS_FILE);
+        File gunnersFile = new File(BASE_DIR + GUNNERS_FILE);
         gunnersFile.getParentFile().mkdirs();
         gunnersFile.createNewFile();
-        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(GUNNERS_FILE, false))) {
+        try (ObjectOutputStream objectOutputStream = new ObjectOutputStream(new FileOutputStream(BASE_DIR + GUNNERS_FILE, false))) {
             objectOutputStream.writeLong(agents.size());
             for (GunnerAgent agent : agents) {
                 objectOutputStream.writeObject(agent);
@@ -71,8 +72,19 @@ public class AgentSaveLoader {
     }
 
     public static List<PilotAgent> loadPilots() throws IOException, ClassNotFoundException {
+        return loadPilots("");
+    }
+
+
+
+    public static List<GunnerAgent> loadGunners() throws IOException, ClassNotFoundException {
+        return loadGunners("");
+    }
+
+
+    public static List<PilotAgent> loadPilots(String test) throws IOException, ClassNotFoundException {
         List<PilotAgent> agents = new ArrayList<>();
-        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(PILOTS_FILE))) {
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(BASE_DIR + test + PILOTS_FILE))) {
             long count = objectInputStream.readLong();
             for (long i = 0; i < count; i++) {
                 agents.add((PilotAgent) objectInputStream.readObject());
@@ -81,9 +93,11 @@ public class AgentSaveLoader {
         }
     }
 
-    public static List<GunnerAgent> loadGunners() throws IOException, ClassNotFoundException {
+
+
+    public static List<GunnerAgent> loadGunners(String test) throws IOException, ClassNotFoundException {
         List<GunnerAgent> agents = new ArrayList<>();
-        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(GUNNERS_FILE))) {
+        try (ObjectInputStream objectInputStream = new ObjectInputStream(new FileInputStream(BASE_DIR + test + GUNNERS_FILE))) {
             long count = objectInputStream.readLong();
             for (long i = 0; i < count; i++) {
                 agents.add((GunnerAgent) objectInputStream.readObject());

@@ -22,4 +22,6 @@ public abstract class GunnerAgent implements Serializable {
     public final void enableLearning() {
         learningDisabled = false;
     }
+
+    public void resetLearningProbability() {}
 }

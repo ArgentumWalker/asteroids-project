@@ -82,7 +82,7 @@ public abstract class CommonGame {
         }
 
         @Override
-        protected Action chooseAction() {
+        public Action chooseAction() {
             return gunnerAction;
         }
     }

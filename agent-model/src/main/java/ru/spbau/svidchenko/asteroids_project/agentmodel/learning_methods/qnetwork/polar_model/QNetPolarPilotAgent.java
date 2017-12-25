@@ -6,14 +6,13 @@ import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Pair;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.PilotPlayer;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class QNetPolarPilotAgent extends PolarGridPilotAgent {
     private static long freeId = 0;
     private final long id = freeId++;
     private final PolarQNet qNet;
+    private final Map<Integer, Double> bonusRewards = new HashMap<>();
 
     public QNetPolarPilotAgent(
             PolarGridDescriptor polarGridDescriptor,
@@ -22,12 +21,20 @@ public class QNetPolarPilotAgent extends PolarGridPilotAgent {
             double gamma
     ) {
         super(polarGridDescriptor);
+        bonusRewards.put(0, 0.);
+        bonusRewards.put(1, 0.);
+        bonusRewards.put(2, 0.);
         qNet = new PolarQNet(explorationProbability, alpha, gamma, 9, polarGridDescriptor, this::isLearningDisabled);
     }
 
     @Override
     public String getName() {
         return "QNetPolarPilotAgent_" + id;
+    }
+
+    public QNetPolarPilotAgent setBonusReward(int action, double bonus) {
+        bonusRewards.put(action, bonus);
+        return this;
     }
 
     public void setExplorationProbability(Callable<Double> explorationProbability) {
@@ -57,7 +64,7 @@ public class QNetPolarPilotAgent extends PolarGridPilotAgent {
     }
 
     private class QNetPolarPilotPlayer extends PolarGridAgentPilotPlayer {
-        LinkedList<Pair<Pair<List<List<Integer>>, Integer>, Long>> states = new LinkedList<>();
+        LinkedList<Pair<Pair<Pair<List<List<Integer>>, List<List<Integer>>>, Integer>, Long>> states = new LinkedList<>();
 
         public QNetPolarPilotPlayer(long id, PolarGridDescriptor polarGridDescriptor) {
             super(id, polarGridDescriptor);
@@ -74,21 +81,31 @@ public class QNetPolarPilotAgent extends PolarGridPilotAgent {
         @Override
         protected Action chooseAction(PolarGrid polarGrid) {
             List<List<Integer>> copy = new ArrayList<>();
+            List<List<Integer>> rewCopy = new ArrayList<>();
             for (List<Integer> counts : polarGrid.getValues()) {
                 List<Integer> c  = new ArrayList<>();
+                List<Integer> rc = new ArrayList<>();
                 for (int count : counts) {
                     c.add(count);
+                    rc.add(count);
                 }
+                Collections.reverse(rc);
                 copy.add(c);
+                rewCopy.add(rc);
             }
             int action = QNetPolarPilotAgent.this.chooseAction(copy);
-            states.addFirst(Pair.of(Pair.of(copy, action), 0L));
+            states.addFirst(Pair.of(Pair.of(Pair.of(copy, rewCopy), action), 0L));
             if (states.size() > Constants.MAX_DELAY) {
-                Pair<Pair<List<List<Integer>>, Integer>, Long> removed = states.removeLast();
-                refresh(states.getLast().first().first(),
-                        removed.first().first(),
+                Pair<Pair<Pair<List<List<Integer>>, List<List<Integer>>>, Integer>, Long> removed = states.removeLast();
+                double reward = removed.second() + bonusRewards.get(removed.first().second() % 3);
+                refresh(states.getLast().first().first().first(),
+                        removed.first().first().first(),
                         removed.first().second(),
-                        removed.second());
+                        reward);
+                refresh(states.getLast().first().first().second(),
+                        removed.first().first().second(),
+                        3 * (2 - removed.first().second() / 3) + removed.first().second() % 3,
+                        reward);
             }
             return intToAction(action);
         }

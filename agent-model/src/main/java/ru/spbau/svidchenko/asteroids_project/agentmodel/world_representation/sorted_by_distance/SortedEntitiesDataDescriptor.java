@@ -1,26 +1,22 @@
 package ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.sorted_by_distance;
 
-import ru.spbau.svidchenko.asteroids_project.commons.Point;
-import ru.spbau.svidchenko.asteroids_project.game_logic.world.EntityRelative;
-import ru.spbau.svidchenko.asteroids_project.game_logic.world.RelativeWorldModel;
-import ru.spbau.svidchenko.asteroids_project.game_logic.world.Stone;
-
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.LinkedList;
 import java.util.List;
 
 public class SortedEntitiesDataDescriptor implements Serializable {
     private List<Long> angleSectors = new ArrayList<>();
     private List<Double> distanceSectors = new ArrayList<>();
-    private long limit = 150;
-    private long maxAngle = 0;
-    private boolean vehicleRealted = false;
+    private long limit = 1;
+    private long maxAngle = 80;
+    private boolean vehicleRelated = false;
     private boolean reloadRelated = false;
+    private double closerReward = 0;
+    private boolean distanceVehicleRelated = false;
+    private boolean disableSymmetry = false;
 
-    public void setVehicleRealted(boolean vehicleRealted) {
-        this.vehicleRealted = vehicleRealted;
+    public void setVehicleRelated(boolean vehicleRelated) {
+        this.vehicleRelated = vehicleRelated;
     }
 
     public void setReloadRelated(boolean reloadRelated) {
@@ -74,7 +70,31 @@ public class SortedEntitiesDataDescriptor implements Serializable {
         return reloadRelated;
     }
 
-    public boolean isVehicleRealted() {
-        return vehicleRealted;
+    public boolean isVehicleRelated() {
+        return vehicleRelated;
+    }
+
+    public double getCloserReward() {
+        return closerReward;
+    }
+
+    public void setCloserReward(double closerReward) {
+        this.closerReward = closerReward;
+    }
+
+    public boolean isDistanceVehicleRelated() {
+        return distanceVehicleRelated;
+    }
+
+    public void setDistanceVehicleRelated(boolean distanceVehicleRelated) {
+        this.distanceVehicleRelated = distanceVehicleRelated;
+    }
+
+    public boolean isDisableSymmetry() {
+        return disableSymmetry;
+    }
+
+    public void setDisableSymmetry(boolean disableSymmetry) {
+        this.disableSymmetry = disableSymmetry;
     }
 }

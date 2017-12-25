@@ -4,7 +4,7 @@ import ru.spbau.svidchenko.asteroids_project.commons.Callable;
 
 import java.util.concurrent.atomic.AtomicLong;
 
-public class ExplorationProbability1 implements Callable<Double> {
+public class ExplorationProbability1 implements ExplorationProbability {
     private final double probabilityConstant;
     private final AtomicLong turns = new AtomicLong(0);
 
@@ -15,5 +15,10 @@ public class ExplorationProbability1 implements Callable<Double> {
     @Override
     public Double call() {
         return 1 / (1.0 + turns.getAndIncrement() * probabilityConstant);
+    }
+
+    @Override
+    public void reset() {
+        turns.set(0);
     }
 }

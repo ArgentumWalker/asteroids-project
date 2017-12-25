@@ -13,7 +13,7 @@ public class RightRollNShootGunnerAgent extends GunnerAgent {
     public GunnerPlayer buildPlayer(long id) {
         return new GunnerPlayer(id) {
             @Override
-            protected Action chooseAction() {
+            public Action chooseAction() {
                 Action action = new Action();
                 action.setShoot(true);
                 action.setTurn(Action.Turn.RIGHT);

@@ -1,10 +1,8 @@
 package ru.spbau.svidchenko.asteroids_project.game_logic.player;
 
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Bullet;
-import ru.spbau.svidchenko.asteroids_project.game_logic.world.Entity;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Ship;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -15,7 +13,7 @@ public abstract class GunnerPlayer extends Player {
         super(id);
     }
 
-    protected abstract Action chooseAction();
+    public abstract Action chooseAction();
 
     public final void setWeapon(Ship.Weapon weapon) {
         this.weapon = weapon;

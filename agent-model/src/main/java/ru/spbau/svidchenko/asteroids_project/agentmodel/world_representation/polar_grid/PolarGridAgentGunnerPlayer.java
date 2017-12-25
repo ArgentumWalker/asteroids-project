@@ -12,7 +12,7 @@ public abstract class PolarGridAgentGunnerPlayer extends GunnerPlayer {
         this.polarGrid = new PolarGrid(polarGridDescriptor);
     }
 
-    protected final Action chooseAction() {
+    public final Action chooseAction() {
         polarGrid.refresh(worldModel);
         return chooseAction(polarGrid);
     }
