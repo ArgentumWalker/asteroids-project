@@ -5,6 +5,10 @@ import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.stage.Stage;
+import ru.spbau.svidchenko.asteroids_project.agentmodel.AgentSaveLoader;
+import ru.spbau.svidchenko.asteroids_project.agentmodel.AgentsBuilder;
+import ru.spbau.svidchenko.asteroids_project.agentmodel.GunnerAgent;
+import ru.spbau.svidchenko.asteroids_project.agentmodel.PilotAgent;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.game_logic.WorldDescriptor;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.GraphicStyleContainer;
@@ -13,6 +17,9 @@ import ru.spbau.svidchenko.asteroids_project.graphics_common.menu.Menu;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.menu.MenuButton;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.styles.NeonGraphicStyle;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class ClientMenu {
     private final Stage stage;
     private final Scene scene;
@@ -20,9 +27,14 @@ public class ClientMenu {
     private final OnePlayerGame onePlayerGame;
     private final SplitScreenGame splitScreenGame;
     private final Menu mainMenu = new Menu("Neon Sparks");
+    private final Menu selectYourRole = new Menu("Choose your role");
+    private final Menu selectGunnerMenu = new Menu("Choose Gunner");
+    private final Menu selectPilotMenu = new Menu("Choose Pilot");
 
     private Menu currentMenu = mainMenu;
     private GraphicStyleContainer style = new NeonGraphicStyle();
+    private List<GunnerAgent> gunnerAgents = new ArrayList<>();
+    private List<PilotAgent> pilotAgents = new ArrayList<>();
 
     public ClientMenu(Stage stage, OnePlayerGame onePlayerGame, SplitScreenGame splitScreenGame) {
         this.onePlayerGame = onePlayerGame;
@@ -33,6 +45,7 @@ public class ClientMenu {
         Canvas canvas = new Canvas(Constants.WINDOW_HALF_WIDTH_PX * 2, Constants.WINDOW_HALF_HEIGHT_PX * 2);
         this.context = canvas.getGraphicsContext2D();
         root.getChildren().add(canvas);
+        initAgents();
         initMenus();
         initEventHandler();
     }
@@ -53,12 +66,26 @@ public class ClientMenu {
 
     private void startSplitScreenGame() {
         WorldDescriptor worldDescriptor = new WorldDescriptor();
-        splitScreenGame.start(worldDescriptor, this, 1, 2, style);
+        splitScreenGame.start(worldDescriptor, this, style,
+                splitScreenGame.getPilot(1), splitScreenGame.getGunner(2));
     }
 
     private void startOnePlayerGame() {
         WorldDescriptor worldDescriptor = new WorldDescriptor();
-        onePlayerGame.start(worldDescriptor, this, 1, 2, style);
+        onePlayerGame.start(worldDescriptor, this, style,
+                onePlayerGame.getPilot(1), onePlayerGame.getGunner(2));
+    }
+
+    private void startGameWith(GunnerAgent agent) {
+        WorldDescriptor worldDescriptor = new WorldDescriptor();
+        onePlayerGame.start(worldDescriptor, this, style, true,
+                onePlayerGame.getPilot(1), agent.buildPlayer(2));
+    }
+
+    private void startGameWith(PilotAgent agent) {
+        WorldDescriptor worldDescriptor = new WorldDescriptor();
+        onePlayerGame.start(worldDescriptor, this, style, false,
+                agent.buildPlayer(1), onePlayerGame.getGunner(2));
     }
 
     private void exit() {
@@ -66,11 +93,18 @@ public class ClientMenu {
     }
 
     private void showSelectGunner() {
-        //TODO: implement player selector
+        currentMenu = selectGunnerMenu;
+        refresh();
     }
 
     private void showSelectPilot() {
-        //TODO: implement player selector
+        currentMenu = selectPilotMenu;
+        refresh();
+    }
+
+    private void showChooseRole() {
+        currentMenu = selectYourRole;
+        refresh();
     }
 
     private void refresh() {
@@ -105,7 +139,7 @@ public class ClientMenu {
                 new MenuButton("One Player") {
                     @Override
                     public void onClick() {
-                        startOnePlayerGame();
+                        showChooseRole();
                     }
                 }
         ).addButton(
@@ -123,6 +157,67 @@ public class ClientMenu {
                     }
                 }
         );
+        for (GunnerAgent agent : gunnerAgents) {
+            selectGunnerMenu.addButton(
+                    new MenuButton(agent.getName()) {
+                        @Override
+                        public void onClick() {
+                            startGameWith(agent);
+                        }
+                    }
+            );
+        }
+        for (PilotAgent agent : pilotAgents) {
+            selectPilotMenu.addButton(
+                    new MenuButton(agent.getName()) {
+                        @Override
+                        public void onClick() {
+                            startGameWith(agent);
+                        }
+                    }
+            );
+        }
+        selectYourRole.addButton(
+                new MenuButton("Pilot") {
+                    @Override
+                    public void onClick() {
+                        showSelectGunner();
+                    }
+                }
+        ).addButton(
+                new MenuButton("Gunner") {
+                    @Override
+                    public void onClick() {
+                        showSelectPilot();
+                    }
+                }
+        ).addButton(
+                new MenuButton("Both") {
+                    @Override
+                    public void onClick() {
+                        startOnePlayerGame();
+                    }
+                }
+        );
+    }
 
+    private void initAgents() {
+        //Gunners
+        try {
+            gunnerAgents.addAll(AgentSaveLoader.loadGunners());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        gunnerAgents.addAll(AgentsBuilder.getDefaultGunnerAgents());
+        gunnerAgents.forEach(GunnerAgent::disableLearning);
+        //Pilots
+        try {
+            pilotAgents.addAll(AgentSaveLoader.loadPilots());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        pilotAgents.addAll(AgentsBuilder.getDefaultPilotAgents());
+        pilotAgents.addAll(AgentsBuilder.getImprovedPilotAgents());
+        pilotAgents.forEach(PilotAgent::disableLearning);
     }
 }

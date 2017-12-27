@@ -1,4 +1,4 @@
-package ru.spbau.svidchenko.asteroids_project.training_arena;
+package ru.spbau.svidchenko.asteroids_project.agentmodel;
 
 import ru.spbau.svidchenko.asteroids_project.agentmodel.GunnerAgent;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.PilotAgent;
@@ -22,7 +22,7 @@ import java.util.List;
 
 public class AgentsBuilder {
 
-    public List<GunnerAgent> getDefaultGunnerAgents() {
+    public static List<GunnerAgent> getDefaultGunnerAgents() {
         List<GunnerAgent> result = new ArrayList<>();
         //result.add(new DoNothingGunnerAgent());
         //result.add(new RandomShootGunnerAgent());
@@ -39,7 +39,7 @@ public class AgentsBuilder {
         return result;
     }
 
-    public List<PilotAgent> getDefaultPilotAgents() {
+    public static List<PilotAgent> getDefaultPilotAgents() {
         List<PilotAgent> result = new ArrayList<>();
         result.add(new DoNothingPilotAgent());
         result.add(new FlyForwardPilotAgent());
@@ -49,7 +49,7 @@ public class AgentsBuilder {
         return result;
     }
 
-    public List<PilotAgent> getImprovedPilotAgents() {
+    public static List<PilotAgent> getImprovedPilotAgents() {
         List<PilotAgent> result = new ArrayList<>();
         result.add(new AvoidPilotAgent(
                 PowerFunctions.getSquaredPowerFunction(2e4),
@@ -78,30 +78,7 @@ public class AgentsBuilder {
         return result;
     }
 
-    public List<PilotAgent> getFlyForwardPilotAgent() {
-        List<PilotAgent> result = new ArrayList<>();
-        result.add(new FlyForwardPilotAgent());
-        return result;
-    }
-
-    public List<PilotAgent> getAlternateDefaultPilotAgents() {
-        List<PilotAgent> result = new ArrayList<>();
-        //result.add(new DoNothingPilotAgent());
-        //result.add(new FlyForwardPilotAgent());
-        //result.add(new RandomFlyPilotAgent());
-        result.add(new LeftRollNFlyPilotAgent());
-        //result.add(new RightRollNFlyPilotAgent());
-        return result;
-    }
-
-    public List<GunnerAgent> getGunnerAgents(long gamesCount) {
-        List<GunnerAgent> result = new ArrayList<>();
-        //TODO
-        return result;
-    }
-
-
-    public List<PilotAgent> getPilotAgents(long gamesCount) {
+    public static List<PilotAgent> getPilotAgents(long gamesCount) {
         List<PilotAgent> result = new ArrayList<>();
         result.addAll(getQLearningPilots(gamesCount));
         return result;
@@ -138,7 +115,7 @@ public class AgentsBuilder {
     }
 
 
-    public List<PilotAgent> getQLearningPilotsAlt(long gamesCount) {
+    public static List<PilotAgent> getQLearningPilotsAlt(long gamesCount) {
         long max = Constants.VEHICLE_TURNS_TO_TURN_AROUND;
         PolarGridDescriptor descriptor4 = new PolarGridDescriptor();
         descriptor4.setMaxAngle(max);
@@ -169,7 +146,7 @@ public class AgentsBuilder {
     }
 
 
-    public List<PilotAgent> getQLearningPilotsAlt2(long gamesCount) {
+    public static List<PilotAgent> getQLearningPilotsAlt2(long gamesCount) {
         long max = Constants.VEHICLE_TURNS_TO_TURN_AROUND;
         PolarGridDescriptor descriptor4 = new PolarGridDescriptor();
         descriptor4.setMaxAngle(max);
@@ -199,7 +176,7 @@ public class AgentsBuilder {
         return result;
     }
 
-    public List<GunnerAgent> getQNetSelectiveGunners() {
+    public static List<GunnerAgent> getQNetSelectiveGunners() {
         List<GunnerAgent> result = new ArrayList<>();
         result.add(new QNetSelectiveGunnerAgent(
                 true,
@@ -248,7 +225,7 @@ public class AgentsBuilder {
         return result;
     }
 
-    public List<GunnerAgent> getSortedQLearningGunners(long gamesCount, List<SortedEntitiesDataDescriptor> descriptors) {
+    public static List<GunnerAgent> getSortedQLearningGunners(long gamesCount, List<SortedEntitiesDataDescriptor> descriptors) {
         List<GunnerAgent> result = new ArrayList<>();
         for (SortedEntitiesDataDescriptor dataDescriptor : descriptors) {
             result.add(new DoubleQLearningSortedGunnerAgent(dataDescriptor,
@@ -260,7 +237,7 @@ public class AgentsBuilder {
         return result;
     }
 
-    public List<SortedEntitiesDataDescriptor> getSortedDescriptors1() {
+    public static List<SortedEntitiesDataDescriptor> getSortedDescriptors1() {
         List<SortedEntitiesDataDescriptor> result = new ArrayList<>();
         long max = Constants.WEAPON_TURNS_TO_TURN_AROUND;
         SortedEntitiesDataDescriptor descriptor1 = new SortedEntitiesDataDescriptor();
@@ -310,7 +287,7 @@ public class AgentsBuilder {
         return result;
     }
 
-    public List<SortedEntitiesDataDescriptor> getSortedDescriptors2() {
+    public static List<SortedEntitiesDataDescriptor> getSortedDescriptors2() {
         List<SortedEntitiesDataDescriptor> result = new ArrayList<>();
         long max = Constants.WEAPON_TURNS_TO_TURN_AROUND;
         SortedEntitiesDataDescriptor descriptor1 = new SortedEntitiesDataDescriptor();

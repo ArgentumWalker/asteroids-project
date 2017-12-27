@@ -21,7 +21,6 @@ import ru.spbau.svidchenko.asteroids_project.graphics_common.GraphicUtils;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.menu.Menu;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.menu.MenuButton;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.styles.NeonGraphicStyle;
-import ru.spbau.svidchenko.asteroids_project.training_arena.AgentsBuilder;
 
 import java.io.IOException;
 

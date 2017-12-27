@@ -184,7 +184,10 @@ public class Game {
             for (Entity checkEntity : entities) {
                 respawned = respawned &&
                         checkEntity.getPosition().worldDistanceTo(newPosition) >
-                                Constants.SPAWN_DISTANCE_KOEF * (Math.max(checkEntity.getRadius(), entity.getRadius()));
+                                ((checkEntity instanceof Ship && entity instanceof Stone) ||
+                                        (entity instanceof Ship && checkEntity instanceof Stone) ?
+                                        Constants.SHIP_STONE_SPAWN_DISTANCE :
+                                        Constants.SPAWN_DISTANCE_KOEF * (Math.max(checkEntity.getRadius(), entity.getRadius())));
             }
             if (respawned) {
                 entity.setPosition(newPosition);

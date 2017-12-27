@@ -24,9 +24,9 @@ public abstract class CommonGame {
     protected abstract Scene initScene();
     protected abstract AnimationTimer buildAnimationTimer();
     protected abstract boolean interrupted();
+    protected abstract PilotPlayer.Action getPilotAction();
+    protected abstract GunnerPlayer.Action getGunnerAction();
 
-    protected final PilotPlayer.Action pilotAction = new PilotPlayer.Action();
-    protected final GunnerPlayer.Action gunnerAction = new GunnerPlayer.Action();
     protected final Scene scene;
     protected final Stage stage;
     protected ShipCrew currentShipCrew;
@@ -38,16 +38,33 @@ public abstract class CommonGame {
     protected CommonGame(Stage stage) {
         this.stage = stage;
         scene = initScene();
-        initEventHandler();
     }
 
-    public void start(WorldDescriptor descriptor, ClientMenu menu, int pilotId, int gunnerId, GraphicStyleContainer style) {
+    public void start(WorldDescriptor descriptor,
+                      ClientMenu menu,
+                      GraphicStyleContainer style,
+                      PilotPlayer pilot,
+                      GunnerPlayer gunner
+    ) {
+        currentShipCrew = new ShipCrew(pilot, gunner);
+        startCommon(descriptor, menu, style);
+    }
+
+    public GunnerPlayer getGunner(long id) {
+        return new Gunner(id);
+    }
+
+    public PilotPlayer getPilot(long id) {
+        return new Pilot(id);
+    }
+
+    private void startCommon(WorldDescriptor descriptor, ClientMenu menu, GraphicStyleContainer style) {
         this.menu = menu;
         this.style = style;
         animationTimer = buildAnimationTimer();
-        currentShipCrew = new ShipCrew(new Pilot(pilotId), new Gunner(gunnerId));
         descriptor.players.add(currentShipCrew);
         new Thread(new StandaloneAppGameExecutor(descriptor, Constants.TURNS_IN_GAME, new Client())).start();
+        initEventHandler();
         stage.setScene(scene);
     }
 
@@ -83,18 +100,18 @@ public abstract class CommonGame {
 
         @Override
         public Action chooseAction() {
-            return gunnerAction;
+            return getGunnerAction();
         }
     }
 
     private class Pilot extends PilotPlayer {
-        public Pilot(int id) {
+        public Pilot(long id) {
             super(id);
         }
 
         @Override
         protected Action chooseAction() {
-            return pilotAction;
+            return getPilotAction();
         }
     }
 }

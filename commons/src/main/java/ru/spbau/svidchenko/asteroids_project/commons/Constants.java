@@ -8,12 +8,6 @@ public class Constants {
 
     ////WORLD CONSTANTS
 
-    //Common
-    public static final double WORLD_HALF_WIDTH = 1200.0;
-    public static final double WORLD_HALF_HEIGHT = 1200.0;
-    public static final double SPAWN_DISTANCE_KOEF = 4.0;
-    public static final long MAX_STONE_COUNT = 150;
-
     //Entity random orientations
     public static final double STONE_MAX_ANGLE_DELTA = Math.PI / 40;
 
@@ -43,6 +37,13 @@ public class Constants {
     //Vehicle
     public static final long VEHICLE_TURNS_TO_TURN_AROUND = 80;
 
+    //Common
+    public static final double WORLD_HALF_WIDTH = 1200.0;
+    public static final double WORLD_HALF_HEIGHT = 1200.0;
+    public static final double SPAWN_DISTANCE_KOEF = 3.0;
+    public static final double SHIP_STONE_SPAWN_DISTANCE =
+            (SHIP_MAX_VELOCITY + STONE_MAX_VELOCITY) * 15 + STONE_RADIUS + SHIP_RADIUS;
+    public static final long MAX_STONE_COUNT = 150;
 
     ////GAME CONSTANTS
 

@@ -59,6 +59,15 @@ public abstract class PilotPlayer extends Player {
             BACKWARD,
             OFF
         }
+
+        public Turn getTurn() {
+            return turn;
+        }
+
+        public Move getMove() {
+            return move;
+        }
+
         private Turn turn = Turn.NO_TURN;
         private Move move = Move.OFF;
 
