@@ -33,7 +33,6 @@ public abstract class KeyboardControls extends CommonGame {
     }
 
     protected PilotPlayer.Action getPilotAction() {
-        System.err.println(pilotAction.getTurn());
         return pilotAction;
     }
     protected GunnerPlayer.Action getGunnerAction() {

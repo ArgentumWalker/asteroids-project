@@ -1,5 +1,6 @@
 package ru.spbau.svidchenko.asteroids_project.standalone_game_client;
 
+import javafx.application.Platform;
 import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.canvas.Canvas;
@@ -65,6 +66,7 @@ public class ClientMenu {
     }
 
     private void startSplitScreenGame() {
+        splitScreenGame.setScoreLogFunction(new GameScoreLogger("humans_split_screen"));
         WorldDescriptor worldDescriptor = new WorldDescriptor();
         splitScreenGame.start(worldDescriptor, this, style,
                 splitScreenGame.getPilot(1), splitScreenGame.getGunner(2));
@@ -72,24 +74,27 @@ public class ClientMenu {
 
     private void startOnePlayerGame() {
         WorldDescriptor worldDescriptor = new WorldDescriptor();
+        onePlayerGame.setScoreLogFunction(new GameScoreLogger("humans_one_screen"));
         onePlayerGame.start(worldDescriptor, this, style,
                 onePlayerGame.getPilot(1), onePlayerGame.getGunner(2));
     }
 
     private void startGameWith(GunnerAgent agent) {
         WorldDescriptor worldDescriptor = new WorldDescriptor();
+        onePlayerGame.setScoreLogFunction(new GameScoreLogger(agent.getName()));
         onePlayerGame.start(worldDescriptor, this, style, true,
                 onePlayerGame.getPilot(1), agent.buildPlayer(2));
     }
 
     private void startGameWith(PilotAgent agent) {
         WorldDescriptor worldDescriptor = new WorldDescriptor();
+        onePlayerGame.setScoreLogFunction(new GameScoreLogger(agent.getName()));
         onePlayerGame.start(worldDescriptor, this, style, false,
                 agent.buildPlayer(1), onePlayerGame.getGunner(2));
     }
 
     private void exit() {
-        //TODO: Exit
+        Platform.exit();
     }
 
     private void showSelectGunner() {

@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
+import ru.spbau.svidchenko.asteroids_project.commons.Callable;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.game_logic.WorldDescriptor;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.GunnerPlayer;
@@ -15,6 +16,8 @@ import ru.spbau.svidchenko.asteroids_project.game_logic.player.ShipCrew;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.GraphicStyleContainer;
 import ru.spbau.svidchenko.asteroids_project.standalone_game_client.standalone_app.StandaloneAppGameExecutor;
 import ru.spbau.svidchenko.asteroids_project.standalone_game_client.standalone_app.StandaloneClientInterface;
+
+import java.util.function.Consumer;
 
 public abstract class CommonGame {
     protected abstract EventHandler<KeyEvent> getOnKeyPressHandler();
@@ -34,6 +37,7 @@ public abstract class CommonGame {
 
     private ClientMenu menu;
     private AnimationTimer animationTimer;
+    private Consumer<Long> scoreLogFunction = null;
 
     protected CommonGame(Stage stage) {
         this.stage = stage;
@@ -48,6 +52,10 @@ public abstract class CommonGame {
     ) {
         currentShipCrew = new ShipCrew(pilot, gunner);
         startCommon(descriptor, menu, style);
+    }
+
+    public void setScoreLogFunction(Consumer<Long> scoreLogFunction) {
+        this.scoreLogFunction = scoreLogFunction;
     }
 
     public GunnerPlayer getGunner(long id) {
@@ -76,6 +84,7 @@ public abstract class CommonGame {
     }
 
     private class Client implements StandaloneClientInterface {
+
         @Override
         public void onGameStart() {
             animationTimer.start();
@@ -83,6 +92,15 @@ public abstract class CommonGame {
 
         @Override
         public void onGameEnd() {
+            animationTimer.stop();
+            Platform.runLater(() -> menu.start());
+            if (scoreLogFunction != null) {
+                scoreLogFunction.accept(currentShipCrew.getScore());
+            }
+        }
+
+        @Override
+        public void onGameInterrupt() {
             animationTimer.stop();
             Platform.runLater(() -> menu.start());
         }

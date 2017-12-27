@@ -8,5 +8,6 @@ public interface StandaloneClientInterface {
     //Game events
     void onGameStart();
     void onGameEnd();
+    void onGameInterrupt();
     boolean isGameInterrupted();
 }

@@ -23,7 +23,11 @@ public abstract class BaseGameExecutor implements Runnable {
             makeTurn();
             turnsPassed++;
         }
-        onGameEnd();
+        if (durationInTurns == turnsPassed) {
+            onGameEnd();
+        } else {
+            onGameInterrupt();
+        }
     }
 
     protected abstract void makeTurn();
@@ -35,4 +39,6 @@ public abstract class BaseGameExecutor implements Runnable {
     protected void onGameStart() {}
 
     protected void onGameEnd() {}
+
+    protected void onGameInterrupt() {}
 }

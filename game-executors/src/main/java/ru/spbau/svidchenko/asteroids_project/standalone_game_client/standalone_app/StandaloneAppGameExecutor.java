@@ -37,6 +37,12 @@ public class StandaloneAppGameExecutor extends BaseGameExecutor {
     }
 
     @Override
+    protected void onGameInterrupt() {
+        super.onGameInterrupt();
+        client.onGameInterrupt();
+    }
+
+    @Override
     protected void onGameStart() {
         super.onGameStart();
         client.onGameStart();

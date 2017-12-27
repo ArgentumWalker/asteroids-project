@@ -1,19 +1,11 @@
 package ru.spbau.svidchenko.asteroids_project.training_arena;
 
 import ru.spbau.svidchenko.asteroids_project.agentmodel.AgentSaveLoader;
+import ru.spbau.svidchenko.asteroids_project.agentmodel.AgentsBuilder;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.GunnerAgent;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.PilotAgent;
-import ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qlearning.polar_model.QLearningPolarGunnerAgent;
-import ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qlearning.polar_model.QLearningPolarPilotAgent;
-import ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qlearning.sorted_model.QLearningSortedGunnerAgent;
-import ru.spbau.svidchenko.asteroids_project.agentmodel.parameters_functions.ExplorationProbability1;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.simple_testing_agents.gunner_agents.*;
-import ru.spbau.svidchenko.asteroids_project.agentmodel.simple_testing_agents.pilot_agents.*;
-import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.polar_grid.PolarGridDescriptor;
-import ru.spbau.svidchenko.asteroids_project.commons.Callable;
-import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Pair;
-import ru.spbau.svidchenko.asteroids_project.game_logic.player.PilotPlayer;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -22,32 +14,31 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
 public class Main {
-    private static final long GAME_COUNT = 500;
-    private static final long STATISTIC_GAMES = 500;
+    private static final long GAME_COUNT = 6000;
+    private static final long STATISTIC_GAMES = 1000;
     private static final long TEST_GAME_COUNT = 140;
-    private static final AgentsBuilder AGENTS_BUILDER = new AgentsBuilder();
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
         ExecutorService executor = Executors.newFixedThreadPool(4);
 
-        List<PilotAgent> loadedPilots = AGENTS_BUILDER.getImprovedPilotAgents();
+        List<PilotAgent> loadedPilots = AgentsBuilder.getImprovedPilotAgents();
         /*loadedPilots.add(AgentSaveLoader.loadPilots("learnedPilots/").get(0));
         loadedPilots.add(AgentSaveLoader.loadPilots("learnedPilotsAlt/").get(3));
         loadedPilots.forEach(PilotAgent::disableLearning);*/
 
         List<PilotAgent> learningPilots = new ArrayList<>();
         List<Pair<List<PilotAgent>, String>> testPilots = new ArrayList<>();
-        for (PilotAgent agent : loadedPilots) {
-            testPilots.add(Pair.of(Collections.singletonList(agent), agent.getName()));
-        }
+        //for (PilotAgent agent : loadedPilots) {
+        //    testPilots.add(Pair.of(Collections.singletonList(agent), agent.getName()));
+        //}
 
         learningPilots.clear();
         learningPilots.addAll(loadedPilots);
-        standartGunnerTest("test37/standard", learningPilots, testPilots, executor);
+
+        standartGunnerTest("test38/standard", learningPilots, testPilots, executor);
         //TEST 1: LEARNING WITH ALL
         /*learningPilots.clear();
         learningPilots.addAll(loadedPilots);
@@ -189,9 +180,12 @@ public class Main {
                 false, false, false);
         trainingPool.start();
         trainingPool.join();
+        AgentSaveLoader.rewriteGunners(gunnerAgents);
         //Test adopt
         for (Pair<List<PilotAgent>, String> pilots : testPilots) {
             pilotAgents = pilots.first();
+            gunnerAgents = AgentSaveLoader.loadGunners();
+            gunnerAgents.forEach(GunnerAgent::disableLearning);
             trainingPool = new TrainingPool(gunnerAgents, pilotAgents, TEST_GAME_COUNT,
                     1, executor,
                     System.out::println, buildStatisticSaver(test + "/" + pilots.second() + "_withoutLearning"),
@@ -199,10 +193,12 @@ public class Main {
             trainingPool.start();
             trainingPool.join();
 
+            gunnerAgents.forEach(GunnerAgent::enableLearning);
+            gunnerAgents.forEach(GunnerAgent::resetLearningProbability);
             trainingPool = new TrainingPool(gunnerAgents, pilotAgents, GAME_COUNT,
                     1, executor,
                     System.out::println, buildStatisticSaver(test + "/" + pilots.second() + "_withResetLearning"),
-                    false, false, false
+                    false, true, false
             );
             trainingPool.start();
             trainingPool.join();
