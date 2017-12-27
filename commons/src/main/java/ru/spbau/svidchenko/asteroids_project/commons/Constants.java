@@ -40,7 +40,7 @@ public class Constants {
     //Common
     public static final double WORLD_HALF_WIDTH = 1200.0;
     public static final double WORLD_HALF_HEIGHT = 1200.0;
-    public static final double SPAWN_DISTANCE_KOEF = 3.0;
+    public static final double SPAWN_DISTANCE_KOEF = 2.5;
     public static final double SHIP_STONE_SPAWN_DISTANCE =
             (SHIP_MAX_VELOCITY + STONE_MAX_VELOCITY) * 15 + STONE_RADIUS + SHIP_RADIUS;
     public static final long MAX_STONE_COUNT = 150;
@@ -51,7 +51,7 @@ public class Constants {
     public static final long IMPACTS_CALCULATION_SPLIT_DEPTH = 6;
 
     //Time
-    public static final long TURNS_IN_GAME = 2000;
+    public static final long TURNS_IN_GAME = 12000;
     public static final long MAX_DELAY = 100;
 
     //Score

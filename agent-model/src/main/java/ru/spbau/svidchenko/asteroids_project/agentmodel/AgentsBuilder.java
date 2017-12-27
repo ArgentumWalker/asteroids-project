@@ -15,9 +15,11 @@ import ru.spbau.svidchenko.asteroids_project.agentmodel.simple_testing_agents.pi
 import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.polar_grid.PolarGridDescriptor;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.sorted_by_distance.SortedEntitiesDataDescriptor;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
+import ru.spbau.svidchenko.asteroids_project.commons.Pair;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class AgentsBuilder {
@@ -51,34 +53,42 @@ public class AgentsBuilder {
 
     public static List<PilotAgent> getImprovedPilotAgents() {
         List<PilotAgent> result = new ArrayList<>();
-        result.add(new AvoidPilotAgent(
-                PowerFunctions.getSquaredPowerFunction(2e4),
-                Point.with(0, 0),
-                ActionFunctions.getSinActionFunction(1, 0.5), "Stay"));
-        result.add(new AvoidPilotAgent(
-                PowerFunctions.getSquaredPowerFunction(1e5),
-                Point.with(0, 0),
-                ActionFunctions.getSinActionFunction(1, 0.5), "Normal"));
-        result.add(new AvoidPilotAgent(
-                PowerFunctions.getSquaredPowerFunction(1e5),
-                Point.with(6, 0),
-                ActionFunctions.getSinActionFunction(1, 0.5), "Forward"));
-        result.add(new AvoidPilotAgent(
-                PowerFunctions.getSquaredPowerFunction(1e5),
-                Point.with(9, 0),
-                ActionFunctions.getSinForwardActionFunction(1, 0.5), "ForwardForced"));
-        result.add(new AvoidPilotAgent(
-                PowerFunctions.getSquaredPowerFunction(1e5),
-                Point.with(2, -2),
-                ActionFunctions.getSinActionFunction(1, 0.5), "Left"));
-        result.add(new AvoidPilotAgent(
-                PowerFunctions.getSquaredPowerFunction(1e5),
-                Point.with(2, 2),
-                ActionFunctions.getSinActionFunction(1, 0.5), "Right"));
+        List<Pair<String, Point>> powers = Arrays.asList(
+                Pair.of("Left", Point.with(2, -2)),
+                Pair.of("Right", Point.with(2, 2)),
+                Pair.of("Forward", Point.with(5, 0)),
+                Pair.of("ForwardForced", Point.with(8, 0)),
+                Pair.of("Backward", Point.with(-5, 0)),
+                Pair.of("Hold", Point.with(0, 0))
+        );
+        List<Pair<String, Double>> doudgeCoef = Arrays.asList(
+                Pair.of("Normal", 1e5),
+                Pair.of("Active", 2e5),
+                Pair.of("Inactive", 6e4),
+                Pair.of("Stay", 3e4)
+        );
+        List<Pair<String, Double>> angleReaction = Arrays.asList(
+                Pair.of("SmallAngle", 1./4),
+                Pair.of("NormalAngle", 1./2),
+                Pair.of("BigAngle", 1./Math.sqrt(1.8))
+        );
+        //72 pilots
+        for (Pair<String, Point> power : powers) {
+            for (Pair<String, Double> coef : doudgeCoef) {
+                for (Pair<String, Double> angle : angleReaction) {
+                    result.add(new AvoidPilotAgent(
+                            PowerFunctions.getSquaredPowerFunction(coef.second()),
+                            power.second(),
+                            ActionFunctions.getSinActionFunction(1, angle.second()),
+                            power.first() + "_" + coef.first() + "_" + angle.first()
+                    ));
+                }
+            }
+        }
         return result;
     }
 
-    public static List<PilotAgent> getPilotAgents(long gamesCount) {
+    public List<PilotAgent> getPilotAgents(long gamesCount) {
         List<PilotAgent> result = new ArrayList<>();
         result.addAll(getQLearningPilots(gamesCount));
         return result;
@@ -179,49 +189,19 @@ public class AgentsBuilder {
     public static List<GunnerAgent> getQNetSelectiveGunners() {
         List<GunnerAgent> result = new ArrayList<>();
         result.add(new QNetSelectiveGunnerAgent(
-                true,
-                false,
-                false,
-                false,
                 PowerFunctions.getSquaredPowerFunction(1e5),
                 getDefaultGunnerAgents(),
                 10,
-                new ExplorationProbability1(4000 * Constants.TURNS_IN_GAME, 0.1),
+                new ExplorationProbability1(6000 * Constants.TURNS_IN_GAME, 0.1),
                 new LearningStep1(0.01),
-                0.95));
+                0.95, 0).setRefreshDelay(72 * Constants.TURNS_IN_GAME));
         result.add(new QNetSelectiveGunnerAgent(
-                true,
-                true,
-                false,
-                false,
                 PowerFunctions.getSquaredPowerFunction(1e5),
                 getDefaultGunnerAgents(),
                 10,
-                new ExplorationProbability1(4000 * Constants.TURNS_IN_GAME, 0.1),
+                new ExplorationProbability1(6000 * Constants.TURNS_IN_GAME, 0.1),
                 new LearningStep1(0.01),
-                0.95));
-        result.add(new QNetSelectiveGunnerAgent(
-                true,
-                true,
-                true,
-                false,
-                PowerFunctions.getSquaredPowerFunction(1e5),
-                getDefaultGunnerAgents(),
-                10,
-                new ExplorationProbability1(4000 * Constants.TURNS_IN_GAME, 0.1),
-                new LearningStep1(0.01),
-                0.95));
-        result.add(new QNetSelectiveGunnerAgent(
-                true,
-                true,
-                true,
-                true,
-                PowerFunctions.getSquaredPowerFunction(1e5),
-                getDefaultGunnerAgents(),
-                10,
-                new ExplorationProbability1(4000 * Constants.TURNS_IN_GAME, 0.1),
-                new LearningStep1(0.01),
-                0.95));
+                0.95, 1).setRefreshDelay(72 * Constants.TURNS_IN_GAME));
         return result;
     }
 
@@ -229,10 +209,10 @@ public class AgentsBuilder {
         List<GunnerAgent> result = new ArrayList<>();
         for (SortedEntitiesDataDescriptor dataDescriptor : descriptors) {
             result.add(new DoubleQLearningSortedGunnerAgent(dataDescriptor,
-                    new ExplorationProbability3(100 * Constants.TURNS_IN_GAME, 0.95),
+                    new ExplorationProbability3(288 * Constants.TURNS_IN_GAME, 0.95),
                     new LearningStep1(0.005),
                     0.95,
-                    25 * Constants.TURNS_IN_GAME));
+                    72 * Constants.TURNS_IN_GAME));
         }
         return result;
     }
@@ -240,7 +220,7 @@ public class AgentsBuilder {
     public static List<SortedEntitiesDataDescriptor> getSortedDescriptors1() {
         List<SortedEntitiesDataDescriptor> result = new ArrayList<>();
         long max = Constants.WEAPON_TURNS_TO_TURN_AROUND;
-        SortedEntitiesDataDescriptor descriptor1 = new SortedEntitiesDataDescriptor();
+        /*SortedEntitiesDataDescriptor descriptor1 = new SortedEntitiesDataDescriptor();
         descriptor1.setMaxAngle(max);
         descriptor1.setLimit(1);
         for (int i = 1; i < max; i++) {
@@ -248,7 +228,7 @@ public class AgentsBuilder {
         }
         for (int i = 1; i < 41; i++) {
             descriptor1.splitDistance(i * Constants.STONE_MAX_VELOCITY + Constants.STONE_RADIUS + Constants.SHIP_RADIUS);
-        }
+        }*/
         SortedEntitiesDataDescriptor descriptor2 = new SortedEntitiesDataDescriptor();
         descriptor2.setMaxAngle(max);
         descriptor2.setLimit(1);
@@ -269,7 +249,7 @@ public class AgentsBuilder {
         for (int i = 1; i < 41; i++) {
             descriptor3.splitDistance(i * Constants.STONE_MAX_VELOCITY + Constants.STONE_RADIUS + Constants.SHIP_RADIUS);
         }
-        SortedEntitiesDataDescriptor descriptor4 = new SortedEntitiesDataDescriptor();
+        /*SortedEntitiesDataDescriptor descriptor4 = new SortedEntitiesDataDescriptor();
         descriptor4.setMaxAngle(max);
         descriptor4.setVehicleRelated(true);
         descriptor4.setLimit(1);
@@ -279,11 +259,11 @@ public class AgentsBuilder {
         }
         for (int i = 1; i < 41; i++) {
             descriptor4.splitDistance(i * Constants.STONE_MAX_VELOCITY + Constants.STONE_RADIUS + Constants.SHIP_RADIUS);
-        }
-        result.add(descriptor1);
+        }*/
+        //result.add(descriptor1);
         result.add(descriptor2);
         result.add(descriptor3);
-        result.add(descriptor4);
+        //result.add(descriptor4);
         return result;
     }
 

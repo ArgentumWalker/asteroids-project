@@ -11,20 +11,13 @@ import ru.spbau.svidchenko.asteroids_project.game_logic.world.RelativeWorldModel
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Ship;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Stone;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiFunction;
 
 public class QNetSelectiveGunnerAgent extends GunnerAgent {
     private static long freeId = 0;
     private final long id = freeId++;
-    private final boolean gunnerPowerEnabled;
-    private final boolean pilotPowerEnabled;
-    private final boolean gunnerPilotPowerEnabled;
-    private final boolean gunnerPilotAngleEnabled;
     private final BiFunction<Ship.Relative, Stone.Relative, Point> powerFunction;
     private final SelectiveQNet policy;
     private final List<GunnerAgent> determenisticGunnerAgents;
@@ -33,30 +26,21 @@ public class QNetSelectiveGunnerAgent extends GunnerAgent {
     private final ConcurrentHashMap<Integer, Long> chooseStatistic = new ConcurrentHashMap<>();
 
     public QNetSelectiveGunnerAgent(
-            boolean gunnerPowerEnabled,
-            boolean pilotPowerEnabled,
-            boolean gunnerPilotPowerEnabled,
-            boolean gunnerPilotAngleEnabled,
             BiFunction<Ship.Relative, Stone.Relative, Point> powerFunction,
             List<GunnerAgent> determenisticGunnerAgents,
             long chooseTurns,
             Callable<Double> explorationProbability,
             Callable<Double> alpha,
-            double gamma
+            double gamma,
+            int featuresPower
     ) {
         this.powerFunction = powerFunction;
-        this.gunnerPowerEnabled = gunnerPowerEnabled;
-        this.pilotPowerEnabled = pilotPowerEnabled;
-        this.gunnerPilotAngleEnabled = gunnerPilotAngleEnabled;
         this.determenisticGunnerAgents = determenisticGunnerAgents;
         this.chooseTurns = chooseTurns;
-        this.gunnerPilotPowerEnabled = gunnerPilotPowerEnabled && gunnerPowerEnabled && pilotPowerEnabled;
         this.policy = new SelectiveQNet(explorationProbability, alpha, gamma, determenisticGunnerAgents.size(),
-                (gunnerPowerEnabled ? 1 : 0) +
-                        (pilotPowerEnabled ? 1 : 0) +
-                        (gunnerPilotPowerEnabled ? 2 : 0) +
-                        (gunnerPilotAngleEnabled ? 1 : 0),
-                this::isLearningDisabled);
+                5,
+                this::isLearningDisabled,
+                featuresPower);
         for (int i = 0; i < determenisticGunnerAgents.size(); i++) {
             chooseStatistic.put(i, 0L);
         }
@@ -75,6 +59,11 @@ public class QNetSelectiveGunnerAgent extends GunnerAgent {
         policy.setAlpha(alpha);
     }
 
+    public QNetSelectiveGunnerAgent setRefreshDelay(long delay) {
+        policy.setRefreshDelay(delay);
+        return this;
+    }
+
     @Override
     public GunnerPlayer buildPlayer(long id) {
         return new QNetSelectiveGunnerPlayer(id, determenisticGunnerAgents);
@@ -82,26 +71,16 @@ public class QNetSelectiveGunnerAgent extends GunnerAgent {
 
     private List<Point> calculatePowers(RelativeWorldModel worldModel, Ship ship) {
         List<Point> result = new ArrayList<>();
-        Point gunnerPower = null;
-        Point pilotPower = null;
         Ship.Relative shipRelative = worldModel.getRelatives().stream()
                 .filter(r -> r instanceof Ship.Relative && r.getEntity().equals(ship))
                 .map(r -> (Ship.Relative)r)
                 .findAny().get();
-        if (gunnerPowerEnabled) {
-            gunnerPower = calculateGunnerPower(worldModel, shipRelative);
-            result.add(gunnerPower);
-        }
-        if (pilotPowerEnabled) {
-            pilotPower = calculateGunnerPower(worldModel, shipRelative);
-            result.add(pilotPower);
-        }
-        if (gunnerPilotPowerEnabled) {
-            result.addAll(calculateGunnerPilotPower(gunnerPower, pilotPower));
-        }
-        if (gunnerPilotAngleEnabled) {
-            result.add(calculateGunnerPilotAngle(shipRelative));
-        }
+        Point gunnerPower = calculateGunnerPower(worldModel, shipRelative);
+        result.add(gunnerPower);
+        Point pilotPower = calculateGunnerPower(worldModel, shipRelative);
+        result.add(pilotPower);
+        result.addAll(calculateGunnerPilotPower(gunnerPower, pilotPower));
+        result.add(calculateGunnerPilotAngle(shipRelative));
         return result;
     }
 
@@ -124,10 +103,8 @@ public class QNetSelectiveGunnerAgent extends GunnerAgent {
     }
 
     private List<Point> calculateGunnerPilotPower(Point gunnerPower, Point pilotPower) {
-        return Arrays.asList(
-                gunnerPower.getInverse().add(pilotPower),
-                Point.with(Math.sqrt(gunnerPower.getX() * gunnerPower.getX() - pilotPower.getX() * pilotPower.getX()),
-                        Math.sqrt(gunnerPower.getY() * gunnerPower.getY() - pilotPower.getY() * pilotPower.getY()))
+        return Collections.singletonList(
+                gunnerPower.getInverse().add(pilotPower)
         );
     }
 

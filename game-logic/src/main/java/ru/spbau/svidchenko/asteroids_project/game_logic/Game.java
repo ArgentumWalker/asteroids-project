@@ -22,6 +22,7 @@ public class Game {
     //CONSTRUCTORS
 
     public Game(WorldDescriptor worldDescriptor) {
+        //TODO check distances
         currentWorldModel = new WorldModel();
         List<Stone> stones = new ArrayList<>();
         for (long i = 0; i < Math.min(worldDescriptor.stonesCount, Constants.MAX_STONE_COUNT); i++) {
