@@ -23,7 +23,15 @@ public class Ship extends Entity {
         this.id = id;
     }
 
+    public void setShipCrew(ShipCrew shipCrew) {
+        this.shipCrew = shipCrew;
+    }
+
     //GET STATE
+
+    public ShipCrew getShipCrew() {
+        return shipCrew;
+    }
 
     public long getId() {
         return id;

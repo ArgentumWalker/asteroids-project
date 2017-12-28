@@ -1,6 +1,7 @@
 package ru.spbau.svidchenko.asteroids_project.game_logic;
 
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
+import ru.spbau.svidchenko.asteroids_project.commons.Pair;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
 import ru.spbau.svidchenko.asteroids_project.commons.RandomGod;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.Player;
@@ -8,7 +9,6 @@ import ru.spbau.svidchenko.asteroids_project.game_logic.player.ShipCrew;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.*;
 
 import java.util.*;
-import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public class Game {
@@ -17,7 +17,8 @@ public class Game {
     private List<RelativeWorldModel> relativeWorldModels = new ArrayList<>();
     private List<Player> players = new ArrayList<>();
     private HashMap<Long, ShipCrew> shipId2shipCrew = new HashMap<>();
-
+    private Set<Pair<Long, Entity>> reviveDelay = new HashSet<>();
+    private Set<Player> frozenPlayers = new HashSet<>();
 
     //CONSTRUCTORS
 
@@ -35,6 +36,7 @@ public class Game {
         for (ShipCrew crew : worldDescriptor.players) {
             Ship ship = new Ship(random.randomWorldPoint(), shipId++);
             ships.add(ship);
+            ship.setShipCrew(crew);
             crew.getMembers().first().setVehicle(ship.getVehicle());
             crew.getMembers().second().setWeapon(ship.getWeapon());
             RelativeWorldModel pilotWorldModel = new RelativeWorldModel(
@@ -52,19 +54,38 @@ public class Game {
             shipId2shipCrew.put(ship.getId(), crew);
         }
         currentWorldModel.addEntities(ships);
+        currentWorldModel.refreshTurn();
         afterTurn();
     }
 
     //TURN LOGIC
 
     public void nextTurn() {
+        currentWorldModel.makeTurn();
         Set<Entity> entities = currentWorldModel.getEntities();
         for (Entity entity : entities) {
             entity.move();
         }
+        processRevive();
         processImpacts(entities);
         processDying(entities);
         afterTurn();
+    }
+
+    private void processRevive() {
+        Set<Pair<Long, Entity>> toReviveEntities = new HashSet<>();
+        for (Pair<Long, Entity> queuedRevive : reviveDelay) {
+            queuedRevive.setFirst(queuedRevive.first() - 1);
+            if (queuedRevive.first() <= 0) {
+                toReviveEntities.add(queuedRevive);
+                if (queuedRevive.second() instanceof Ship) {
+                    frozenPlayers.remove(((Ship) queuedRevive.second()).getShipCrew().getMembers().first());
+                    frozenPlayers.remove(((Ship) queuedRevive.second()).getShipCrew().getMembers().second());
+                }
+            }
+        }
+        reviveDelay.removeAll(toReviveEntities);
+        currentWorldModel.addEntities(toReviveEntities.stream().map(Pair::second).collect(Collectors.toList()));
     }
 
     private void processImpacts(Set<Entity> entities) {
@@ -159,22 +180,23 @@ public class Game {
         for (Entity entity : entities) {
             if (entity.isDead()) {
                 if (entity instanceof Ship) {
+                    reviveDelay.add(Pair.of(Constants.SHIP_REVIVE_DELAY, entity));
+                    frozenPlayers.add(((Ship) entity).getShipCrew().getMembers().first());
+                    frozenPlayers.add(((Ship) entity).getShipCrew().getMembers().second());
                     respawn(entity, entities);
                     entity.setVelocity(Point.with(0, 0));
                     entity.setHealth(Constants.SHIP_START_HEALTH);
-                    continue;
                 }
                 if (entity instanceof Stone) {
+                    reviveDelay.add(Pair.of(Constants.STONE_REVIVE_DELAY, entity));
                     respawn(entity, entities);
                     entity.setVelocity(random.randomPoint(Constants.STONE_MIN_VELOCITY, Constants.STONE_MAX_VELOCITY));
                     entity.setHealth(Constants.STONE_START_HEALTH);
-                    continue;
                 }
                 entitiesToRemove.add(entity);
             }
         }
         currentWorldModel.removeEntities(entitiesToRemove);
-
     }
 
     private void respawn(Entity entity, Set<Entity> entities) {
@@ -202,9 +224,11 @@ public class Game {
         }
         List<Entity> newEntities = new ArrayList<>();
         for (Player player : players) {
-            List<? extends Entity> result = player.makeAction();
-            if (result != null) {
-                newEntities.addAll(result);
+            if (!frozenPlayers.contains(player)) {
+                List<? extends Entity> result = player.makeAction();
+                if (result != null) {
+                    newEntities.addAll(result);
+                }
             }
         }
         currentWorldModel.addEntities(newEntities);
@@ -217,11 +241,11 @@ public class Game {
         if (destroyedBy instanceof Bullet){
             if (entity instanceof Ship) {
                 shipId2shipCrew.get(((Bullet) destroyedBy).getParentShipId()).addDelayedScore(Constants.SCORE_FOR_DESTROY_SHIP,
-                        Math.min(destroyedBy.getLiveTime() - 1, Constants.MAX_DELAY));
+                        Math.min(destroyedBy.getLiveTime() - 1, Constants.AGENT_LEARNING_MAX_DELAY));
             }
             if (entity instanceof Stone) {
                 shipId2shipCrew.get(((Bullet) destroyedBy).getParentShipId()).addDelayedScore(Constants.SCORE_FOR_DESTROY_STONE,
-                        Math.min(destroyedBy.getLiveTime() - 1, Constants.MAX_DELAY));
+                        Math.min(destroyedBy.getLiveTime() - 1, Constants.AGENT_LEARNING_MAX_DELAY));
             }
         }
     }
