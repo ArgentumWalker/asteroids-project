@@ -38,12 +38,12 @@ public class Constants {
     public static final long VEHICLE_TURNS_TO_TURN_AROUND = 80;
 
     //Common
-    public static final double WORLD_HALF_WIDTH = 1200.0;
-    public static final double WORLD_HALF_HEIGHT = 1200.0;
+    public static final double WORLD_HALF_WIDTH = 1232.0;
+    public static final double WORLD_HALF_HEIGHT = 1232.0;
     public static final double SPAWN_DISTANCE_KOEF = 2.5;
     public static final double SHIP_STONE_SPAWN_DISTANCE =
-            (SHIP_MAX_VELOCITY + STONE_MAX_VELOCITY) * 15 + STONE_RADIUS + SHIP_RADIUS;
-    public static final long MAX_STONE_COUNT = 150;
+            (SHIP_MAX_VELOCITY + STONE_MAX_VELOCITY) * 20 + STONE_RADIUS + SHIP_RADIUS;
+    public static final long MAX_STONE_COUNT = 140;
 
     ////GAME CONSTANTS
 
@@ -77,7 +77,7 @@ public class Constants {
     public static final double MENU_AFTER_TITLE_VERTICAL_INDENT_PX = 150;
     public static final double MENU_BUTTON_HORIZONTAL_INDENT_PX = 40;
     public static final double MENU_BUTTON_VERTICAL_INDENT_PX = 40;
-    public static final int AFTER_ACTIVE_BUTTONS_COUNT = 3;
+    public static final int AFTER_ACTIVE_BUTTONS_COUNT = 4;
 
     //Graphics
     public static final int GRID_DIVIDERS = 5;

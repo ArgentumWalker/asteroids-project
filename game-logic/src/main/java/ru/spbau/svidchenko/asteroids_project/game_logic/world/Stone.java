@@ -21,6 +21,11 @@ public class Stone extends Entity {
         return new Relative(angleFunction, centerFunction);
     }
 
+    @Override
+    public boolean harmfulImpactsTo(Entity e) {
+        return super.harmfulImpactsTo(e);
+    }
+
     public class Relative extends EntityRelative<Stone> {
         private double angle = RandomGod.ask.nextDouble();
         private double dangle = (0.5 - RandomGod.ask.nextDouble()) * 2 * Constants.STONE_MAX_ANGLE_DELTA;

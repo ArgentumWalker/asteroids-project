@@ -179,24 +179,27 @@ public class Game {
         List<Entity> entitiesToRemove = new ArrayList<>();
         for (Entity entity : entities) {
             if (entity.isDead()) {
-                if (entity instanceof Ship) {
-                    reviveDelay.add(Pair.of(Constants.SHIP_REVIVE_DELAY, entity));
-                    frozenPlayers.add(((Ship) entity).getShipCrew().getMembers().first());
-                    frozenPlayers.add(((Ship) entity).getShipCrew().getMembers().second());
-                    respawn(entity, entities);
-                    entity.setVelocity(Point.with(0, 0));
-                    entity.setHealth(Constants.SHIP_START_HEALTH);
-                }
-                if (entity instanceof Stone) {
-                    reviveDelay.add(Pair.of(Constants.STONE_REVIVE_DELAY, entity));
-                    respawn(entity, entities);
-                    entity.setVelocity(random.randomPoint(Constants.STONE_MIN_VELOCITY, Constants.STONE_MAX_VELOCITY));
-                    entity.setHealth(Constants.STONE_START_HEALTH);
-                }
                 entitiesToRemove.add(entity);
             }
         }
         currentWorldModel.removeEntities(entitiesToRemove);
+        for (Entity entity : entitiesToRemove) {
+            if (entity instanceof Ship) {
+                reviveDelay.add(Pair.of(Constants.SHIP_REVIVE_DELAY, entity));
+                frozenPlayers.add(((Ship) entity).getShipCrew().getMembers().first());
+                frozenPlayers.add(((Ship) entity).getShipCrew().getMembers().second());
+                respawn(entity, entities);
+                entity.setVelocity(Point.with(0, 0));
+                entity.setHealth(Constants.SHIP_START_HEALTH);
+            }
+            if (entity instanceof Stone) {
+                reviveDelay.add(Pair.of(Constants.STONE_REVIVE_DELAY, entity));
+                respawn(entity, entities);
+                entity.setVelocity(random.randomPoint(Constants.STONE_MIN_VELOCITY, Constants.STONE_MAX_VELOCITY));
+                entity.setHealth(Constants.STONE_START_HEALTH);
+            }
+        }
+        entitiesToRemove.forEach(currentWorldModel::addAppearEvent);
     }
 
     private void respawn(Entity entity, Set<Entity> entities) {
@@ -232,6 +235,7 @@ public class Game {
             }
         }
         currentWorldModel.addEntities(newEntities);
+        newEntities.forEach(currentWorldModel::addAppearEvent);
     }
 
     private void processScore(Entity entity, Entity destroyedBy) {

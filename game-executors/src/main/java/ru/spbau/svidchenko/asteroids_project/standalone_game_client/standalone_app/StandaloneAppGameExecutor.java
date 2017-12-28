@@ -1,15 +1,21 @@
 package ru.spbau.svidchenko.asteroids_project.standalone_game_client.standalone_app;
 
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
+import ru.spbau.svidchenko.asteroids_project.commons.Pair;
 import ru.spbau.svidchenko.asteroids_project.game_logic.WorldDescriptor;
+import ru.spbau.svidchenko.asteroids_project.game_logic.world.WorldModel;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.GraphicUtils;
 import ru.spbau.svidchenko.asteroids_project.standalone_game_client.BaseGameExecutor;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class StandaloneAppGameExecutor extends BaseGameExecutor {
     protected StandaloneClientInterface client;
     protected boolean interrupted = false;
+    private Set<Pair<WorldModel.Event, Long>> eventsAndTurns = new HashSet<>();
 
     public StandaloneAppGameExecutor(
             WorldDescriptor worldDescriptor,
@@ -24,10 +30,18 @@ public class StandaloneAppGameExecutor extends BaseGameExecutor {
     protected void makeTurn() {
         try {
             game.nextTurn();
+            Set<WorldModel.Event> events = game.getCurrentWorldodel().getCurrentEvents();
+            eventsAndTurns.addAll(events.stream().map(event -> Pair.of(event, turnsPassed)).collect(Collectors.toList()));
             TimeUnit.MILLISECONDS.sleep(Constants.MILLIS_PER_TURN);
         } catch (InterruptedException e) {
             interrupted = true;
         }
+    }
+
+    public Set<Pair<WorldModel.Event, Long>> getEventsAndTurns() {
+        HashSet<Pair<WorldModel.Event, Long>> result = new HashSet<>(eventsAndTurns);
+        eventsAndTurns.clear();
+        return result;
     }
 
     @Override

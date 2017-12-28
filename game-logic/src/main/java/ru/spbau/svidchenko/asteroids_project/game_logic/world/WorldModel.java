@@ -14,9 +14,10 @@ public class WorldModel {
 
     public void addEntities(List<? extends Entity> addTarget) {
         entities.addAll(addTarget);
-        for (Entity entity : addTarget) {
-            currentEvents.add(new Event(EventType.APPEAR, entity, entity.position.clone(), turn));
-        }
+    }
+
+    public void addAppearEvent(Entity appearedEntity) {
+        currentEvents.add(new Event(EventType.APPEAR, appearedEntity, appearedEntity.position.clone(), turn));
     }
 
     public long getTurn() {

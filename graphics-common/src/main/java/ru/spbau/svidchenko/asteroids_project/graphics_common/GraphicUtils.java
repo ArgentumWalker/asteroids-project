@@ -10,16 +10,16 @@ import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
+import ru.spbau.svidchenko.asteroids_project.commons.Pair;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.ShipCrew;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.EntityRelative;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.RelativeWorldModel;
-import ru.spbau.svidchenko.asteroids_project.game_logic.world.Ship;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.menu.Menu;
 import ru.spbau.svidchenko.asteroids_project.graphics_common.menu.MenuButton;
 
 import java.util.List;
-import java.util.concurrent.TimeUnit;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 
@@ -101,7 +101,12 @@ public class GraphicUtils {
         context.restore();
     }
 
-    public static void drawWorld(GraphicsContext context, RelativeWorldModel relativeWorldModel, GraphicStyleContainer style) {
+    public static void drawWorld(
+            GraphicsContext context,
+            RelativeWorldModel relativeWorldModel,
+            GraphicStyleContainer style,
+            Set<Pair<Animation, Point>> animations
+    ) {
         relativeWorldModel.readLock().lock();
         List<EntityRelative> visibleEntities = relativeWorldModel.getRelatives().stream().filter(relative ->
                 (Math.abs(relative.getPosition().getX()) - relative.getEntity().getRadius()) * Constants.PIXELS_IN_WORLD_POINT
@@ -114,7 +119,17 @@ public class GraphicUtils {
                 drawSprite(context, sprite);
             }
         }
+        Point relativeVector = relativeWorldModel.getCurrentCenter().getInverse();
+        double relativeAngle = relativeWorldModel.getCurrentAngle();
         relativeWorldModel.readLock().unlock();
+        context.save();
+        for (Pair<Animation, Point> animation : animations) {
+            animation.first()
+                    .draw(context,
+                            animation.second().clone().add(relativeVector).rotate(relativeAngle),
+                            relativeAngle);
+        }
+        context.restore();
     }
 
     public static void drawUi(
@@ -154,7 +169,8 @@ public class GraphicUtils {
         horizontalOffset += Constants.MENU_AFTER_TITLE_VERTICAL_INDENT_PX;
         for (int i = startIndex; i < endIndex + 1; i++) {
             MenuButton button = menu.getButtons().get(i);
-            textStyle = menu.isActiveButton(button) ? style.getMenuActiveTextStyle() : style.getMenuButtonTextStyle();
+            int offset = Math.abs(i - menu.getActiveButtonPosition());
+            textStyle = menu.isActiveButton(button) ? style.getMenuActiveTextStyle() : style.getMenuButtonTextStyle(offset);
             horizontalOffset += drawText(context,
                     menuTextCalculatePosition(
                             button.getText(), textStyle,

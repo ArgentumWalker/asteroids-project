@@ -9,6 +9,7 @@ public abstract class BaseGameExecutor implements Runnable {
     protected WorldDescriptor worldDescriptor;
     protected long durationInTurns;
     protected long turnsPassed = 0;
+    private boolean interrupted = false;
 
     protected BaseGameExecutor(WorldDescriptor worldDescriptor, long durationInTurns) {
         this.worldDescriptor = worldDescriptor;
@@ -30,10 +31,18 @@ public abstract class BaseGameExecutor implements Runnable {
         }
     }
 
+    public void interrupt() {
+        interrupted = true;
+    }
+
+    public long getTurnsPassed() {
+        return turnsPassed;
+    }
+
     protected abstract void makeTurn();
 
     protected boolean gameInterrupted() {
-        return false;
+        return interrupted;
     }
 
     protected void onGameStart() {}

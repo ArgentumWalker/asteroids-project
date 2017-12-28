@@ -50,17 +50,12 @@ public class SplitScreenGame extends KeyboardControls {
     }
 
     @Override
-    protected AnimationTimer buildAnimationTimer() {
-        return new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                GraphicUtils.drawGameBackground(pilotContext, currentShipCrew.getMembers().first().getWorldModel(), style);
-                GraphicUtils.drawWorld(pilotContext, currentShipCrew.getMembers().first().getWorldModel(), style);
-                GraphicUtils.drawUi(pilotContext, currentShipCrew.getMembers().first().getWorldModel(), style, currentShipCrew);
-                GraphicUtils.drawGameBackground(gunnerContext, currentShipCrew.getMembers().second().getWorldModel(), style);
-                GraphicUtils.drawWorld(gunnerContext, currentShipCrew.getMembers().second().getWorldModel(), style);
-                GraphicUtils.drawUi(gunnerContext, currentShipCrew.getMembers().second().getWorldModel(), style, currentShipCrew);
-            }
-        };
+    protected void onAnimationTimerAction() {
+        GraphicUtils.drawGameBackground(pilotContext, currentShipCrew.getMembers().first().getWorldModel(), style);
+        GraphicUtils.drawWorld(pilotContext, currentShipCrew.getMembers().first().getWorldModel(), style, animations);
+        GraphicUtils.drawUi(pilotContext, currentShipCrew.getMembers().first().getWorldModel(), style, currentShipCrew);
+        GraphicUtils.drawGameBackground(gunnerContext, currentShipCrew.getMembers().second().getWorldModel(), style);
+        GraphicUtils.drawWorld(gunnerContext, currentShipCrew.getMembers().second().getWorldModel(), style, animations);
+        GraphicUtils.drawUi(gunnerContext, currentShipCrew.getMembers().second().getWorldModel(), style, currentShipCrew);
     }
 }

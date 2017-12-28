@@ -8,10 +8,7 @@ import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
-import ru.spbau.svidchenko.asteroids_project.game_logic.world.Bullet;
-import ru.spbau.svidchenko.asteroids_project.game_logic.world.EntityRelative;
-import ru.spbau.svidchenko.asteroids_project.game_logic.world.Ship;
-import ru.spbau.svidchenko.asteroids_project.game_logic.world.Stone;
+import ru.spbau.svidchenko.asteroids_project.game_logic.world.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -37,15 +34,22 @@ public abstract class GraphicStyleContainer {
     public abstract TextStyle getTextStyle();
 
     //// MENU CONSTANTS
-
     public abstract TextStyle getMenuTitleTextStyle();
-    public abstract TextStyle getMenuButtonTextStyle();
+    public abstract TextStyle getMenuButtonTextStyle(int offset);
     public abstract TextStyle getMenuActiveTextStyle();
 
+    //Game visual
     protected abstract Image getVehicleImage();
     protected abstract Image getWeaponImage();
     protected abstract Image getStoneImage();
     protected abstract Image getBulletImage();
+
+    protected abstract Animation getShipAppearAnimation();
+    protected abstract Animation getShipDieAnimation();
+    protected abstract Animation getStoneAppearAnimation();
+    protected abstract Animation getStoneDieAnimation();
+    protected abstract Animation getBulletAppearAnimation();
+    protected abstract Animation getBulletDieAnimation();
 
     public List<Sprite> getSpritesFor(EntityRelative relative) {
         List<Sprite> result = new ArrayList<>();
@@ -63,6 +67,34 @@ public abstract class GraphicStyleContainer {
             result.add(new Sprite(bulletImage, 0, relative.getPosition(), Constants.BULLET_RADIUS));
         }
         return result;
+    }
+
+    public Animation getAnimationFor(WorldModel.Event event) {
+        if (event.entity instanceof Ship) {
+            switch (event.type) {
+                case APPEAR:
+                    return getShipAppearAnimation();
+                case DIE:
+                    return getShipDieAnimation();
+            }
+        }
+        if (event.entity instanceof Stone) {
+            switch (event.type) {
+                case APPEAR:
+                    return getStoneAppearAnimation();
+                case DIE:
+                    return getStoneDieAnimation();
+            }
+        }
+        if (event.entity instanceof Bullet) {
+            switch (event.type) {
+                case APPEAR:
+                    return getBulletAppearAnimation();
+                case DIE:
+                    return getBulletDieAnimation();
+            }
+        }
+        return null;
     }
 
     private Point calculateWindowPosition(Point worldPosition) {

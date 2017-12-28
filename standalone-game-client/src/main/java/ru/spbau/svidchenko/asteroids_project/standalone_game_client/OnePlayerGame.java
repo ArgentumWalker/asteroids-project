@@ -48,20 +48,15 @@ public class OnePlayerGame extends KeyboardControls {
     }
 
     @Override
-    protected AnimationTimer buildAnimationTimer() {
-        return new AnimationTimer() {
-            @Override
-            public void handle(long now) {
-                if (pilotView) {
-                    GraphicUtils.drawGameBackground(playerContext, currentShipCrew.getMembers().first().getWorldModel(), style);
-                    GraphicUtils.drawWorld(playerContext, currentShipCrew.getMembers().first().getWorldModel(), style);
-                    GraphicUtils.drawUi(playerContext, currentShipCrew.getMembers().first().getWorldModel(), style, currentShipCrew);
-                } else {
-                    GraphicUtils.drawGameBackground(playerContext, currentShipCrew.getMembers().second().getWorldModel(), style);
-                    GraphicUtils.drawWorld(playerContext, currentShipCrew.getMembers().second().getWorldModel(), style);
-                    GraphicUtils.drawUi(playerContext, currentShipCrew.getMembers().second().getWorldModel(), style, currentShipCrew);
-                }
-            }
-        };
+    protected void onAnimationTimerAction() {
+        if (pilotView) {
+            GraphicUtils.drawGameBackground(playerContext, currentShipCrew.getMembers().first().getWorldModel(), style);
+            GraphicUtils.drawWorld(playerContext, currentShipCrew.getMembers().first().getWorldModel(), style, animations);
+            GraphicUtils.drawUi(playerContext, currentShipCrew.getMembers().first().getWorldModel(), style, currentShipCrew);
+        } else {
+            GraphicUtils.drawGameBackground(playerContext, currentShipCrew.getMembers().second().getWorldModel(), style);
+            GraphicUtils.drawWorld(playerContext, currentShipCrew.getMembers().second().getWorldModel(), style, animations);
+            GraphicUtils.drawUi(playerContext, currentShipCrew.getMembers().second().getWorldModel(), style, currentShipCrew);
+        }
     }
 }
