@@ -1,23 +1,15 @@
 package ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qlearning.sorted_model;
 
 import ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qlearning.TableQLearningBase;
-import ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qlearning.polar_model.QLearningPolarGunnerAgent;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.parameters_functions.ExplorationProbability;
-import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.polar_grid.PolarGrid;
-import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.polar_grid.PolarGridAgentGunnerPlayer;
-import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.polar_grid.PolarGridDescriptor;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.sorted_by_distance.SortedEntitiesData;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.sorted_by_distance.SortedEntitiesDataDescriptor;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.sorted_by_distance.SortedEntitiesGunnerAgent;
 import ru.spbau.svidchenko.asteroids_project.commons.Callable;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Pair;
-import ru.spbau.svidchenko.asteroids_project.commons.RandomGod;
-import ru.spbau.svidchenko.asteroids_project.game_logic.player.GunnerPlayer;
 
 import java.util.LinkedList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class QLearningSortedGunnerAgent extends SortedEntitiesGunnerAgent {
     private static long freeId = 0;
@@ -96,7 +88,7 @@ public class QLearningSortedGunnerAgent extends SortedEntitiesGunnerAgent {
             long newState = data.getCurrentState();
             int action = QLearningSortedGunnerAgent.this.chooseAction(newState);
             states.addFirst(Pair.of(Pair.of(Pair.of(newState, data.getCurrentSymmetricState()), action), 0L));
-            if (states.size() > Constants.MAX_DELAY) {
+            if (states.size() > Constants.AGENT_LEARNING_MAX_DELAY) {
                 Pair<Pair<Pair<Long, Long>, Integer>, Long> removed = states.removeLast();
                 double reward = removed.second();
                 long angle = descriptor.getAngleSectors()

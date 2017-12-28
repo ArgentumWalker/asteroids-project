@@ -95,7 +95,7 @@ public class QNetPolarPilotAgent extends PolarGridPilotAgent {
             }
             int action = QNetPolarPilotAgent.this.chooseAction(copy);
             states.addFirst(Pair.of(Pair.of(Pair.of(copy, rewCopy), action), 0L));
-            if (states.size() > Constants.MAX_DELAY) {
+            if (states.size() > Constants.AGENT_LEARNING_MAX_DELAY) {
                 Pair<Pair<Pair<List<List<Integer>>, List<List<Integer>>>, Integer>, Long> removed = states.removeLast();
                 double reward = removed.second() + bonusRewards.get(removed.first().second() % 3);
                 refresh(states.getLast().first().first().first(),

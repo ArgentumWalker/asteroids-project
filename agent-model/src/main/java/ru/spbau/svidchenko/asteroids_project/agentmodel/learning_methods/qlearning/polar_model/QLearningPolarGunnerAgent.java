@@ -5,12 +5,9 @@ import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.pol
 import ru.spbau.svidchenko.asteroids_project.commons.Callable;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Pair;
-import ru.spbau.svidchenko.asteroids_project.commons.RandomGod;
 
-import java.util.Deque;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class QLearningPolarGunnerAgent extends PolarGridGunnerAgent {
     private static long freeId = 0;
@@ -78,7 +75,7 @@ public class QLearningPolarGunnerAgent extends PolarGridGunnerAgent {
             }
             int action = QLearningPolarGunnerAgent.this.chooseAction(newState);
             states.addFirst(Pair.of(Pair.of(newState, action), 0L));
-            if (states.size() > Constants.MAX_DELAY) {
+            if (states.size() > Constants.AGENT_LEARNING_MAX_DELAY) {
                 Pair<Pair<Long, Integer>, Long> removed = states.removeLast();
                 refresh(states.getLast().first().first(),
                         removed.first().first(),

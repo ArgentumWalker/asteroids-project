@@ -6,7 +6,6 @@ import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Pair;
 import ru.spbau.svidchenko.asteroids_project.commons.Point;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.GunnerPlayer;
-import ru.spbau.svidchenko.asteroids_project.game_logic.world.EntityRelative;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.RelativeWorldModel;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Ship;
 import ru.spbau.svidchenko.asteroids_project.game_logic.world.Stone;
@@ -138,7 +137,7 @@ public class QNetSelectiveGunnerAgent extends GunnerAgent {
                 List<Point> state = calculatePowers(worldModel, weapon.getShip());
                 int action = QNetSelectiveGunnerAgent.this.chooseAction(state);
                 states.addFirst(Pair.of(Pair.of(state, action), 0L));
-                if (states.size() > Constants.MAX_DELAY / chooseTurns) {
+                if (states.size() > Constants.AGENT_LEARNING_MAX_DELAY / chooseTurns) {
                     Pair<Pair<List<Point>, Integer>, Long> removed = states.removeLast();
                     refresh(states.getLast().first().first(),
                             removed.first().first(),

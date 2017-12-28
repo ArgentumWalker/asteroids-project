@@ -80,7 +80,7 @@ public class QNetPolarGunnerAgent extends PolarGridGunnerAgent {
             }
             int action = QNetPolarGunnerAgent.this.chooseAction(copy);
             states.addFirst(Pair.of(Pair.of(copy, action), 0L));
-            if (states.size() > Constants.MAX_DELAY) {
+            if (states.size() > Constants.AGENT_LEARNING_MAX_DELAY) {
                 Pair<Pair<List<List<Integer>>, Integer>, Long> removed = states.removeLast();
                 refresh(states.getLast().first().first(),
                         removed.first().first(),

@@ -8,11 +8,9 @@ import ru.spbau.svidchenko.asteroids_project.agentmodel.world_representation.pol
 import ru.spbau.svidchenko.asteroids_project.commons.Callable;
 import ru.spbau.svidchenko.asteroids_project.commons.Constants;
 import ru.spbau.svidchenko.asteroids_project.commons.Pair;
-import ru.spbau.svidchenko.asteroids_project.commons.RandomGod;
 import ru.spbau.svidchenko.asteroids_project.game_logic.player.PilotPlayer;
 
 import java.util.*;
-import java.util.concurrent.ConcurrentHashMap;
 
 public class QLearningPolarPilotAgent extends PolarGridPilotAgent {
     private static long freeId = 0;
@@ -93,7 +91,7 @@ public class QLearningPolarPilotAgent extends PolarGridPilotAgent {
             }
             int action = QLearningPolarPilotAgent.this.chooseAction(newState);
             states.addFirst(Pair.of(Pair.of(Pair.of(newState, symmState), action), 0L));
-            if (states.size() > Constants.MAX_DELAY) {
+            if (states.size() > Constants.AGENT_LEARNING_MAX_DELAY) {
                 Pair<Pair<Pair<Long, Long>, Integer>, Long> removed = states.removeLast();
                 double reward = removed.second() + bonusRewards.get(removed.first().second() % 3);
                 refresh(states.getLast().first().first().first(),
