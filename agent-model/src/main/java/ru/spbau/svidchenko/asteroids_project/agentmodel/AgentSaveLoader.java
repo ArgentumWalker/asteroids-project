@@ -76,7 +76,6 @@ public class AgentSaveLoader {
     }
 
 
-
     public static List<GunnerAgent> loadGunners() throws IOException, ClassNotFoundException {
         return loadGunners("");
     }
@@ -92,8 +91,6 @@ public class AgentSaveLoader {
             return agents;
         }
     }
-
-
 
     public static List<GunnerAgent> loadGunners(String test) throws IOException, ClassNotFoundException {
         List<GunnerAgent> agents = new ArrayList<>();

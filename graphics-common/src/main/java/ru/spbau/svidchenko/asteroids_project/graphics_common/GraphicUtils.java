@@ -35,7 +35,7 @@ public class GraphicUtils {
         return getTextSizes(text, style);
     }
 
-    public static void drawImage(GraphicsContext context, Image source, Point position, Point size, double rotation) {
+    public static void drawImageWithCenterRotation(GraphicsContext context, Image source, Point position, Point size, double rotation) {
         context.save();
         Rotate rotate = new Rotate(Math.toDegrees(rotation),
                 position.getX() + size.getX() / 2,
@@ -47,8 +47,20 @@ public class GraphicUtils {
         context.restore();
     }
 
+    public static void drawImageWithCornerRotation(GraphicsContext context, Image source, Point position, Point size, double rotation) {
+        context.save();
+        Rotate rotate = new Rotate(Math.toDegrees(rotation),
+                position.getX(),
+                position.getY());
+        context.setTransform(rotate.getMxx(), rotate.getMyx(),
+                rotate.getMxy(), rotate.getMyy(),
+                rotate.getTx(), rotate.getTy());
+        context.drawImage(source, position.getX(), position.getY(), size.getX(), size.getY());
+        context.restore();
+    }
+
     public static void drawSprite(GraphicsContext context, Sprite sprite) {
-        drawImage(context, sprite.getImage(), sprite.getPosition(), sprite.getSize(), sprite.getRotation());
+        drawImageWithCenterRotation(context, sprite.getImage(), sprite.getPosition(), sprite.getSize(), sprite.getRotation());
     }
 
     public static void drawGameBackground(
@@ -56,11 +68,27 @@ public class GraphicUtils {
             RelativeWorldModel relativeWorldModel,
             GraphicStyleContainer style
     ) {
-        context.setFill(Color.BLACK);
-        context.fillRect(0, 0, context.getCanvas().getWidth(), context.getCanvas().getHeight());
         double angle = relativeWorldModel.getCurrentAngle();
         Point center = relativeWorldModel.getCurrentCenter();
         center = Point.with(-center.getY(), center.getX());
+
+        context.setFill(Color.BLACK);
+        context.fillRect(0, 0, context.getCanvas().getWidth(), context.getCanvas().getHeight());
+
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                Point bgPos = Point.with(Constants.WINDOW_HALF_WIDTH_PX, Constants.WINDOW_HALF_HEIGHT_PX).add(
+                        Point.with(- (2 * i + 1) * Constants.WORLD_HALF_WIDTH, - (2 * j + 1) * Constants.WORLD_HALF_HEIGHT)
+                                .add(center)
+                                .rotate(angle)
+                                .mult(Constants.PIXELS_IN_WORLD_POINT)
+                );
+                drawImageWithCornerRotation(context, style.getBackground(), bgPos,
+                        Point.with(Constants.WORLD_HALF_HEIGHT, Constants.WORLD_HALF_WIDTH).mult(2 * Constants.PIXELS_IN_WORLD_POINT),
+                        -angle);
+            }
+        }
+
         context.save();
         context.setStroke(style.getGridColor());
         context.setLineWidth(4);

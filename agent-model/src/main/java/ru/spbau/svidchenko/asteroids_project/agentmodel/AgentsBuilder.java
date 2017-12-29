@@ -26,18 +26,18 @@ public class AgentsBuilder {
 
     public static List<GunnerAgent> getDefaultGunnerAgents() {
         List<GunnerAgent> result = new ArrayList<>();
-        //result.add(new DoNothingGunnerAgent());
+        result.add(new DoNothingGunnerAgent());
         //result.add(new RandomShootGunnerAgent());
-        result.add(new LeftRollNShootGunnerAgent());
-        result.add(new RightRollNShootGunnerAgent());
+        //result.add(new LeftRollNShootGunnerAgent());
+        //result.add(new RightRollNShootGunnerAgent());
         result.add(new ShootClosestGunnerAgent());
-        result.add(new ShootClosestToDirectionGunnerAgent(0.25));
-        result.add(new ShootClosestToDirectionGunnerAgent(0.75));
-        result.add(new ShootClosestToDirectionGunnerAgent(1.25));
-        result.add(new ShootClosestToDirectionGunnerAgent(1.75));
-        result.add(new ShootClosestToDirectionGunnerAgent(2.25));
-        result.add(new ShootClosestToDirectionGunnerAgent(2.75));
-        result.add(new ShootForwardGunnerAgent());
+        //result.add(new ShootClosestToDirectionGunnerAgent(0.25));
+        //result.add(new ShootClosestToDirectionGunnerAgent(0.75));
+        //result.add(new ShootClosestToDirectionGunnerAgent(1.25));
+        //result.add(new ShootClosestToDirectionGunnerAgent(1.75));
+        //result.add(new ShootClosestToDirectionGunnerAgent(2.25));
+        //result.add(new ShootClosestToDirectionGunnerAgent(2.75));
+        //result.add(new ShootForwardGunnerAgent());
         return result;
     }
 

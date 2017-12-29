@@ -115,6 +115,11 @@ public class NeonGraphicStyle extends GraphicStyleContainer {
     }
 
     @Override
+    protected Image getBackgroundImage() {
+        return new Image("/styles/neon/Background.png");
+    }
+
+    @Override
     protected Animation getShipAppearAnimation() {
         return new AppearAnimation(Constants.SHIP_REVIVE_DELAY, Constants.SHIP_REVIVE_DELAY * 2,
                 Constants.SHIP_RADIUS * 2, Constants.SHIP_RADIUS * 3, Color.LIME);
@@ -140,7 +145,7 @@ public class NeonGraphicStyle extends GraphicStyleContainer {
 
     @Override
     protected Animation getBulletAppearAnimation() {
-        return new AppearAnimation(0, 5,
+        return new AppearAnimation(2, 15,
                 0, Constants.BULLET_RADIUS * 2.5, Color.LIME);
     }
 
@@ -149,6 +154,9 @@ public class NeonGraphicStyle extends GraphicStyleContainer {
         return new DieAnimation(10,
                 Constants.BULLET_RADIUS * 0.5, Constants.BULLET_RADIUS * 3.5, Color.LIME);
     }
+
+    private final static double MIN_CIRCLE_WIDTH = 1.5;
+    private final static double MAX_CIRCLE_WIDTH = 9;
 
     private class DieAnimation extends Animation {
         private long turnsLeft;
@@ -175,13 +183,13 @@ public class NeonGraphicStyle extends GraphicStyleContainer {
             if (turnsLeft < 0) {
                 return;
             }
-            double opacity = Math.min(1., Math.max(0., color.getOpacity() * Math.sqrt((1. * turnsLeft) / (turnsStart + 1))));
+            double opacity = Math.min(1., Math.max(0., color.getOpacity() * 1.6 * sqr((1. * turnsLeft) / (turnsStart + 1))));
             double red = color.getRed();
             double green = color.getGreen();
             double blue = color.getBlue();
             double radius = finishRadius + (startRadius - finishRadius) * (turnsLeft) / (turnsStart + 1);
             context.setStroke(Color.color(red, green, blue, opacity));
-            context.setLineWidth(5 * (turnsStart + 1) / ((turnsStart + 1) + 4 * (turnsLeft)));
+            context.setLineWidth(MAX_CIRCLE_WIDTH * (turnsStart + 1) / ((turnsStart + 1) + (MAX_CIRCLE_WIDTH / MIN_CIRCLE_WIDTH - 1) * (turnsLeft)));
             Point canvasPosition = calculateCanvasPosition(position, radius);
             context.strokeOval(canvasPosition.getX(), canvasPosition.getY(),
                     2*radius*Constants.PIXELS_IN_WORLD_POINT, 2*radius*Constants.PIXELS_IN_WORLD_POINT);
@@ -232,13 +240,13 @@ public class NeonGraphicStyle extends GraphicStyleContainer {
             double radius;
             double width;
             if (turnsLeft > middleTurns) {
-                opacity = Math.min(1., Math.max(0., color.getOpacity() * Math.sqrt(1. * (turnsStart + 2 + middleTurns - turnsLeft) / (turnsStart + 2))));
+                opacity = Math.min(1., Math.max(0., color.getOpacity() * 2.5 * sqr(1. * (turnsStart + 2 + middleTurns - turnsLeft) / (turnsStart + 2))));
                 radius = startRadius * (turnsLeft - middleTurns) / (turnsStart + 1);
-                width = 5 * (turnsStart + 1) / ((turnsStart + 1) + 4 * (turnsStart + middleTurns - turnsLeft + 1));
+                width = MAX_CIRCLE_WIDTH * (turnsStart + 1) / ((turnsStart + 1) + (MAX_CIRCLE_WIDTH / MIN_CIRCLE_WIDTH - 1) * (turnsStart + middleTurns - turnsLeft + 1));
             } else {
-                opacity = Math.min(1., Math.max(0., color.getOpacity() * Math.sqrt((1. * turnsLeft) / (middleTurns + 1))));
+                opacity = Math.min(1., Math.max(0., color.getOpacity() * 1.6 * sqr((1. * turnsLeft) / (middleTurns + 1))));
                 radius = finishRadius * (middleTurns - turnsLeft) / (middleTurns + 1);
-                width = 5 * (middleTurns + 1) / ((middleTurns + 1) + 4 * (turnsLeft));
+                width = MAX_CIRCLE_WIDTH * (middleTurns + 1) / ((middleTurns + 1) + (MAX_CIRCLE_WIDTH / MIN_CIRCLE_WIDTH - 1) * (turnsLeft));
             }
             context.setStroke(Color.color(red, green, blue, opacity));
             context.setLineWidth(width);
@@ -256,6 +264,10 @@ public class NeonGraphicStyle extends GraphicStyleContainer {
         public void passTurns(long turns) {
             turnsLeft -= turns;
         }
+    }
+
+    private double sqr(double v) {
+        return v*v;
     }
 
     private static Point calculateCanvasPosition(Point relativePosition, double radius) {

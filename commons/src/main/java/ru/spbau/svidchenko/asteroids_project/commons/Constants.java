@@ -53,7 +53,7 @@ public class Constants {
     //Time
     public static final long STONE_REVIVE_DELAY = 15;
     public static final long SHIP_REVIVE_DELAY = 15;
-    public static final long TURNS_IN_GAME = 12000;
+    public static final long TURNS_IN_GAME = 4000;
     public static final long AGENT_LEARNING_MAX_DELAY = 100;
 
     //Score

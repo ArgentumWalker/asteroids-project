@@ -18,6 +18,7 @@ public abstract class GraphicStyleContainer {
     private Image weaponImage = getWeaponImage();
     private Image stoneImage = getStoneImage();
     private Image bulletImage = getBulletImage();
+    private Image backgroundImage = getBackgroundImage();
 
     public GraphicStyleContainer() {}
 
@@ -44,6 +45,8 @@ public abstract class GraphicStyleContainer {
     protected abstract Image getStoneImage();
     protected abstract Image getBulletImage();
 
+    protected abstract Image getBackgroundImage();
+
     protected abstract Animation getShipAppearAnimation();
     protected abstract Animation getShipDieAnimation();
     protected abstract Animation getStoneAppearAnimation();
@@ -67,6 +70,10 @@ public abstract class GraphicStyleContainer {
             result.add(new Sprite(bulletImage, 0, relative.getPosition(), Constants.BULLET_RADIUS));
         }
         return result;
+    }
+
+    public Image getBackground() {
+        return backgroundImage;
     }
 
     public Animation getAnimationFor(WorldModel.Event event) {
