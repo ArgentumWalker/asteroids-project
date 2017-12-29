@@ -25,6 +25,7 @@ public class Ship extends Entity {
 
     public void setShipCrew(ShipCrew shipCrew) {
         this.shipCrew = shipCrew;
+        shipCrew.setShip(this);
     }
 
     //GET STATE
@@ -93,6 +94,10 @@ public class Ship extends Entity {
         }
 
         public long getCooldown() {return cooldown;}
+
+        public double getRealAngle() {
+            return 2 * Math.PI * angle/Constants.WEAPON_TURNS_TO_TURN_AROUND;
+        }
     }
 
     public class Vehicle {
@@ -111,11 +116,11 @@ public class Ship extends Entity {
         }
 
         public void moveForward() {
-            velocity = Point.withPolar(2 * Math.PI * angle/Constants.WEAPON_TURNS_TO_TURN_AROUND, Constants.SHIP_MAX_VELOCITY);
+            velocity = Point.withPolar(2 * Math.PI * angle/Constants.VEHICLE_TURNS_TO_TURN_AROUND, Constants.SHIP_MAX_VELOCITY);
         }
 
         public void moveBackward() {
-            velocity = Point.withPolar(2 * Math.PI * angle/Constants.WEAPON_TURNS_TO_TURN_AROUND - Math.PI, Constants.SHIP_MAX_VELOCITY);
+            velocity = Point.withPolar(2 * Math.PI * angle/Constants.VEHICLE_TURNS_TO_TURN_AROUND - Math.PI, Constants.SHIP_MAX_VELOCITY);
         }
 
         public void stop() {
@@ -128,6 +133,10 @@ public class Ship extends Entity {
 
         public Ship getShip() {
             return Ship.this;
+        }
+
+        public double getRealAngle() {
+            return 2 * Math.PI * angle/Constants.VEHICLE_TURNS_TO_TURN_AROUND;
         }
     }
 

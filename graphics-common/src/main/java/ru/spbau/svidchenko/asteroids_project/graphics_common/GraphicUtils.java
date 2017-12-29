@@ -4,8 +4,7 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.effect.BlendMode;
 import javafx.scene.effect.Effect;
 import javafx.scene.image.Image;
-import javafx.scene.paint.Color;
-import javafx.scene.paint.Paint;
+import javafx.scene.paint.*;
 import javafx.scene.text.Font;
 import javafx.scene.text.Text;
 import javafx.scene.transform.Rotate;
@@ -174,7 +173,37 @@ public class GraphicUtils {
         text = "Time left: " + leftTime / 60 + ":" + leftTime % 60;
         yOffset += 20 + getTextSizes(text, textStyle).getY();
         drawText(context, Point.with(20, yOffset), text, textStyle);
-        //TODO: implement
+        Color baseColor = Color.LIME; //TODO
+        //Gun laser
+        double gunAngle = crew.getShip().getWeapon().getRealAngle() - relativeWorldModel.getCurrentAngle();
+        Point start = Point.with(Constants.WINDOW_HALF_WIDTH_PX, Constants.WINDOW_HALF_HEIGHT_PX);
+        Point end = Point.with(0, -1).rotate(-gunAngle)
+                .mult(Constants.PIXELS_IN_WORLD_POINT * Constants.BULLET_BASE_VELOCITY * Constants.BULLET_HEALTH / Constants.BULLET_DAMAGE_PER_MOVE)
+                .add(start);
+        LinearGradient laserGradient = new LinearGradient(start.getX(), start.getY(), end.getX(), end.getY(), false, CycleMethod.NO_CYCLE,
+                new Stop(0.0, baseColor),
+                new Stop(1.0, Color.color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 0.0)));
+        context.setStroke(laserGradient);
+        context.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
+        //Vehicle
+        double vehicleAngle = crew.getShip().getVehicle().getRealAngle() - relativeWorldModel.getCurrentAngle();
+        start = Point.with(Constants.WINDOW_HALF_WIDTH_PX, Constants.WINDOW_HALF_HEIGHT_PX);
+        end = Point.with(0, -1).rotate(-vehicleAngle + Math.PI/6)
+                .mult(Constants.PIXELS_IN_WORLD_POINT * (Constants.STONE_RADIUS * 5  + Constants.SHIP_RADIUS))
+                .add(start);
+        laserGradient = new LinearGradient(start.getX(), start.getY(), end.getX(), end.getY(), false, CycleMethod.NO_CYCLE,
+                new Stop(0.0, baseColor),
+                new Stop(1.0, Color.color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 0.0)));
+        context.setStroke(laserGradient);
+        context.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
+        end = Point.with(0, -1).rotate(-vehicleAngle - Math.PI/6)
+                .mult(Constants.PIXELS_IN_WORLD_POINT * (Constants.STONE_RADIUS * 5  + Constants.SHIP_RADIUS))
+                .add(start);
+        laserGradient = new LinearGradient(start.getX(), start.getY(), end.getX(), end.getY(), false, CycleMethod.NO_CYCLE,
+                new Stop(0.0, baseColor),
+                new Stop(1.0, Color.color(baseColor.getRed(), baseColor.getGreen(), baseColor.getBlue(), 0.0)));
+        context.setStroke(laserGradient);
+        context.strokeLine(start.getX(), start.getY(), end.getX(), end.getY());
     }
 
     public static void drawMenu(GraphicsContext context, Menu menu, GraphicStyleContainer style) {

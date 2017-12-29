@@ -8,10 +8,15 @@ import java.util.concurrent.TimeUnit;
 
 public class ShipCrew {
     private Pair<PilotPlayer, GunnerPlayer> members;
+    private Ship ship;
     private long score = 0;
 
     public ShipCrew(PilotPlayer pilot, GunnerPlayer gunner) {
         members = Pair.of(pilot, gunner);
+    }
+
+    public void setShip(Ship ship) {
+        this.ship = ship;
     }
 
     public Pair<PilotPlayer, GunnerPlayer> getMembers() {
@@ -20,6 +25,10 @@ public class ShipCrew {
 
     public long getScore() {
         return score;
+    }
+
+    public Ship getShip() {
+        return ship;
     }
 
     public void addDelayedScore(long score, long delay) {
