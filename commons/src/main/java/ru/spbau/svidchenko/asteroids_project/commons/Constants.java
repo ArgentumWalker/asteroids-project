@@ -12,10 +12,10 @@ public class Constants {
     public static final double STONE_MAX_ANGLE_DELTA = Math.PI / 40;
 
     //Health
-    public static final double SPEED_TO_DAMAGE_KOEF = 8.0;
+    public static final double SPEED_TO_DAMAGE_KOEF = 32.0;
     public static final long SHIP_START_HEALTH = 1;
     public static final long STONE_START_HEALTH = 1;
-    public static final long BULLET_HEALTH = 80;
+    public static final long BULLET_HEALTH = 60;
     public static final long BULLET_DAMAGE_PER_MOVE = 1;
 
     //Entities sizes
@@ -28,7 +28,7 @@ public class Constants {
     public static final double SHIP_MAX_VELOCITY = 5.5;
     public static final double STONE_MIN_VELOCITY = 3.0;
     public static final double STONE_MAX_VELOCITY = 4.0;
-    public static final double BULLET_BASE_VELOCITY = 9.0;
+    public static final double BULLET_BASE_VELOCITY = 10.0;
 
     //Weapon
     public static final long WEAPON_COOLDOWN = 9;
@@ -38,12 +38,12 @@ public class Constants {
     public static final long VEHICLE_TURNS_TO_TURN_AROUND = 80;
 
     //Common
-    public static final double WORLD_HALF_WIDTH = 1232.0;
-    public static final double WORLD_HALF_HEIGHT = 1232.0;
+    public static final double WORLD_HALF_WIDTH = 1400.0;
+    public static final double WORLD_HALF_HEIGHT = 1400.0;
     public static final double SPAWN_DISTANCE_KOEF = 2.5;
     public static final double SHIP_STONE_SPAWN_DISTANCE =
-            (SHIP_MAX_VELOCITY + STONE_MAX_VELOCITY) * 20 + STONE_RADIUS + SHIP_RADIUS;
-    public static final long MAX_STONE_COUNT = 140;
+            (SHIP_MAX_VELOCITY + STONE_MAX_VELOCITY) * 15 + STONE_RADIUS + SHIP_RADIUS;
+    public static final long MAX_STONE_COUNT = 180;
 
     ////GAME CONSTANTS
 
@@ -53,7 +53,7 @@ public class Constants {
     //Time
     public static final long STONE_REVIVE_DELAY = 15;
     public static final long SHIP_REVIVE_DELAY = 15;
-    public static final long TURNS_IN_GAME = 4000;
+    public static final long TURNS_IN_GAME = 4800;
     public static final long AGENT_LEARNING_MAX_DELAY = 100;
 
     //Score

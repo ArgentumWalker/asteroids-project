@@ -17,8 +17,8 @@ import java.util.concurrent.Executors;
 import java.util.function.Consumer;
 
 public class Main {
-    private static final long GAME_COUNT = 7200;
-    private static final long STATISTIC_GAMES = 720;
+    private static final long GAME_COUNT = 1080;
+    private static final long STATISTIC_GAMES = 540;
     private static final long TEST_GAME_COUNT = 140;
 
     public static void main(String[] args) throws IOException, ClassNotFoundException, InterruptedException {
@@ -35,11 +35,15 @@ public class Main {
         //    testPilots.add(Pair.of(Collections.singletonList(agent), agent.getName()));
         //}
 
+        ShootClosestGunnerAgent ideal = new ShootClosestGunnerAgent();
         List<GunnerAgent> gunnerAgents = AgentsBuilder.getSortedQLearningGunners(GAME_COUNT, AgentsBuilder.getSortedDescriptors1());
         gunnerAgents.addAll(AgentsBuilder.getQNetSelectiveGunners());
+        gunnerAgents.add(ideal);
         learningPilots.clear();
         learningPilots.addAll(loadedPilots);
-        gunnerAdaptationTest("test38/standard", gunnerAgents, learningPilots, testPilots, executor);
+        gunnerAdaptationTest("test38/standard2", gunnerAgents, learningPilots, testPilots, executor);
+        gunnerAgents.remove(ideal);
+        AgentSaveLoader.rewriteGunners(gunnerAgents);
         //TEST 1: LEARNING WITH ALL
         /*learningPilots.clear();
         learningPilots.addAll(loadedPilots);

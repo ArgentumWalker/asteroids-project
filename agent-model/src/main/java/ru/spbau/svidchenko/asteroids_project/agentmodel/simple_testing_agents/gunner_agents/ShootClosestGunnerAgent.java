@@ -17,12 +17,19 @@ public class ShootClosestGunnerAgent extends GunnerAgent {
     public GunnerPlayer buildPlayer(long id) {
         return new GunnerPlayer(id) {
             private final Point ZERO = Point.with(0, 0);
+            private static final int CHOOSE_DELAY_REMAINING = 3;
+            private int chooseDelayRemaining = 0;
+            private Action action = new Action();
 
             @Override
             public Action chooseAction() {
-                Action action = new Action();
                 action.setShoot(true);
-                action.setTurn(chooseTurn());
+                if (chooseDelayRemaining == 0) {
+                    action.setTurn(chooseTurn());
+                    chooseDelayRemaining = CHOOSE_DELAY_REMAINING;
+                } else {
+                    chooseDelayRemaining--;
+                }
                 return action;
             }
 

@@ -29,6 +29,17 @@ public abstract class KeyboardControls extends CommonGame {
     @Override
     public void start(WorldDescriptor descriptor, ClientMenu menu, GraphicStyleContainer style, PilotPlayer pilot, GunnerPlayer gunner) {
         interrupted = false;
+        keyAPressed = false;
+        keyDPressed = false;
+        keyWPressed = false;
+        keySPressed = false;
+        keyLeftPressed = false;
+        keyRightPressed = false;
+        keyUpPressed = false;
+        pilotAction.setMove(PilotPlayer.Action.Move.OFF);
+        pilotAction.setTurn(PilotPlayer.Action.Turn.NO_TURN);
+        gunnerAction.setShoot(false);
+        gunnerAction.setTurn(GunnerPlayer.Action.Turn.NO_TURN);
         super.start(descriptor, menu, style, pilot, gunner);
     }
 

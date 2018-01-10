@@ -15,7 +15,7 @@ import java.util.stream.Collectors;
 public class StandaloneAppGameExecutor extends BaseGameExecutor {
     protected StandaloneClientInterface client;
     protected boolean interrupted = false;
-    private Set<Pair<WorldModel.Event, Long>> eventsAndTurns = new HashSet<>();
+    private final Set<Pair<WorldModel.Event, Long>> eventsAndTurns = new HashSet<>();
 
     public StandaloneAppGameExecutor(
             WorldDescriptor worldDescriptor,
@@ -31,7 +31,9 @@ public class StandaloneAppGameExecutor extends BaseGameExecutor {
         try {
             game.nextTurn();
             Set<WorldModel.Event> events = game.getCurrentWorldodel().getCurrentEvents();
-            eventsAndTurns.addAll(events.stream().map(event -> Pair.of(event, turnsPassed)).collect(Collectors.toList()));
+            synchronized (eventsAndTurns) {
+                eventsAndTurns.addAll(events.stream().map(event -> Pair.of(event, turnsPassed)).collect(Collectors.toList()));
+            }
             TimeUnit.MILLISECONDS.sleep(Constants.MILLIS_PER_TURN);
         } catch (InterruptedException e) {
             interrupted = true;
@@ -39,8 +41,11 @@ public class StandaloneAppGameExecutor extends BaseGameExecutor {
     }
 
     public Set<Pair<WorldModel.Event, Long>> getEventsAndTurns() {
-        HashSet<Pair<WorldModel.Event, Long>> result = new HashSet<>(eventsAndTurns);
-        eventsAndTurns.clear();
+        HashSet<Pair<WorldModel.Event, Long>> result;
+        synchronized (eventsAndTurns) {
+            result = new HashSet<>(eventsAndTurns);
+            eventsAndTurns.clear();
+        }
         return result;
     }
 

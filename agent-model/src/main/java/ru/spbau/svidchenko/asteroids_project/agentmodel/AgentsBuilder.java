@@ -1,9 +1,6 @@
 package ru.spbau.svidchenko.asteroids_project.agentmodel;
 
-import ru.spbau.svidchenko.asteroids_project.agentmodel.GunnerAgent;
-import ru.spbau.svidchenko.asteroids_project.agentmodel.PilotAgent;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qlearning.sorted_model.DoubleQLearningSortedGunnerAgent;
-import ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qlearning.sorted_model.QLearningSortedGunnerAgent;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qnetwork.polar_model.QNetPolarPilotAgent;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.learning_methods.qnetwork.selective_model.QNetSelectiveGunnerAgent;
 import ru.spbau.svidchenko.asteroids_project.agentmodel.parameters_functions.*;
@@ -41,6 +38,29 @@ public class AgentsBuilder {
         return result;
     }
 
+    public static List<GunnerAgent> getSelectGunnerAgents() {
+        List<GunnerAgent> result = new ArrayList<>();
+        //result.add(new DoNothingGunnerAgent());
+        //result.add(new RandomShootGunnerAgent());
+        result.add(new LeftRollNShootGunnerAgent());
+        result.add(new RightRollNShootGunnerAgent());
+        result.add(new ShootClosestGunnerAgent());
+        result.add(new ShootClosestToDirectionGunnerAgent(1.25));
+        result.add(new ShootClosestToDirectionGunnerAgent(1.75));
+        result.add(new ShootClosestToDirectionGunnerAgent(2.25));
+        result.add(new ShootClosestToDirectionGunnerAgent(2.75));
+        result.add(new ShootClosestToDirectionGunnerAgent(3.25));
+        result.add(new ShootClosestToDirectionGunnerAgent(3.75));
+        result.add(new ShootClosestToDirectionGunnerAgent(-1.25));
+        result.add(new ShootClosestToDirectionGunnerAgent(-1.75));
+        result.add(new ShootClosestToDirectionGunnerAgent(-2.25));
+        result.add(new ShootClosestToDirectionGunnerAgent(-2.75));
+        result.add(new ShootClosestToDirectionGunnerAgent(-3.25));
+        result.add(new ShootClosestToDirectionGunnerAgent(-3.75));
+        result.add(new ShootForwardGunnerAgent());
+        return result;
+    }
+
     public static List<PilotAgent> getDefaultPilotAgents() {
         List<PilotAgent> result = new ArrayList<>();
         result.add(new DoNothingPilotAgent());
@@ -54,18 +74,17 @@ public class AgentsBuilder {
     public static List<PilotAgent> getImprovedPilotAgents() {
         List<PilotAgent> result = new ArrayList<>();
         List<Pair<String, Point>> powers = Arrays.asList(
-                Pair.of("Left", Point.with(2, -2)),
-                Pair.of("Right", Point.with(2, 2)),
+        //        Pair.of("Left", Point.with(2, -2)),
+        //        Pair.of("Right", Point.with(2, 2)),
                 Pair.of("Forward", Point.with(5, 0)),
-                Pair.of("ForwardForced", Point.with(8, 0)),
+        //        Pair.of("ForwardForced", Point.with(8, 0)),
                 Pair.of("Backward", Point.with(-5, 0)),
                 Pair.of("Hold", Point.with(0, 0))
         );
         List<Pair<String, Double>> doudgeCoef = Arrays.asList(
                 Pair.of("Normal", 1e5),
-                Pair.of("Active", 2e5),
-                Pair.of("Inactive", 6e4),
-                Pair.of("Stay", 3e4)
+                Pair.of("Active", 1.4e5),
+                Pair.of("Inactive", 6e4)
         );
         List<Pair<String, Double>> angleReaction = Arrays.asList(
                 Pair.of("SmallAngle", 1./4),
@@ -188,20 +207,20 @@ public class AgentsBuilder {
 
     public static List<GunnerAgent> getQNetSelectiveGunners() {
         List<GunnerAgent> result = new ArrayList<>();
-        result.add(new QNetSelectiveGunnerAgent(
+        /*result.add(new QNetSelectiveGunnerAgent(
                 PowerFunctions.getSquaredPowerFunction(1e5),
-                getDefaultGunnerAgents(),
-                10,
+                getSelectGunnerAgents(),
+                20,
                 new ExplorationProbability1(6000 * Constants.TURNS_IN_GAME, 0.1),
                 new LearningStep1(0.01),
-                0.95, 0).setRefreshDelay(72 * Constants.TURNS_IN_GAME));
+                0.99, 0).setRefreshDelay(54 * Constants.TURNS_IN_GAME));*/
         result.add(new QNetSelectiveGunnerAgent(
                 PowerFunctions.getSquaredPowerFunction(1e5),
-                getDefaultGunnerAgents(),
-                10,
+                getSelectGunnerAgents(),
+                20,
                 new ExplorationProbability1(6000 * Constants.TURNS_IN_GAME, 0.1),
                 new LearningStep1(0.01),
-                0.95, 1).setRefreshDelay(72 * Constants.TURNS_IN_GAME));
+                0.95, 1).setRefreshDelay(54 * Constants.TURNS_IN_GAME));
         return result;
     }
 
@@ -209,10 +228,10 @@ public class AgentsBuilder {
         List<GunnerAgent> result = new ArrayList<>();
         for (SortedEntitiesDataDescriptor dataDescriptor : descriptors) {
             result.add(new DoubleQLearningSortedGunnerAgent(dataDescriptor,
-                    new ExplorationProbability3(288 * Constants.TURNS_IN_GAME, 0.95),
+                    new ExplorationProbability3(216 * Constants.TURNS_IN_GAME, 0.95),
                     new LearningStep1(0.005),
                     0.95,
-                    72 * Constants.TURNS_IN_GAME));
+                    54 * Constants.TURNS_IN_GAME));
         }
         return result;
     }

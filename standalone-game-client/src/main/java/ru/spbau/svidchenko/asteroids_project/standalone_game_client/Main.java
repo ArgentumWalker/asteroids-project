@@ -17,8 +17,8 @@ public class Main extends Application {
 
         SplitScreenGame splitScreenGame = new SplitScreenGame(primaryStage);
         OnePlayerGame onePlayerGame = new OnePlayerGame(primaryStage);
-        ClientMenu observerMenu = new ClientMenu(primaryStage, onePlayerGame, splitScreenGame);
-        observerMenu.start();
+        ClientMenu clientMenu = new ClientMenu(primaryStage, onePlayerGame, splitScreenGame);
+        clientMenu.start();
 
         primaryStage.show();
     }

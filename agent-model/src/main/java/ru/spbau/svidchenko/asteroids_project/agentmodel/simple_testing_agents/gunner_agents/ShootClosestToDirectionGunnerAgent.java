@@ -24,12 +24,19 @@ public class ShootClosestToDirectionGunnerAgent extends GunnerAgent {
     public GunnerPlayer buildPlayer(long id) {
         return new GunnerPlayer(id) {
             private final Point ZERO = Point.with(0, 0);
+            private static final int CHOOSE_DELAY_REMAINING = 3;
+            private int chooseDelayRemaining = 0;
+            private Action action = new Action();
 
             @Override
             public Action chooseAction() {
-                Action action = new Action();
                 action.setShoot(true);
-                action.setTurn(chooseTurn());
+                if (chooseDelayRemaining == 0) {
+                    action.setTurn(chooseTurn());
+                    chooseDelayRemaining = CHOOSE_DELAY_REMAINING;
+                } else {
+                    chooseDelayRemaining--;
+                }
                 return action;
             }
 
@@ -45,7 +52,7 @@ public class ShootClosestToDirectionGunnerAgent extends GunnerAgent {
                 for (EntityRelative relative : worldModel.getRelatives()) {
                     if (relative.getEntity() instanceof Stone) {
                         double cos = Math.cos(relative.getPosition().getAngle() - myShipRelative.getVehicleOrientation());
-                        double distance = relative.getPosition().worldDistanceTo(ZERO) * (1 + c - cos * cos * cos);
+                        double distance = relative.getPosition().worldDistanceTo(ZERO) * Math.abs(c - cos * cos * cos);
                         if (closest == null || relative.getPosition().worldDistanceTo(ZERO) < closestDistance) {
                             closest = relative;
                             closestDistance = distance;

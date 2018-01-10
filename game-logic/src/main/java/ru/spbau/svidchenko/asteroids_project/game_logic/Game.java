@@ -25,17 +25,15 @@ public class Game {
     public Game(WorldDescriptor worldDescriptor) {
         //TODO check distances
         currentWorldModel = new WorldModel();
-        List<Stone> stones = new ArrayList<>();
+        List<Entity> entities = new ArrayList<>();
         for (long i = 0; i < Math.min(worldDescriptor.stonesCount, Constants.MAX_STONE_COUNT); i++) {
-            stones.add(new Stone(random.randomWorldPoint(),
+            entities.add(new Stone(random.randomWorldPoint(),
                     random.randomPoint(Constants.STONE_MIN_VELOCITY, Constants.STONE_MAX_VELOCITY)));
         }
-        currentWorldModel.addEntities(stones);
-        List<Ship> ships = new ArrayList<>();
         long shipId = 0;
         for (ShipCrew crew : worldDescriptor.players) {
             Ship ship = new Ship(random.randomWorldPoint(), shipId++);
-            ships.add(ship);
+            entities.add(ship);
             ship.setShipCrew(crew);
             crew.getMembers().first().setVehicle(ship.getVehicle());
             crew.getMembers().second().setWeapon(ship.getWeapon());
@@ -53,7 +51,12 @@ public class Game {
             players.add(crew.getMembers().second());
             shipId2shipCrew.put(ship.getId(), crew);
         }
-        currentWorldModel.addEntities(ships);
+        Set<Entity> spawned = new HashSet<>();
+        for (Entity entity : entities) {
+            respawn(entity, spawned);
+            spawned.add(entity);
+        }
+        currentWorldModel.addEntities(entities);
         currentWorldModel.refreshTurn();
         afterTurn();
     }
@@ -214,6 +217,14 @@ public class Game {
                                         (entity instanceof Ship && checkEntity instanceof Stone) ?
                                         Constants.SHIP_STONE_SPAWN_DISTANCE :
                                         Constants.SPAWN_DISTANCE_KOEF * (Math.max(checkEntity.getRadius(), entity.getRadius())));
+            }
+            for (Pair<Long, Entity> checkEntity : reviveDelay) {
+                respawned = respawned &&
+                        checkEntity.second().getPosition().worldDistanceTo(newPosition) >
+                                ((checkEntity.second() instanceof Ship && entity instanceof Stone) ||
+                                        (entity instanceof Ship && checkEntity.second() instanceof Stone) ?
+                                        Constants.SHIP_STONE_SPAWN_DISTANCE :
+                                        Constants.SPAWN_DISTANCE_KOEF * (Math.max(checkEntity.second().getRadius(), entity.getRadius())));
             }
             if (respawned) {
                 entity.setPosition(newPosition);

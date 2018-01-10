@@ -16,6 +16,7 @@ import ru.spbau.svidchenko.asteroids_project.graphics_common.GraphicUtils;
 import ru.spbau.svidchenko.asteroids_project.standalone_game_client.standalone_app.StandaloneAppGameExecutor;
 import ru.spbau.svidchenko.asteroids_project.standalone_game_client.standalone_app.StandaloneClientInterface;
 
+import java.util.Collections;
 import java.util.List;
 
 public class GameClient {
@@ -46,7 +47,7 @@ public class GameClient {
             @Override
             public void handle(long now) {
                 GraphicUtils.drawGameBackground(graphicsContext, crews.get(crewId).getMembers().first().getWorldModel(), style);
-                GraphicUtils.drawWorld(graphicsContext, crews.get(crewId).getMembers().first().getWorldModel(), style);
+                GraphicUtils.drawWorld(graphicsContext, crews.get(crewId).getMembers().first().getWorldModel(), style, Collections.emptySet());
                 GraphicUtils.drawUi(graphicsContext, crews.get(crewId).getMembers().first().getWorldModel(), style, crews.get(crewId));
             }
         };
@@ -89,6 +90,12 @@ public class GameClient {
 
         @Override
         public void onGameEnd() {
+            animationTimer.stop();
+            Platform.runLater(() -> observerMenu.start());
+        }
+
+        @Override
+        public void onGameInterrupt() {
             animationTimer.stop();
             Platform.runLater(() -> observerMenu.start());
         }

@@ -153,7 +153,7 @@ public class GraphicUtils {
         for (Pair<Animation, Point> animation : animations) {
             animation.first()
                     .draw(context,
-                            animation.second().clone().add(relativeVector).rotate(relativeAngle),
+                            animation.second().clone().add(relativeVector).checkWorldBounds().rotate(relativeAngle),
                             relativeAngle);
         }
         context.restore();

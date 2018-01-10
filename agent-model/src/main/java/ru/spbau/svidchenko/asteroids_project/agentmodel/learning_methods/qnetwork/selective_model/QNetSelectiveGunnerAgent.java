@@ -80,6 +80,8 @@ public class QNetSelectiveGunnerAgent extends GunnerAgent {
         result.add(pilotPower);
         result.addAll(calculateGunnerPilotPower(gunnerPower, pilotPower));
         result.add(calculateGunnerPilotAngle(shipRelative));
+        Point shipVelocity = shipRelative.getEntity().getVelocity().clone();
+        result.add(shipVelocity.rotate(ship.getVehicle().getRealAngle()));
         return result;
     }
 

@@ -38,17 +38,17 @@ public class SelectiveQNet extends QNet {
         List<Double> realState = new ArrayList<>();
         List<Double> features = new ArrayList<>();
         state.forEach(p -> features.addAll(getPowerFeatures(p)));
-        getProds(features, realState, 0, 1.);
+        getProds(features, realState, 0, 0, 1.);
         return realState;
     }
 
-    private void getProds(List<Double> features, List<Double> result, int deep, double currentProd) {
+    private void getProds(List<Double> features, List<Double> result, int deep, int minPos, double currentProd) {
         result.add(currentProd);
         if (deep > featureProductions) {
             return;
         }
-        for (double feature : features) {
-            getProds(features, result, deep + 1, currentProd * feature);
+        for (int i = minPos; i < features.size(); i++) {
+            getProds(features, result, deep + 1, i, currentProd * features.get(i));
         }
     }
 
@@ -72,7 +72,7 @@ public class SelectiveQNet extends QNet {
             power -> power.angle,
             power -> power.angleAbs,
             power -> power.angle * power.angleAbs,
-            //power -> power.angle * power.angleAbs * power.angleAbs,
+            power -> power.angle * power.angleAbs * power.angleAbs,
             power -> power.x,
             power -> power.y,
             power -> power.x * power.x,
@@ -81,8 +81,8 @@ public class SelectiveQNet extends QNet {
             power -> power.yabs,
             power -> power.x * power.xabs,
             power -> power.y * power.yabs,
-            //power -> power.x * power.xabs * power.xabs,
-            //power -> power.y * power.yabs * power.yabs,
+            power -> power.x * power.xabs * power.xabs,
+            power -> power.y * power.yabs * power.yabs,
             power -> power.size,
             power -> power.cos,
             power -> power.sin,
@@ -92,8 +92,8 @@ public class SelectiveQNet extends QNet {
             power -> power.sin * power.sin,
             power -> power.cos * power.cosAbs,
             power -> power.sin * power.sinAbs,
-            //power -> power.cos * power.cosAbs * power.cosAbs,
-            //power -> power.sin * power.sinAbs * power.sinAbs,
+            power -> power.cos * power.cosAbs * power.cosAbs,
+            power -> power.sin * power.sinAbs * power.sinAbs,
             power -> power.absCos,
             power -> power.absCosAbs,
             power -> power.angleAbs > 1e-10 ? 1. / power.angle : 0,
@@ -102,21 +102,21 @@ public class SelectiveQNet extends QNet {
             power -> power.angleAbs > 1e-10 ? power.size / power.angle : 0,
             power -> power.cosAbs > 1e-10 ? power.size / power.cos : 0,
             power -> power.sinAbs > 1e-10 ? power.size / power.sin : 0,
-            //power -> power.angleAbs > 1e-10 ? power.size * power.size / power.angle : 0,
-            //power -> power.cosAbs > 1e-10 ? power.size * power.size / power.cos : 0,
-            //power -> power.sinAbs > 1e-10 ? power.size * power.size / power.sin : 0,
+            power -> power.angleAbs > 1e-10 ? power.size * power.size / power.angle : 0,
+            power -> power.cosAbs > 1e-10 ? power.size * power.size / power.cos : 0,
+            power -> power.sinAbs > 1e-10 ? power.size * power.size / power.sin : 0,
             power -> power.angleAbs > 1e-10 ? power.xabs / power.angle : 0,
             power -> power.cosAbs > 1e-10 ? power.xabs / power.cos : 0,
             power -> power.sinAbs > 1e-10 ? power.xabs / power.sin : 0,
-            //power -> power.angleAbs > 1e-10 ? power.xabs * power.xabs / power.angle : 0,
-            ///power -> power.cosAbs > 1e-10 ? power.xabs * power.xabs / power.cos : 0,
-            //power -> power.sinAbs > 1e-10 ? power.xabs * power.xabs / power.sin : 0,
+            power -> power.angleAbs > 1e-10 ? power.xabs * power.xabs / power.angle : 0,
+            power -> power.cosAbs > 1e-10 ? power.xabs * power.xabs / power.cos : 0,
+            power -> power.sinAbs > 1e-10 ? power.xabs * power.xabs / power.sin : 0,
             power -> power.angleAbs > 1e-10 ? power.yabs / power.angle : 0,
             power -> power.cosAbs > 1e-10 ? power.yabs / power.cos : 0,
-            power -> power.sinAbs > 1e-10 ? power.yabs / power.sin : 0
-            //power -> power.angleAbs > 1e-10 ? power.yabs * power.yabs / power.angle : 0,
-            //power -> power.cosAbs > 1e-10 ? power.yabs * power.yabs / power.cos : 0,
-            //power -> power.sinAbs > 1e-10 ? power.yabs * power.yabs / power.sin : 0
+            power -> power.sinAbs > 1e-10 ? power.yabs / power.sin : 0,
+            power -> power.angleAbs > 1e-10 ? power.yabs * power.yabs / power.angle : 0,
+            power -> power.cosAbs > 1e-10 ? power.yabs * power.yabs / power.cos : 0,
+            power -> power.sinAbs > 1e-10 ? power.yabs * power.yabs / power.sin : 0
     );
 
     private class PowerBaseFeatures {

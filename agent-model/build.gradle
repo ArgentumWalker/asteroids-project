@@ -12,5 +12,4 @@ repositories {
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.11'
     compile project(':commons'), project(':game-logic')
-    compile group: 'org.python', name: 'jython', version: '2.7.0'
 }
